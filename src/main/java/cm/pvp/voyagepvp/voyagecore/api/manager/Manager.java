@@ -1,0 +1,90 @@
+package cm.pvp.voyagepvp.voyagecore.api.manager;
+
+import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
+import lombok.AccessLevel;
+import lombok.Getter;
+
+import java.util.logging.Logger;
+
+/**
+ * Template class for Managers.
+ * @param <T>
+ */
+@Getter
+public class Manager<T extends VoyagePlugin>
+{
+    private String name;
+    private double version;
+    private boolean enabled = false;
+
+    @Getter(value = AccessLevel.PROTECTED)
+    private Logger logger;
+
+    public Manager(T instance, String name, double version)
+    {
+        this.name = name;
+        this.version = version;
+        logger = Logger.getLogger(getClass().getName());
+        logger.setParent(instance.getLogger());
+    }
+
+    /**
+     * Process to boot the manager.
+     */
+    public final void boot()
+    {
+        if (!enabled) {
+            logger.info("Enabling module.");
+
+            try {
+                enabled = enable();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            if (enabled) {
+                logger.info("Module enabled!");
+            } else {
+                logger.warning("Module didn't enable correctly. Module not enabled.");
+            }
+        }
+    }
+
+    /**
+     * Process to shutdown the manager.
+     */
+    public final void shutdown()
+    {
+        if (enabled) {
+            logger.info("Disabling module.");
+
+            try {
+                disable();
+                logger.info("Disabled module.");
+                enabled = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Method signature to be inherited when this class is inherited.
+     * @return if true the Manager enabled successfully, else the Manager
+     * enabled unsuccessfully.
+     * @throws Exception
+     */
+    public boolean enable() throws Exception
+    {
+        return false;
+    }
+
+    /**
+     * Method signature to be inherited when this class is inherited.
+     * @throws Exception
+     */
+    public void disable() throws Exception
+    {
+    }
+}
