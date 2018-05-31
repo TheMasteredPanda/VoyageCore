@@ -1,5 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.api.lookup;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -13,12 +14,12 @@ public interface Lookup
      * @param name - the players name.
      * @return the players profile.
      */
-    PlayerProfile lookup(String name);
+    Optional<PlayerProfile> lookup(String name);
 
     /**
      * Lookup a player by their unique id.
      * @param uuid - the players unique id.
      * @return the players profile.
      */
-    PlayerProfile lookup(UUID uuid);
+    Optional<PlayerProfile> lookup(UUID uuid);
 }

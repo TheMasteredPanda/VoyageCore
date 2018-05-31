@@ -12,7 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PlayerProfile
 {
+    @Setter
     private String name;
+
     private UUID id;
 
     @Setter

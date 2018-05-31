@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -24,29 +25,27 @@ import java.util.concurrent.TimeUnit;
 public class MojangLookup implements Lookup
 {
     private final JsonParser parser = new JsonParser();
-    private Cache<UUID, PlayerProfile> idCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
-    private Cache<String, PlayerProfile> nameCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private final String SESSION_SERVERS_URL = "https://sessionserver.mojang.com/session/minecraft/profile/";
+    private Cache<String, UUID> namesCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+    private Cache<UUID, PlayerProfile> idCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
 
     @Override
-    public PlayerProfile lookup(String name)
+    public Optional<PlayerProfile> lookup(String name)
     {
-        if (nameCache.asMap().containsKey(name)) {
-            return nameCache.getIfPresent(name);
+        if (namesCache.asMap().containsKey(name)) {
+            return lookup(namesCache.getIfPresent(name));
         }
 
-        PlayerProfile playerProfile = lookup(LookupUtil.getUniqueId(name));
-        nameCache.put(playerProfile.getName(), playerProfile);
-        idCache.put(playerProfile.getId(), playerProfile);
-        return playerProfile;
+        return lookup(LookupUtil.getUniqueId(name));
     }
 
     @Override
-    public PlayerProfile lookup(UUID uuid)
+    public Optional<PlayerProfile> lookup(UUID uuid)
     {
         if (idCache.asMap().containsKey(uuid)) {
-            return idCache.getIfPresent(uuid);
+            return Optional.of(idCache.getIfPresent(uuid));
         }
+
 
         try {
             URL url = new URL(SESSION_SERVERS_URL + uuid.toString().replace("-", ""));
@@ -69,10 +68,10 @@ public class MojangLookup implements Lookup
                 context.append(input);
             }
 
-            PlayerProfile playerProfile = new PlayerProfile(parser.parse(context.toString()).getAsJsonObject());
-            nameCache.put(playerProfile.getName(), playerProfile);
-            idCache.put(playerProfile.getId(), playerProfile);
-            return playerProfile;
+            PlayerProfile profile = new PlayerProfile(parser.parse(context.toString()).getAsJsonObject());
+            idCache.put(profile.getId(), profile);
+            namesCache.put(profile.getName(), profile.getId());
+            return Optional.of(profile);
         } catch (IOException e) {
             throw new MojangException(e);
         }
