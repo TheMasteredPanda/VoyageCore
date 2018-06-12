@@ -4,15 +4,11 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.ArgumentCheckFunct
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 public class ArgumentField
 {
-    @Getter
     private String name;
-
-    @Getter
     private boolean required;
-
-    @Getter
     private Class type;
 
     @Setter
@@ -20,6 +16,8 @@ public class ArgumentField
 
     public ArgumentField(String name, boolean required, Class type)
     {
-
+        this.name = name;
+        this.required = required;
+        this.type = type;
     }
 }

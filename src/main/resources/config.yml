@@ -1,0 +1,11 @@
+
+
+modules:
+  customlist:
+    messages:
+      header:
+      footer:
+    groups:
+      staff: "owner, admin, senior-mod, mod, chat-mod, junior-mod"
+      specials: ""
+

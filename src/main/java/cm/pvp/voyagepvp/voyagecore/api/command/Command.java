@@ -3,6 +3,7 @@ package cm.pvp.voyagepvp.voyagecore.api.command;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.command.locale.CommandLocale;
 import cm.pvp.voyagepvp.voyagecore.api.command.locale.DefaultCommandLocale;
+import cm.pvp.voyagepvp.voyagecore.api.exception.CommandException;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -19,6 +20,14 @@ import java.util.stream.Collectors;
 
 import static cm.pvp.voyagepvp.voyagecore.api.command.locale.CommandLocale.Key.*;
 
+
+/**
+ * A command wrapper. It serves as a more advanced command executor.
+ * This wrapper can determine if each argument for a command is the correct
+ * data type, if the player has the correct permission, whether an alias of
+ * the command has been invoked, and gives the command sender, when invoked,
+ * a detailed json list of the command and it's child commands.
+ */
 @Getter
 public abstract class Command implements CommandExecutor
 {
@@ -39,6 +48,12 @@ public abstract class Command implements CommandExecutor
         this.aliases = ImmutableList.<String>builder().addAll(Arrays.asList(aliases)).build();
     }
 
+    /**
+     * Add arguments to this command. Beware, a required command can not come after an
+     * optional argument. However, an optional argument can come after a required argument.
+     * @param fields - the immutable array of arguments.
+     * @throws OperationNotSupportedException
+     */
     public void addArguments(ArgumentField... fields) throws OperationNotSupportedException
     {
         boolean required = false;
@@ -54,18 +69,47 @@ public abstract class Command implements CommandExecutor
         this.fields.addAll(Arrays.asList(fields));
     }
 
-    public void setParent(Command parent)
+    /**
+     * Set the parent of this command, making it a child of that command.
+     * @param parent - command to set the parent to.
+     */
+    public final void setParent(Command parent)
     {
+        parent.addChildren(this);
         this.parent = parent;
     }
 
-    public Command getParent()
+    /**
+     * Get the parent command.
+     * @return
+     */
+    public final Command getParent()
     {
         return parent;
     }
 
+    /**
+     * Add commands as children (sub commands) of this command.
+     * @param children - immutable array of child commands.
+     */
+    public final void addChildren(Command... children)
+    {
+        for (Command child : children) {
+            if (child.getParent() != null) {
+                throw new CommandException("Command " + child.getCommandPath() + " already has a parent.");
+            }
+
+            if (this.children.contains(child)) {
+                continue;
+            }
+
+            this.children.add(child);
+            child.setParent(this);
+        }
+    }
+
     @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args)
+    public final boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args)
     {
         if (isPlayerOnlyCommand() && !(sender instanceof Player)) {
             sender.sendMessage(Format.colour(locale.get(PLAYER_ONLY_COMMAND)));
@@ -97,37 +141,88 @@ public abstract class Command implements CommandExecutor
         }
 
         if (getRequiredFields().size() > arguments.size()) {
-            sender.sendMessage(locale.get(NOT_ENOUGH_ARGUMENTS));
+            sender.sendMessage(Format.colour(locale.get(NOT_ENOUGH_ARGUMENTS)));
             return true;
         }
 
+        if (args.length > 0) {
+            for (int i = 0; i < fields.size(); i++) {
+                ArgumentField field = fields.get(i);
 
-
-        for (ArgumentField field : fields) {
-
+                if (!field.getCheckFunction().check(args[i])) {
+                    sender.sendMessage(Format.format(locale.get(ARGUMENT_INCORRECT).replace("{argument}", field.getName())));
+                    return true;
+                }
+            }
         }
 
-        execute(sender, this, Lists.newLinkedList()); /*TODO arguments*/
+        execute(sender, this, Lists.newLinkedList());
 
         return false;
     }
 
+    /**
+     * Get the command usage. This pertains the command path plus the arguments the command has.
+     * @return the command usage.
+     */
+    public String getCommandUsage()
+    {
+        StringBuilder sb = new StringBuilder(getCommandPath() + " ");
 
+        for (ArgumentField field : fields) {
+            sb.append(field.isRequired() ? "[" : "<").append(field.getName()).append(field.isRequired() ? "]" : ">");
+
+            if (field != fields.getLast()) {
+                sb.append(" ");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Get the full command path of this command.
+     * @return the command path.
+     */
+    public String getCommandPath()
+    {
+        return (getParent() != null ? getParent().getCommandPath() + " " : "/") + getMainAlias();
+    }
+
+    /**
+     * Gets the list of required argument fields.
+     * @return
+     */
     @Cacheable
     public LinkedList<ArgumentField> getRequiredFields()
     {
         return fields.stream().filter(ArgumentField::isRequired).collect(Collectors.toCollection(Lists::newLinkedList));
     }
 
+    /**
+     * Cheeck if a string is an alias of this command.
+     * @param alias - alias to check.
+     * @return true if it is, else false.
+     */
     public boolean isAlias(String alias)
     {
         return aliases.contains(alias);
     }
 
+    /**
+     * Get the main alias of this command.
+     * @return the main alias.
+     */
     public String getMainAlias()
     {
         return aliases.get(0);
     }
 
+    /**
+     * The method signature that will be inherited then defined.
+     * @param sender - the person who sent the command.
+     * @param command - the command executed.
+     * @param arguments - the arguments.
+     */
     public abstract void execute(CommandSender sender, Command command, LinkedList<String> arguments);
 }

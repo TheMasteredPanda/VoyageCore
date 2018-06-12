@@ -17,6 +17,7 @@ public class DefaultCommandLocale implements CommandLocale
                 .put(Key.NO_PERMISSION, "{commandPrefix} &cNo permission.")
                 .put(Key.NOT_ENOUGH_ARGUMENTS, "{commandPrefix} Not enough arguments for {commandusage}")
                 .put(Key.PLAYER_ONLY_COMMAND, "{commandPrefix} Player only command.")
+                .put(Key.ARGUMENT_INCORRECT, "{commandPrefix} &cArgument {argument} is incorrect.")
                 .build();
     }
 
