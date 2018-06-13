@@ -2,6 +2,7 @@ package cm.pvp.voyagepvp.voyagecore.api.module;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -26,6 +27,7 @@ public class Module<T extends JavaPlugin>
     /**
      * For checking if the module is enabled or not.
      */
+    @Setter
     private boolean enabled = false;
 
     /**
@@ -51,18 +53,18 @@ public class Module<T extends JavaPlugin>
     /**
      * Process for booting the module.
      */
-    protected final void boot()
+    protected void boot()
     {
         logger.info("Enabling module.");
 
-        if (!enabled) {
+        if (!isEnabled()) {
             try {
-                enabled = enable();
+                setEnabled(enable());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            if (enabled) {
+            if (isEnabled()) {
                 logger.info("Enabled module.");
             } else {
                 logger.warning("Couldn't enable module.");
@@ -73,12 +75,12 @@ public class Module<T extends JavaPlugin>
     /**
      * Process for disabling module.
      */
-    protected final void shutdown()
+    protected void shutdown()
     {
-        if (enabled) {
+        if (isEnabled()) {
             try {
                 disable();
-                enabled = false;
+                setEnabled(false);
                 logger.info("Disabled module.");
             } catch (Exception e) {
                 logger.warning("Couldn't disable module " + e + ".");

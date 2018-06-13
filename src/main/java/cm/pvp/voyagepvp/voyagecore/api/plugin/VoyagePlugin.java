@@ -1,5 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.api.plugin;
 
+import cm.pvp.voyagepvp.voyagecore.api.generic.GenericUtil;
 import cm.pvp.voyagepvp.voyagecore.api.manager.Manager;
 import com.google.common.collect.Lists;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,6 +47,25 @@ public class VoyagePlugin extends JavaPlugin
         managers.forEach(Manager::shutdown);
     }
 
+
+    /**
+     * Get a manager instance.
+     * @param manager - manager type.
+     * @param <T> - generic type.
+     * @return manager instance.
+     */
+    public <T extends Manager> T get(Class<T> manager)
+    {
+        for (Manager m : managers) {
+            if (!m.getClass().equals(manager)) {
+                continue;
+            }
+
+            return GenericUtil.cast(m);
+        }
+
+        return null;
+    }
 
 
 }
