@@ -2,8 +2,11 @@ package cm.pvp.voyagepvp.voyagecore.modules.announcement;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
+import cm.pvp.voyagepvp.voyagecore.api.command.CommandManager;
+import cm.pvp.voyagepvp.voyagecore.modules.announcement.commands.AnnouncementCommand;
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -15,15 +18,18 @@ import java.util.regex.Pattern;
 
 public class Announcements extends Feature
 {
+    @Getter
     private LinkedList<TextComponent> announcements = Lists.newLinkedList();
+
     private final Pattern placeholder = Pattern.compile("[{(<](\\w*);(\\w*)[})>]");
 
-    @Getter
+    @Getter @Setter
     private AnnouncementThread announcementThread;
 
     public Announcements(VoyageCore instance)
     {
         super(instance, "Announcements", 1.0);
+        instance.get(CommandManager.class).addCommands(instance, new AnnouncementCommand(instance, this));
     }
 
     @Override
@@ -85,5 +91,14 @@ public class Announcements extends Feature
         }
 
         return true;
+    }
+
+    @Override
+    protected void disable() throws Exception
+    {
+        if (announcementThread != null) {
+            announcementThread.cancel();
+            announcementThread = null;
+        }
     }
 }

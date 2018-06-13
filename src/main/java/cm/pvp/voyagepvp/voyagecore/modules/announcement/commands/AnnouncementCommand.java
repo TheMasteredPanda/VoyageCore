@@ -12,7 +12,7 @@ public class AnnouncementCommand extends Command
     public AnnouncementCommand(VoyageCore instance, Announcements feature)
     {
         super(null, "voyagecore.announcement.commands", "Parent command for the announcement feature.", false, "announcement");
-        addChildren(new StopAnnouncementThread(instance, feature));
+        addChildren(new StopAnnouncementThread(instance, feature), new StartAnnouncementThread(instance, feature));
     }
 
     @Override

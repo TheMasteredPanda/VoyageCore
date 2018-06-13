@@ -11,8 +11,8 @@ public class CommandManager extends Manager<VoyageCore>
         super(instance, "Command Manager", 1.0);
     }
 
-    public static void addCommands(JavaPlugin instance, Command command)
+    public void addCommands(JavaPlugin instance, Command command)
     {
-        
+        //TODO
     }
 }
