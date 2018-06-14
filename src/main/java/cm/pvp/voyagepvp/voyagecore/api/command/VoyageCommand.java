@@ -5,17 +5,17 @@ import cm.pvp.voyagepvp.voyagecore.api.command.locale.CommandLocale;
 import cm.pvp.voyagepvp.voyagecore.api.command.locale.DefaultCommandLocale;
 import cm.pvp.voyagepvp.voyagecore.api.exception.CommandException;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.jcabi.aspects.Cacheable;
 import lombok.Getter;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static cm.pvp.voyagepvp.voyagecore.api.command.locale.CommandLocale.Key.*;
@@ -29,23 +29,25 @@ import static cm.pvp.voyagepvp.voyagecore.api.command.locale.CommandLocale.Key.*
  * a detailed json list of the command and it's child commands.
  */
 @Getter
-public abstract class Command implements CommandExecutor
+public abstract class VoyageCommand extends BukkitCommand
 {
-    private ImmutableList<String> aliases;
-    private String permission;
-    private String description;
-    private boolean playerOnlyCommand = false;
-    private Command parent;
-    private LinkedList<Command> children = Lists.newLinkedList();
+    private boolean playerOnlyCommand;
+    private VoyageCommand parent;
+    private LinkedList<VoyageCommand> children = Lists.newLinkedList();
     private LinkedList<ArgumentField> fields = Lists.newLinkedList();
     private CommandLocale locale;
 
-    public Command(CommandLocale locale, String permission, String description, boolean playerOnlyCommand, String... aliases)
+    public VoyageCommand(CommandLocale locale, String permission, String description, boolean playerOnlyCommand, String... aliases)
     {
-        this.permission = permission;
-        this.description = description;
+        super(aliases[0]);
+        List<String> sortedAliases = Lists.newArrayList(aliases);
+        sortedAliases.remove(0);
+        if (sortedAliases.size() != 0) setAliases(sortedAliases);
+        setDescription(description);
+        setPermission(permission);
         this.locale = locale == null ? new DefaultCommandLocale() : locale;
-        this.aliases = ImmutableList.<String>builder().addAll(Arrays.asList(aliases)).build();
+        setPermissionMessage(this.locale.get(NO_PERMISSION));
+        this.playerOnlyCommand = playerOnlyCommand;
     }
 
     /**
@@ -73,7 +75,7 @@ public abstract class Command implements CommandExecutor
      * Set the parent of this command, making it a child of that command.
      * @param parent - command to set the parent to.
      */
-    public final void setParent(Command parent)
+    public final void setParent(VoyageCommand parent)
     {
         parent.addChildren(this);
         this.parent = parent;
@@ -83,7 +85,7 @@ public abstract class Command implements CommandExecutor
      * Get the parent command.
      * @return
      */
-    public final Command getParent()
+    public final VoyageCommand getParent()
     {
         return parent;
     }
@@ -92,9 +94,9 @@ public abstract class Command implements CommandExecutor
      * Add commands as children (sub commands) of this command.
      * @param children - immutable array of child commands.
      */
-    public final void addChildren(Command... children)
+    public final void addChildren(VoyageCommand... children)
     {
-        for (Command child : children) {
+        for (VoyageCommand child : children) {
             if (child.getParent() != null) {
                 throw new CommandException("Command " + child.getCommandPath() + " already has a parent.");
             }
@@ -109,7 +111,7 @@ public abstract class Command implements CommandExecutor
     }
 
     @Override
-    public final boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args)
+    public boolean execute(CommandSender sender, String label, String[] args)
     {
         if (isPlayerOnlyCommand() && !(sender instanceof Player)) {
             sender.sendMessage(Format.colour(locale.get(PLAYER_ONLY_COMMAND)));
@@ -117,7 +119,6 @@ public abstract class Command implements CommandExecutor
         }
 
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Format.colour(locale.get(NO_PERMISSION)));
             return true;
         }
 
@@ -129,14 +130,13 @@ public abstract class Command implements CommandExecutor
                 return true;
             }
 
-            for (Command child : children) {
-                if (!child.isAlias(args[1])) {
+            for (VoyageCommand child : children) {
+                if (!child.isAlias(args[0])) {
                     continue;
                 }
 
                 arguments.remove(0);
-                onCommand(sender, cmd, label, arguments.toArray(new String[0]));
-                return true;
+                return child.execute(sender, args[0], arguments.toArray(new String[0]));
             }
         }
 
@@ -156,9 +156,8 @@ public abstract class Command implements CommandExecutor
             }
         }
 
-        execute(sender, this, Lists.newLinkedList());
-
-        return false;
+        execute(sender, this, arguments);
+        return true;
     }
 
     /**
@@ -186,7 +185,7 @@ public abstract class Command implements CommandExecutor
      */
     public String getCommandPath()
     {
-        return (getParent() != null ? getParent().getCommandPath() + " " : "/") + getMainAlias();
+        return (getParent() != null ? getParent().getCommandPath() + " " : "/") + getName();
     }
 
     /**
@@ -206,16 +205,7 @@ public abstract class Command implements CommandExecutor
      */
     public boolean isAlias(String alias)
     {
-        return aliases.contains(alias);
-    }
-
-    /**
-     * Get the main alias of this command.
-     * @return the main alias.
-     */
-    public String getMainAlias()
-    {
-        return aliases.get(0);
+        return getAliases().contains(alias) || getName().equals(alias);
     }
 
     /**
@@ -224,5 +214,5 @@ public abstract class Command implements CommandExecutor
      * @param command - the command executed.
      * @param arguments - the arguments.
      */
-    public abstract void execute(CommandSender sender, Command command, LinkedList<String> arguments);
+    public abstract void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments);
 }

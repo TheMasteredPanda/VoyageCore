@@ -2,26 +2,22 @@ package cm.pvp.voyagepvp.voyagecore.modules.announcement;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
-import cm.pvp.voyagepvp.voyagecore.api.command.CommandManager;
+import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.modules.announcement.commands.AnnouncementCommand;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Announcements extends Feature
 {
-    @Getter
-    private LinkedList<TextComponent> announcements = Lists.newLinkedList();
 
-    private final Pattern placeholder = Pattern.compile("[{(<](\\w*);(\\w*)[})>]");
+    @Getter
+    private LinkedList<BaseComponent[]> announcements = Lists.newLinkedList();
 
     @Getter @Setter
     private AnnouncementThread announcementThread;
@@ -29,72 +25,28 @@ public class Announcements extends Feature
     public Announcements(VoyageCore instance)
     {
         super(instance, "Announcements", 1.0);
-        instance.get(CommandManager.class).addCommands(instance, new AnnouncementCommand(instance, this));
     }
 
     @Override
     protected boolean enable() throws Exception
     {
+        getInstance().register(new AnnouncementCommand(getInstance(), this));
+
         Map<String, Object> announcements = getSection().getConfigurationSection("announcements").getValues(true);
 
+
         for (Map.Entry<String, Object> entry : announcements.entrySet()) {
-            List<String> text = (List<String>) entry.getValue();
-            TextComponent announcement = new TextComponent();
-
-
-            for (String line : text) {
-                String[] words = line.split(" ");
-
-                for (String word : words) {
-                    Matcher m = placeholder.matcher(word);
-
-                    if (!m.matches()) {
-                        announcement.addExtra(new TextComponent(word + " "));
-                        continue;
-                    }
-
-                    StringBuilder sb = new StringBuilder(word);
-                    sb.deleteCharAt(0);
-                    sb.deleteCharAt(word.length() - 1);
-                    String[] pair = sb.toString().split(";");
-                    TextComponent component = new TextComponent(pair[0]);
-
-                    if (word.startsWith("(")) { //OPEN URL
-                        component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, pair[1]));
-                    }
-
-                    if (word.startsWith("{")) {
-                        component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, pair[1]));
-                    }
-
-                    if (word.startsWith("<")) {
-                        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, pair[1]));
-                    }
-
-                    announcement.addExtra(component);
-
-
-                    if (!line.equals(text.get(text.size() - 1))) {
-                        announcement.addExtra(" ");
-                    }
-                }
-
-                announcement.addExtra("\n");
-            }
-
-            this.announcements.add(announcement);
+            this.announcements.add(ComponentSerializer.parse(Format.colour((String) entry.getValue())));
         }
 
-
-        if (announcements.size() != 0) {
-            announcementThread = new AnnouncementThread(getInstance(), this.announcements, getSection().getBoolean("random"), getSection().getInt("internal"));
+        if (this.announcements.size() != 0) {
+            announcementThread = new AnnouncementThread(getInstance(), this.announcements, getSection().getBoolean("random"), getSection().getInt("interval") * 20);
         }
-
         return true;
     }
 
     @Override
-    protected void disable() throws Exception
+    protected void disable()
     {
         if (announcementThread != null) {
             announcementThread.cancel();

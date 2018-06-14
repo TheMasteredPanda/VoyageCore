@@ -44,9 +44,9 @@ public class Manager<T extends VoyagePlugin>
             }
 
             if (enabled) {
-                logger.info("Module enabled!");
+                logger.info("Manager enabled!");
             } else {
-                logger.warning("Module didn't enable correctly. Module not enabled.");
+                logger.warning("Manager didn't enable correctly. Module not enabled.");
             }
         }
     }
@@ -77,7 +77,7 @@ public class Manager<T extends VoyagePlugin>
      */
     public boolean enable() throws Exception
     {
-        return false;
+        return true;
     }
 
     /**

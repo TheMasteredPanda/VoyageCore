@@ -1,33 +1,39 @@
 package cm.pvp.voyagepvp.voyagecore.api.plugin;
 
+import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.generic.GenericUtil;
 import cm.pvp.voyagepvp.voyagecore.api.manager.Manager;
-import com.google.common.collect.Lists;
+import cm.pvp.voyagepvp.voyagecore.api.reflect.ReflectUtil;
+import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Main class of Voyage plugins.
  */
 public class VoyagePlugin extends JavaPlugin
 {
-    private ArrayList<Manager> managers = Lists.newArrayList();
+    private HashMap<Class, Manager> managers = Maps.newHashMap();
 
     /**
      * Add an array of managers owned by this plugin.
      * @param managers - managers.
      */
-    public void add(final Manager... managers)
+    public void add(Manager... managers)
     {
         for (int i = 0; i < managers.length; i++) {
             Manager manager = managers[i];
 
-            if (this.managers.stream().anyMatch(m -> m.getName().equals(manager.getName()))) {
+            if (this.managers.values().stream().anyMatch(m -> m.getName().equals(manager.getName()))) {
                 continue;
             }
 
-            this.managers.add(manager);
+            getLogger().info("Added manager " + manager.getName() + ".");
+            this.managers.put(manager.getClass(), manager);
         }
     }
 
@@ -36,7 +42,7 @@ public class VoyagePlugin extends JavaPlugin
      */
     public void bootAll()
     {
-        managers.forEach(Manager::boot);
+        managers.values().forEach(Manager::boot);
     }
 
     /**
@@ -44,9 +50,8 @@ public class VoyagePlugin extends JavaPlugin
      */
     public void shutdownAll()
     {
-        managers.forEach(Manager::shutdown);
+        managers.values().forEach(Manager::shutdown);
     }
-
 
     /**
      * Get a manager instance.
@@ -56,16 +61,22 @@ public class VoyagePlugin extends JavaPlugin
      */
     public <T extends Manager> T get(Class<T> manager)
     {
-        for (Manager m : managers) {
-            if (!m.getClass().equals(manager)) {
-                continue;
-            }
-
-            return GenericUtil.cast(m);
-        }
-
-        return null;
+        return GenericUtil.cast(managers.get(manager));
     }
 
+    /**
+     * Register voyage command wrappers.
+     * @param commands - immutable array of commands to register.
+     */
+    public void register(VoyageCommand... commands)
+    {
+        MethodAccessor<SimpleCommandMap> getCommandMap = ReflectUtil.getMethod(ReflectUtil.getOBCClass("CraftServer"), "getCommandMap", true);
+        SimpleCommandMap map = getCommandMap.invoke(getServer());
+        Preconditions.checkNotNull(map, "Command map is null.");
 
+        for (VoyageCommand cmd : commands) {
+            map.register(getDescription().getName().toLowerCase(), cmd);
+            getLogger().warning("Registered command " + cmd.getName() + ".");
+        }
+    }
 }

@@ -1,13 +1,13 @@
 package cm.pvp.voyagepvp.voyagecore.modules.announcement.commands;
 
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
-import cm.pvp.voyagepvp.voyagecore.api.command.Command;
+import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.modules.announcement.Announcements;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedList;
 
-public class AnnouncementCommand extends Command
+public class AnnouncementCommand extends VoyageCommand
 {
     public AnnouncementCommand(VoyageCore instance, Announcements feature)
     {
@@ -16,8 +16,8 @@ public class AnnouncementCommand extends Command
     }
 
     @Override
-    public void execute(CommandSender sender, Command command, LinkedList<String> arguments)
+    public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-
+        return;
     }
 }

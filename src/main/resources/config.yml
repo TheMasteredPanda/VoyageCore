@@ -1,6 +1,12 @@
-
-
-modules:
+features:
+  ##http://minecraft.tools/en/tellraw.php
   announcements:
-    enabled: true
-
+    messages:
+      AnnouncementThreadRunning: "{commandprefix} &cThe announcement thread is already running."
+      AnnouncementThreadStarted: "{commandprefix} &cThe announcement thread has started."
+      AnnouncementThreadStopped: "{commandprefix} &cThe announcement thread has stopped."
+      AnnouncementThreadNotRunning: "{commandprefix} &cThe announcement thread is not running."
+    random: false
+    interval: 15
+    announcements:
+      1: '["",{"text":"&8&m&l-------------------------&l&8[ &6&lVOYAGE&b&lPVP &8&l]&8&m&l--------------------\n"},{"text":"test","clickEvent":{"action":"open_url","value":"https://www.google.com/"}},{"text":"\n&8&m&l-------------------------&l&8[ &6&lVOYAGE&b&lPVP &8&l]&8&m&l--------------------"}]'

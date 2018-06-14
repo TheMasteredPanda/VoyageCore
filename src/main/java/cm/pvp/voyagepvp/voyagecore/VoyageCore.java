@@ -4,29 +4,22 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.Config;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.MojangLookup;
 import cm.pvp.voyagepvp.voyagecore.api.module.ModuleManager;
 import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
+import cm.pvp.voyagepvp.voyagecore.modules.announcement.Announcements;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
+@Getter
 public class VoyageCore extends VoyagePlugin
 {
     private static VoyageCore instance;
-    private ModuleManager moduleManager;
     private MojangLookup mojangLookup;
     private Config<VoyageCore> mainConfig;
 
     public VoyageCore()
     {
         instance = this;
-    }
-
-    public ModuleManager getModuleManager()
-    {
-        if (moduleManager == null) {
-            moduleManager = new ModuleManager(this);
-        }
-
-        return moduleManager;
     }
 
     public static VoyageCore get()
@@ -51,6 +44,9 @@ public class VoyageCore extends VoyagePlugin
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        add(new ModuleManager(this));
+        get(ModuleManager.class).add(this, new Announcements(this));
     }
 
     @Override

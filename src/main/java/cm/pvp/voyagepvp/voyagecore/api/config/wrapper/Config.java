@@ -33,7 +33,7 @@ public class Config<T extends VoyagePlugin>
         }
 
         if (!config.exists()) {
-            instance.saveResource(instance.getName(), false);
+            instance.saveResource(config.getName(), false);
 
             if (!config.exists()) {
                 throw new FileNotFoundException("Couldn't find file " + config.getName() + " bundled with plugin " + instance.getDescription().getName() + ".");

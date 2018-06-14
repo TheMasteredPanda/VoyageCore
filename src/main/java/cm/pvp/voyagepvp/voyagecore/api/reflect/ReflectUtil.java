@@ -8,6 +8,7 @@ import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.FieldAccessor;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.bukkit.Bukkit;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class ReflectUtil
 {
     private static Cache<String, Object> reflections = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+    private static String OBC = "org.bukkit.craftbukkit." + getServerVersion() + ".";
+    private static String NMS = "net.minecraft.server." + getServerVersion() + ".";
 
     private ReflectUtil()
     {
@@ -32,14 +35,30 @@ public class ReflectUtil
         }
     }
 
-    public static MethodAccessor getMethod(String origin, String name, boolean declared, Class... parameters)
+    public static Class getOBCClass(String className)
     {
-        StringBuilder sb = new StringBuilder("M/").append(origin).append("/").append(name).append("/").append(declared);
+        return getClass(OBC + className);
+    }
 
-        for (int i = 0; i < parameters.length; i++) {
-            sb.append(parameters[i].getName());
+    public static Class getNMSClass(String className)
+    {
+        return getClass(NMS + className);
+    }
 
-            if (parameters[parameters.length - 1] != parameters[i]) {
+    public static String getServerVersion()
+    {
+        String packageName = Bukkit.getServer().getClass().getPackage().getName();
+        return packageName.substring(packageName.lastIndexOf('.') + 1);
+    }
+
+    public static MethodAccessor getMethod(Class origin, String name, boolean declared, Class... parameters)
+    {
+        StringBuilder sb = new StringBuilder("M/").append(origin.getCanonicalName()).append("/").append(name).append("/").append(declared);
+
+        for (Class parameter : parameters) {
+            sb.append(parameter.getName());
+
+            if (parameters[parameters.length - 1] != parameter) {
                 sb.append(";");
             }
         }
@@ -49,7 +68,7 @@ public class ReflectUtil
         }
 
         try {
-            Method method = declared ? getClass(origin).getDeclaredMethod(name, parameters) : getClass(origin).getMethod(name, parameters);
+            Method method = declared ? origin.getDeclaredMethod(name, parameters) : origin.getMethod(name, parameters);
             MethodAccessor accessor = new MethodAccessor(method);
             reflections.put(sb.toString(), accessor);
             return accessor;
@@ -58,16 +77,16 @@ public class ReflectUtil
         }
     }
 
-    public static FieldAccessor getField(String origin, String name, boolean declared)
+    public static FieldAccessor getField(Class origin, String name, boolean declared)
     {
-        StringBuilder sb = new StringBuilder("F/").append(origin).append("/").append(name).append("/").append(declared);
+        StringBuilder sb = new StringBuilder("F/").append(origin.getCanonicalName()).append("/").append(name).append("/").append(declared);
 
         if (reflections.asMap().containsKey(sb.toString())) {
             return GenericUtil.cast(reflections.getIfPresent(sb.toString()));
         }
 
         try {
-            Field field = declared ? getClass(origin).getDeclaredField(name) : getClass(origin).getField(name);
+            Field field = declared ? origin.getDeclaredField(name) : origin.getField(name);
             FieldAccessor accessor = new FieldAccessor(field);
             reflections.put(sb.toString(), accessor);
             return accessor;
@@ -76,7 +95,7 @@ public class ReflectUtil
         }
     }
 
-    public static ConstructorAccessor getConstructor(String origin, boolean declared, Class... parameters)
+    public static ConstructorAccessor getConstructor(Class origin, boolean declared, Class... parameters)
     {
         StringBuilder sb = new StringBuilder("C/").append(origin).append("/").append(declared);
 
@@ -93,7 +112,7 @@ public class ReflectUtil
         }
 
         try {
-            Constructor constructor = declared ? getClass(origin).getDeclaredConstructor(parameters) : getClass(origin).getConstructor(parameters);
+            Constructor constructor = declared ? origin.getDeclaredConstructor(parameters) : origin.getConstructor(parameters);
             ConstructorAccessor accessor = new ConstructorAccessor(constructor);
             reflections.put(sb.toString(), constructor);
             return accessor;

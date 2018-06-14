@@ -1,7 +1,7 @@
 package cm.pvp.voyagepvp.voyagecore.modules.announcement;
 
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -10,11 +10,11 @@ import java.util.Random;
 
 public class AnnouncementThread extends BukkitRunnable
 {
-    private LinkedList<TextComponent> announcements;
+    private LinkedList<BaseComponent[]> announcements;
     private Random dice;
-    private int last = -0;
+    private int last = -1;
 
-    public AnnouncementThread(VoyageCore instance, LinkedList<TextComponent> announcements, boolean random, int interval)
+    public AnnouncementThread(VoyageCore instance, LinkedList<BaseComponent[]> announcements, boolean random, int interval)
     {
         this.announcements = announcements;
 
@@ -34,14 +34,14 @@ public class AnnouncementThread extends BukkitRunnable
 
             while (chosen != last) {
                 last = chosen;
-                Bukkit.spigot().broadcast(announcements.get(chosen));
             }
         } else {
             last = last + 1;
 
-            if (announcements.size() < last) {
+            if ((announcements.size() - 1) < last) {
                 last = 0;
             }
+
 
             Bukkit.spigot().broadcast(announcements.get(last));
         }

@@ -29,8 +29,17 @@ public final class ModuleManager extends Manager<VoyageCore>
                 continue;
             }
 
+            getLogger().info("Added module " + module.getName() + ".");
             this.modules.put(instance, module);
         }
+    }
+
+
+    @Override
+    public boolean enable() throws Exception
+    {
+        modules.values().forEach(Module::boot);
+        return true;
     }
 
     /**
