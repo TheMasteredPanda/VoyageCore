@@ -4,7 +4,7 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.Config;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.MojangLookup;
 import cm.pvp.voyagepvp.voyagecore.api.module.ModuleManager;
 import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
-import cm.pvp.voyagepvp.voyagecore.modules.announcement.Announcements;
+import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import lombok.Getter;
 
 import java.io.File;

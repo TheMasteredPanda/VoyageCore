@@ -1,8 +1,8 @@
-package cm.pvp.voyagepvp.voyagecore.modules.announcement.commands;
+package cm.pvp.voyagepvp.voyagecore.features.announcement.commands;
 
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
-import cm.pvp.voyagepvp.voyagecore.modules.announcement.Announcements;
+import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import org.bukkit.command.CommandSender;
 
 import java.util.LinkedList;

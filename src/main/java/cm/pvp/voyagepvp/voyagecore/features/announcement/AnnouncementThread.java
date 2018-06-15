@@ -1,4 +1,4 @@
-package cm.pvp.voyagepvp.voyagecore.modules.announcement;
+package cm.pvp.voyagepvp.voyagecore.features.announcement;
 
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import net.md_5.bungee.api.chat.BaseComponent;

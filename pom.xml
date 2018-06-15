@@ -69,5 +69,13 @@
             <version>4.2</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>de.Herbystar</groupId>
+            <artifactId>TTA</artifactId>
+            <version>4.1-SNAPSHOT</version>
+            <systemPath>${project.basedir}/depends/TTA-4.1.jar</systemPath>
+            <scope>system</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 </project>

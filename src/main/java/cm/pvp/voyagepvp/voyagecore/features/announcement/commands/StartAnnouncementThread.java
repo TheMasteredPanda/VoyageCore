@@ -1,12 +1,12 @@
-package cm.pvp.voyagepvp.voyagecore.modules.announcement.commands;
+package cm.pvp.voyagepvp.voyagecore.features.announcement.commands;
 
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.locale.CommandLocale;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
-import cm.pvp.voyagepvp.voyagecore.modules.announcement.AnnouncementThread;
-import cm.pvp.voyagepvp.voyagecore.modules.announcement.Announcements;
+import cm.pvp.voyagepvp.voyagecore.features.announcement.AnnouncementThread;
+import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import org.bukkit.command.CommandSender;
 
 import javax.naming.OperationNotSupportedException;

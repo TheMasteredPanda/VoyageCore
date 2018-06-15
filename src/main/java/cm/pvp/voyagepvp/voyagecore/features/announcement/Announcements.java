@@ -1,9 +1,9 @@
-package cm.pvp.voyagepvp.voyagecore.modules.announcement;
+package cm.pvp.voyagepvp.voyagecore.features.announcement;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
-import cm.pvp.voyagepvp.voyagecore.modules.announcement.commands.AnnouncementCommand;
+import cm.pvp.voyagepvp.voyagecore.features.announcement.commands.AnnouncementCommand;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
