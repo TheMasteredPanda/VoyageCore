@@ -17,10 +17,10 @@ public class StartAnnouncementThread extends VoyageCommand
     private Announcements feature = null;
     private VoyageCore instance;
 
-    @ConfigPopulate("features.announcements.messages.AnnouncementThreadRunning")
+    @ConfigPopulate("features.announcements.messages.announcementthreadrunning")
     private String announcementThreadRunning;
 
-    @ConfigPopulate("features.announcements.messages.AnnouncementThreadStarted")
+    @ConfigPopulate("features.announcements.messages.announcementthreadstarted")
     private String announcementThreadStarted;
 
     public StartAnnouncementThread(VoyageCore instance, Announcements feature)

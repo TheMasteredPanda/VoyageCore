@@ -12,6 +12,6 @@ public class Feature extends Module<VoyageCore>
     public Feature(VoyageCore instance, String name, double version)
     {
         super(instance, name, version);
-        section = instance.getMainConfig().raw().getConfigurationSection("features.announcements");
+        section = instance.getMainConfig().raw().getConfigurationSection("features." + name.toLowerCase());
     }
 }

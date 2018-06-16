@@ -1,4 +1,5 @@
 name: VoyageCore
 main: cm.pvp.voyagepvp.voyagecore.VoyageCore
-version: 1.00.0054
+version: 1.00.0079
 author: TheMasteredPanda
+depend: [TTA]

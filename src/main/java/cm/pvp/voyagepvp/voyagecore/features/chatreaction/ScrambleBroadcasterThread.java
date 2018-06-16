@@ -3,9 +3,6 @@ package cm.pvp.voyagepvp.voyagecore.features.chatreaction;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import com.google.common.collect.Lists;
 import javafx.util.Pair;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collections;
@@ -17,7 +14,7 @@ public class ScrambleBroadcasterThread extends BukkitRunnable
     private ChatReaction feature;
     private VoyageCore instance;
     private final Random r = new Random();
-    private String broadcast;
+    private int cooldown;
 
     public ScrambleBroadcasterThread(VoyageCore instance, ChatReaction feature)
     {
@@ -26,13 +23,21 @@ public class ScrambleBroadcasterThread extends BukkitRunnable
 
         this.instance = instance;
         this.feature = feature;
-        broadcast = feature.getSection().getString("messages.broadcast");
-        runTaskTimerAsynchronously(instance, 0L, feature.getSection().getInt("countdown") * 20);
+        cooldown = feature.getSection().getInt("cooldown");
+        System.out.println("Initial cooldown number: " + cooldown);
+        runTaskTimerAsynchronously(instance, 0L, 20);
     }
 
     @Override
     public void run()
     {
+        System.out.println("Cooldown: " + cooldown);
+
+        if (cooldown > 0) {
+            cooldown--;
+            return;
+        }
+
         String chosenWord = feature.getWords().get(r.nextInt(feature.getWords().size() - 1));
 
         LinkedList<Character> chars = Lists.newLinkedList();
@@ -47,12 +52,6 @@ public class ScrambleBroadcasterThread extends BukkitRunnable
         }
 
         String shuffledWord = new String(shuffled);
-        TextComponent component = new TextComponent(broadcast.split("\\{randomword}")[0]);
-        TextComponent randomWord = new TextComponent(shuffledWord);
-        randomWord.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(chosenWord)));
-        component.addExtra(component);
-        component.addExtra(broadcast.split("\\{randomword}")[1]);
-        Bukkit.spigot().broadcast(component);
         feature.setCountdown(new CountdownThread(instance, feature, new Pair<>(chosenWord, shuffledWord)));
     }
 }

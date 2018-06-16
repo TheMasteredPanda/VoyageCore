@@ -15,10 +15,10 @@ public class StopAnnouncementThread extends VoyageCommand
 {
     private Announcements feature;
 
-    @ConfigPopulate("features.announcements.messages.AnnouncementThreadNotRunning")
+    @ConfigPopulate("features.announcements.messages.announcementthreadnotrunning")
     private String announcementThreadNotRunning;
 
-    @ConfigPopulate("features.announcements.messages.AnnouncementThreadStopped")
+    @ConfigPopulate("features.announcements.messages.announcementthreadstopped")
     private String announcementThreadStopped;
 
     public StopAnnouncementThread(VoyageCore instance, Announcements feature)

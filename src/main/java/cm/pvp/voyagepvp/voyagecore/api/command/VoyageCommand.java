@@ -111,7 +111,7 @@ public abstract class VoyageCommand extends BukkitCommand
     }
 
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args)
+    public final boolean execute(CommandSender sender, String label, String[] args)
     {
         if (isPlayerOnlyCommand() && !(sender instanceof Player)) {
             sender.sendMessage(Format.colour(locale.get(PLAYER_ONLY_COMMAND)));

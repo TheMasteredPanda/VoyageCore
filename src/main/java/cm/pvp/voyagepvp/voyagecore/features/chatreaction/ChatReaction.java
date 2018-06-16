@@ -2,6 +2,7 @@ package cm.pvp.voyagepvp.voyagecore.features.chatreaction;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
+import cm.pvp.voyagepvp.voyagecore.features.chatreaction.commands.StatsCommand;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +30,7 @@ public class ChatReaction extends Feature
     {
         super(instance, "ChatReaction", 1.0);
 
-        File wordFile = new File(instance.getDataFolder() + File.separator + "words.txt");
+        File wordFile = new File(instance.getDataFolder() + File.separator + "chatreaction-words.txt");
 
         if (wordFile.exists()) {
             try {
@@ -49,6 +50,7 @@ public class ChatReaction extends Feature
 
         handler = new DataHandler(getInstance(), this);
         scambleThread = new ScrambleBroadcasterThread(getInstance(), this);
+        getInstance().register(new StatsCommand(getInstance(), handler));
         return true;
     }
 }

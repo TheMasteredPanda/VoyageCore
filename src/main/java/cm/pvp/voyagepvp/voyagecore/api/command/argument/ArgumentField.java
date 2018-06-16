@@ -9,15 +9,13 @@ public class ArgumentField
 {
     private String name;
     private boolean required;
-    private Class type;
 
     @Setter
     private ArgumentCheckFunction checkFunction;
 
-    public ArgumentField(String name, boolean required, Class type)
+    public ArgumentField(String name, boolean required)
     {
         this.name = name;
         this.required = required;
-        this.type = type;
     }
 }

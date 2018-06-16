@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,33 +25,14 @@ import java.util.concurrent.TimeUnit;
 public class DataHandler implements AutoCloseable, Listener
 {
     private Cache<UUID, ReactionPlayer> players = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
-    private File dbFile;
     private HikariDataSource source;
 
     public DataHandler(VoyageCore instance, ChatReaction feature)
     {
-        dbFile = new File(instance.getDataFolder() + File.separator + "chatreaction-data.db");
-
-        if (!dbFile.exists()) {
-            try {
-                if (dbFile.createNewFile()) {
-                    feature.getLogger().info("Creating data database.");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
+        File dbFile = new File(instance.getDataFolder(), "chatreactiondata.db");
         HikariConfig config = new HikariConfig();
         config.setPoolName("ChatReactionDataHandler");
-        config.setDataSourceClassName("org.sqlite.SQLiteDataSource");
-
-        try {
-            config.setJdbcUrl("jdbc:sqlite:/" + dbFile.getCanonicalPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        config.setJdbcUrl("jdbc:sqlite:" + dbFile.getAbsolutePath());
         config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(60000);
         config.setIdleTimeout(45000);
@@ -66,6 +46,7 @@ public class DataHandler implements AutoCloseable, Listener
             connection = source.getConnection();
             statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS records(uuid VARCHAR (36), wins INTEGER, quickestTime INTEGER);");
             statement.execute();
+            feature.getLogger().info("Created ChatReaction database.");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -168,7 +149,7 @@ public class DataHandler implements AutoCloseable, Listener
 
             try {
                 connection = source.getConnection();
-                statement = connection.prepareStatement("UPDATE records SET win=?, quickestTime=? WHERE uuid=?");
+                statement = connection.prepareStatement("UPDATE records SET wins=?, quickestTime=? WHERE uuid=?");
                 statement.setInt(1, player.getWins());
                 statement.setLong(2, player.getFastest());
                 statement.setString(3, player.getReference().get().getUniqueId().toString());

@@ -9,11 +9,13 @@ import org.bukkit.entity.Player;
 @Setter
 public class ReactionPlayer extends PlayerWrapper
 {
-    private int wins = 0;
-    private long fastest = 0L;
+    private int wins;
+    private long fastest;
 
     public ReactionPlayer(Player player, int wins, long fastest)
     {
         super(player);
+        this.wins = wins;
+        this.fastest = fastest;
     }
 }

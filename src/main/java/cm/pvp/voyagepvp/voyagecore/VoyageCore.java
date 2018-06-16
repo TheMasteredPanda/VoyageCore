@@ -5,6 +5,7 @@ import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.MojangLookup;
 import cm.pvp.voyagepvp.voyagecore.api.module.ModuleManager;
 import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
 import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
+import cm.pvp.voyagepvp.voyagecore.features.chatreaction.ChatReaction;
 import lombok.Getter;
 
 import java.io.File;
@@ -27,7 +28,7 @@ public class VoyageCore extends VoyagePlugin
         return instance;
     }
 
-    private MojangLookup getMojangLookup()
+    public MojangLookup getMojangLookup()
     {
         if (mojangLookup == null) {
             mojangLookup = new MojangLookup();
@@ -46,7 +47,9 @@ public class VoyageCore extends VoyagePlugin
         }
 
         add(new ModuleManager(this));
-        get(ModuleManager.class).add(this, new Announcements(this));
+        get(ModuleManager.class).add(this,
+                new Announcements(this),
+                new ChatReaction(this));
     }
 
     @Override
