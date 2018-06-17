@@ -36,7 +36,6 @@ public class DataHandler implements AutoCloseable, Listener
         config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(60000);
         config.setIdleTimeout(45000);
-        config.setMaximumPoolSize(50);
         source = new HikariDataSource(config);
 
         Connection connection = null;
