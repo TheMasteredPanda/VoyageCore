@@ -23,7 +23,7 @@ features:
       cannotfindplayerprofile: "{commandprefix} &cCannot find {player}s profile on Mojang API."
     countdown: 60
     cooldown: 120
-    rewardcommand: "/me Congrats, cunt."
+    rewardcommand: "me Congrats, cunt."
   customprefix:
     messages:
       resetprefix: "{commandprefix} &cPrefix reset."

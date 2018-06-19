@@ -30,7 +30,7 @@ public class AdminResetPrefixCommand extends VoyageCommand
 
     public AdminResetPrefixCommand(VoyageCore instance, CustomPrefix feature)
     {
-        super(null, "voyagecore.customprefix.admin.reset", "Reset a players prefix.", false, "areset");
+        super(null, "voyagecore.customprefix.admin.reset", "Reset a players prefix.", false, "reset");
         this.instance = instance;
         this.feature = feature;
 

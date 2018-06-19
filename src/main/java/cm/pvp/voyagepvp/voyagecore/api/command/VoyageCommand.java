@@ -60,12 +60,14 @@ public abstract class VoyageCommand extends BukkitCommand
     {
         boolean required = false;
 
-        for (ArgumentField field : fields) {
-            if (required && field.isRequired()) {
-                throw new OperationNotSupportedException("Cannot have a required argument field after a non-required argument field.");
-            } else {
-                required = field.isRequired();
+        for (int i = 0; i < fields.length; i++) {
+            ArgumentField field = fields[i];
+
+            if (i != 0 && !required && field.isRequired()) {
+                throw new OperationNotSupportedException("You cannot have a required argument after a non-required argument.");
             }
+
+            required = field.isRequired();
         }
 
         this.fields.addAll(Arrays.asList(fields));

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cm.pvp.voyagepvp</groupId>
   <artifactId>VoyageCore</artifactId>
-  <version>1.00.0083</version>
+  <version>1.00.0087</version>
   <build>
     <plugins>
       <plugin>

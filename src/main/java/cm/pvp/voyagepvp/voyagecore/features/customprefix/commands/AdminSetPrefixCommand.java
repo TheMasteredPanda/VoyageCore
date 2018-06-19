@@ -33,7 +33,7 @@ public class AdminSetPrefixCommand extends VoyageCommand
 
     public AdminSetPrefixCommand(VoyageCore instance, CustomPrefix feature)
     {
-        super(null, "voyagecore.customprefix.admin.set", "Set a players prefix", false, "aset");
+        super(null, "voyagecore.customprefix.admin.set", "Set a players prefix", false, "set");
         this.instance = instance;
         this.feature = feature;
 
