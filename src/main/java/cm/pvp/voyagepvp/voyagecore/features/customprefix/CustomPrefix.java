@@ -2,6 +2,8 @@ package cm.pvp.voyagepvp.voyagecore.features.customprefix;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
+import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.AdminResetPrefixCommand;
+import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.AdminSetPrefixCommand;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.ResetPrefixCommand;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.SetPrefixCommand;
 import lombok.Getter;
@@ -30,8 +32,7 @@ public class CustomPrefix extends Feature
         }
 
         handler = new DataHandler(getInstance());
-
-        getInstance().register(new SetPrefixCommand(getInstance(), this), new ResetPrefixCommand(this));
+        getInstance().register(new SetPrefixCommand(getInstance(), this), new ResetPrefixCommand(this), new AdminResetPrefixCommand(getInstance(), this), new AdminSetPrefixCommand(getInstance(), this));
         return true;
     }
 }

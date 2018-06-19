@@ -24,3 +24,12 @@ features:
     countdown: 60
     cooldown: 120
     rewardcommand: "/me Congrats, cunt."
+  customprefix:
+    messages:
+      resetprefix: "{commandprefix} &cPrefix reset."
+      noprefixfound: "{commandprefix} &cPrefix not found."
+      prefixsetfor: "{commandprefix} Prefix set for &b{player} &7is &b{prefix}&7."
+      nocustomprefix: "{commandprefix} &cNo custom prefix found for &b{player}&c."
+      setprefix: "{commandprefix} Prefix set as &b{prefix}&7."
+      prefixtoolong: "{commandprefix} &cPrefix too long, maximum length is &b{length}&c."
+    length: 16

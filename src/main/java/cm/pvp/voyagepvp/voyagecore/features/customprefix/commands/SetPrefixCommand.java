@@ -26,8 +26,6 @@ public class SetPrefixCommand extends VoyageCommand
     @ConfigPopulate("features.customprefix.messages.prefixtoolong")
     private String prefixTooLong;
 
-    @ConfigPopulate("features.customprefix.command")
-    private String prefixCommand;
 
     @ConfigPopulate("features.customprefix.length")
     private int prefixLength;
@@ -51,7 +49,7 @@ public class SetPrefixCommand extends VoyageCommand
         String prefix = arguments.get(0).replaceAll("(&)\\w", "");
 
         if (prefix.length() > prefixLength) {
-            sender.sendMessage(Format.colour(Format.format(prefixTooLong, "{prefix};" + arguments.get(0))));
+            sender.sendMessage(Format.colour(Format.format(prefixTooLong, "{prefix};" + arguments.get(0), "{length};" + String.valueOf(prefixLength))));
             return;
         }
 

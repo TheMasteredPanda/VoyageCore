@@ -31,7 +31,7 @@ public class DataHandler implements AutoCloseable
         config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(60000);
         config.setIdleTimeout(45000);
-        source = new HikariDataSource(source);
+        source = new HikariDataSource(config);
 
         Connection connection = null;
         PreparedStatement statement = null;
@@ -86,7 +86,9 @@ public class DataHandler implements AutoCloseable
             e.printStackTrace();
         } finally {
             DBUtil.close(connection, statement);
+            nodes.invalidate(id);
         }
+
     }
 
     public void update(UUID id, String node)

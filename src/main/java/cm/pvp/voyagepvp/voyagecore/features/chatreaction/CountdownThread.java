@@ -102,7 +102,7 @@ public class CountdownThread extends BukkitRunnable implements Listener
     @Override
     public void run()
     {
-        System.out.println("Countdown: " + countdown);
+        //System.out.println("Countdown: " + countdown);
 
         countdown--;
 

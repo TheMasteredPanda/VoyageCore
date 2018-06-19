@@ -31,7 +31,7 @@ public class ScrambleBroadcasterThread extends BukkitRunnable
     @Override
     public void run()
     {
-        System.out.println("Cooldown: " + cooldown);
+       // System.out.println("Cooldown: " + cooldown);
 
         if (cooldown > 0) {
             cooldown--;

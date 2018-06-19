@@ -17,8 +17,8 @@ public class ResetPrefixCommand extends VoyageCommand
 {
     private CustomPrefix feature;
 
-    @ConfigPopulate("features.customprefix.prefixreset")
-    private String prefixReset;
+    @ConfigPopulate("features.customprefix.resetprefix")
+    private String resetPrefix;
 
     @ConfigPopulate("features.customprefix.nocustomprefix")
     private String noCustomPrefix;
@@ -40,7 +40,7 @@ public class ResetPrefixCommand extends VoyageCommand
 
             Objects.requireNonNull(user).unsetPermission(node);
             feature.getHandler().remove(id);
-            sender.sendMessage(Format.colour(prefixReset));
+            sender.sendMessage(Format.colour(resetPrefix));
         } else {
             sender.sendMessage(Format.colour(noCustomPrefix));
         }
