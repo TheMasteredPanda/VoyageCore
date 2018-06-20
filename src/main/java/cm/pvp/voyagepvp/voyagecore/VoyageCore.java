@@ -7,6 +7,7 @@ import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
 import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import cm.pvp.voyagepvp.voyagecore.features.chatreaction.ChatReaction;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
+import cm.pvp.voyagepvp.voyagecore.features.mention.Mention;
 import lombok.Getter;
 
 import java.io.File;
@@ -51,7 +52,8 @@ public class VoyageCore extends VoyagePlugin
         get(ModuleManager.class).add(this,
                 new Announcements(this),
                 new ChatReaction(this),
-                new CustomPrefix(this)
+                new CustomPrefix(this),
+                new Mention(this)
         );
     }
 

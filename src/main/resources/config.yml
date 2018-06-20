@@ -33,3 +33,9 @@ features:
       setprefix: "{commandprefix} Prefix set as &b{prefix}&7."
       prefixtoolong: "{commandprefix} &cPrefix too long, maximum length is &b{length}&7."
     length: 16
+  mention:
+    messages:
+      playernotfound: "&c&lMention &8» &c{player} is not found."
+      infotemplate:
+        - "&bOnline&7: {online}"
+        - "&bID&7: {uuid}"
