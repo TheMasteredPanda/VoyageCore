@@ -18,9 +18,6 @@ public class ResetPrefixCommand extends VoyageCommand
     @ConfigPopulate("features.customprefix.messages.resetprefix")
     private String resetPrefix;
 
-    @ConfigPopulate("features.customprefix.messages.nocustomprefix")
-    private String noCustomPrefix;
-
     public ResetPrefixCommand(VoyageCore instance, CustomPrefix feature)
     {
         super(null, "voyagecore.customprefix.reset", "Remove the custom prefix", true, "reset");

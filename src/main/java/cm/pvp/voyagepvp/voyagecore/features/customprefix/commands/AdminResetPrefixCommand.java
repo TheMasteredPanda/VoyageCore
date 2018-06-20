@@ -21,9 +21,6 @@ public class AdminResetPrefixCommand extends VoyageCommand
     @ConfigPopulate("features.customprefix.messages.resetprefix")
     private String resetPrefix;
 
-    @ConfigPopulate("features.customprefix.messages.noprefixfound")
-    private String noPrefixFound;
-
     public AdminResetPrefixCommand(VoyageCore instance, CustomPrefix feature)
     {
         super(null, "voyagecore.customprefix.admin.reset", "Reset a players prefix.", false, "reset");

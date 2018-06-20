@@ -23,7 +23,6 @@ public class SetPrefixCommand extends VoyageCommand
     @ConfigPopulate("features.customprefix.messages.prefixtoolong")
     private String prefixTooLong;
 
-
     @ConfigPopulate("features.customprefix.length")
     private int prefixLength;
 
