@@ -45,6 +45,7 @@ public class StatsCommand extends VoyageCommand
             ArgumentField field = new ArgumentField("player name", true);
             field.setCheckFunction(new PlayerCheckFunction(instance.getMojangLookup()));
             addArguments(field);
+            instance.getMainConfig().populate(this);
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
         }
