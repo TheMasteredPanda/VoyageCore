@@ -139,8 +139,8 @@ public abstract class VoyageCommand extends BukkitCommand
 
                 for (int i = 0; i < children.size(); i++) {
                     VoyageCommand child = children.get(i);
-                    TextComponent entry = new TextComponent(child.getCommandPath());
-                    entry.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Format.format(getLocale().get(HELP_COMMAND_ENTRY_DESCRIPTION), "{commandusage};" + child.getCommandUsage(), "{description};" + child.getDescription(), "{aliases};" + child.getAliases()))));
+                    TextComponent entry = new TextComponent(Format.colour(Format.format(getLocale().get(CommandLocale.Key.HELP_COMMAND_ENTRY), "{commandpath};" + child.getCommandPath())));
+                    entry.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Format.format(Format.colour(getLocale().get(HELP_COMMAND_ENTRY_DESCRIPTION)), "{commandusage};" + child.getCommandUsage(), "{description};" + child.getDescription(), "{aliases};" + child.getAliases()))));
                     component.addExtra(entry);
 
                     if (i < children.size()) {
@@ -148,7 +148,11 @@ public abstract class VoyageCommand extends BukkitCommand
                     }
                 }
 
-                ((Player) sender).spigot().sendMessage(component);
+                String[] textMsg = Format.format(getLocale().get(HELP_TEMPLATE), "{parentcommand};" + getCommandPath(), "{parentdescription};" + getDescription(), "{parentusage};" + getCommandUsage()).split("\\{childcommands}");
+                TextComponent message = new TextComponent(textMsg[0]);
+                message.addExtra(component);
+                if (textMsg.length != 1) message.addExtra(textMsg[1]);
+                ((Player) sender).spigot().sendMessage(message);
                 return true;
             }
 

@@ -13,7 +13,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 public class CustomPrefix extends Feature
 {
     private LuckPermsApi api;
-    private DataHandler handler;
 
     public CustomPrefix(VoyageCore instance)
     {
@@ -29,7 +28,6 @@ public class CustomPrefix extends Feature
             api = provider.getProvider();
         }
 
-        handler = new DataHandler(getInstance());
         getInstance().register(new CustomPrefixCommand(getInstance(), this), new CustomPrefixAdminCommand(getInstance(), this));
         return true;
     }

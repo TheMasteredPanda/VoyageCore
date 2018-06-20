@@ -7,14 +7,12 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.PlayerCheckFunctio
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
-import me.lucko.luckperms.api.User;
+import com.google.common.base.Joiner;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
-import java.util.Objects;
-import java.util.UUID;
 
 public class AdminSetPrefixCommand extends VoyageCommand
 {
@@ -50,28 +48,17 @@ public class AdminSetPrefixCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-
-        String prefix = arguments.get(1).replaceAll("(&)\\w", "");
+        String player = arguments.get(0);
+        arguments.remove(0);
+        String prefix = Joiner.on(' ').join(arguments).replaceAll("(&)\\w", "");
 
         if (prefix.length() > prefixLength) {
-            sender.sendMessage(Format.colour(Format.format(prefixTooLong, "{prefix};" + arguments.get(0), "{length};" + String.valueOf(prefixLength))));
+            sender.sendMessage(Format.colour(Format.format(prefixTooLong, "{prefix};" + prefix, "{length};" + String.valueOf(prefixLength))));
             return;
         }
 
-        UUID target = Bukkit.getPlayer(arguments.get(1)) == null ? instance.getMojangLookup().lookup(arguments.get(1)).get().getId() : Bukkit.getPlayer(arguments.get(1)).getUniqueId();
-
-        User user = feature.getApi().getUser(target);
-        String node = "prefix.9000." + arguments.get(1);
-
-
-        if (feature.getHandler().exists(target)) {
-            Objects.requireNonNull(user).unsetPermission(feature.getApi().buildNode(feature.getHandler().get(target).get()).build());
-            feature.getHandler().update(target, node);
-        } else {
-            feature.getHandler().add(target, node);
-            Objects.requireNonNull(user).setPermission(feature.getApi().buildNode(node).build());
-        }
-
-        sender.sendMessage(Format.colour(Format.format(prefixSetFor, "{player};" + arguments.get(0), "{prefix};" + arguments.get(1))));
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player + " meta removeprefix 9000");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player + "meta addprefix 9000 " + arguments.get(0));
+        sender.sendMessage(Format.colour(Format.format(prefixSetFor, "{player};" + player, "{prefix};" + arguments.get(1))));
     }
 }

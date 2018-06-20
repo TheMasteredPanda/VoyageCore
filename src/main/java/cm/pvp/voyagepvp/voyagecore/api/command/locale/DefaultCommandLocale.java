@@ -18,9 +18,9 @@ public class DefaultCommandLocale implements CommandLocale
                 .put(Key.NOT_ENOUGH_ARGUMENTS, "{commandPrefix} Not enough arguments for {commandusage}")
                 .put(Key.PLAYER_ONLY_COMMAND, "{commandPrefix} Player only command.")
                 .put(Key.ARGUMENT_INCORRECT, "{commandPrefix} &cArgument {argument} is incorrect.")
-                .put(Key.HELP_TEMPLATE, "&bParent Command: {parentcommand}\n&bChild Commands&{childcommands}")
+                .put(Key.HELP_TEMPLATE, "&bParent Command&7: {parentcommand}\n&8» &bUsage&7: {parentusage}\n&8» &bDescription&7: {parentdescription}\n&bChild Commands&7:\n{childcommands}")
                 .put(Key.HELP_COMMAND_ENTRY, "&8» &7{commandpath}")
-                .put(Key.HELP_COMMAND_ENTRY_DESCRIPTION, "&8» &bDescription&7: {description}\n&8» &bUsage&7: {commandusage}, &8» &bAliases&7: {aliases}")
+                .put(Key.HELP_COMMAND_ENTRY_DESCRIPTION, "&8» &bDescription&7: {description}\n&8» &bUsage&7: {commandusage}\n&8» &bAliases&7: {aliases}")
                 .build();
     }
 

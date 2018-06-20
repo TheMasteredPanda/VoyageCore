@@ -7,15 +7,11 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.PlayerCheckFunctio
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
-import me.lucko.luckperms.api.Node;
-import me.lucko.luckperms.api.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
-import java.util.Objects;
-import java.util.UUID;
 
 public class AdminResetPrefixCommand extends VoyageCommand
 {
@@ -46,16 +42,7 @@ public class AdminResetPrefixCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        UUID target = Bukkit.getPlayer(arguments.get(0)) == null ? instance.getMojangLookup().lookup(arguments.get(0)).get().getId() : Bukkit.getPlayer(arguments.get(0)).getUniqueId();
-
-        if (feature.getHandler().exists(target)) {
-            User user = feature.getApi().getUser(target);
-            Node node = feature.getApi().buildNode(feature.getHandler().get(target).get()).build();
-            Objects.requireNonNull(user).unsetPermission(node);
-            feature.getHandler().remove(target);
-            sender.sendMessage(Format.colour(Format.format(resetPrefix, "{player};" + arguments.get(0))));
-        } else {
-            sender.sendMessage(Format.colour(Format.format(noPrefixFound, "{player};" + arguments.get(0))));
-        }
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + sender.getName() + " meta removeprefix 9000");
+        sender.sendMessage(Format.colour(Format.format(resetPrefix)));
     }
 }

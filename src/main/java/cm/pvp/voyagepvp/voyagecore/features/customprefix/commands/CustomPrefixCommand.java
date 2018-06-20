@@ -12,7 +12,7 @@ public class CustomPrefixCommand extends VoyageCommand
     public CustomPrefixCommand(VoyageCore instance, CustomPrefix feature)
     {
         super(null, "", "Parent command for regular player commands.", false, "cp", "customprefix");
-        addChildren(new SetPrefixCommand(instance, feature), new ResetPrefixCommand(feature));
+        addChildren(new SetPrefixCommand(instance, feature), new ResetPrefixCommand(instance, feature));
     }
 
     @Override
