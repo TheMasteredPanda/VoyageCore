@@ -31,3 +31,8 @@ features:
       setprefix: "{commandprefix} Prefix set as &b{prefix}&7."
       prefixtoolong: "{commandprefix} &cPrefix too long, maximum length is &b{length}&7."
     length: 16
+    blacklist:
+      - "Nigger"
+      - "Shit"
+      - "Bitch"
+      - "Cracker"

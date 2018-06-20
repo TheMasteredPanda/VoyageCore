@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
+import java.util.List;
 
 public class AdminSetPrefixCommand extends VoyageCommand
 {
@@ -25,9 +26,14 @@ public class AdminSetPrefixCommand extends VoyageCommand
     @ConfigPopulate("features.customprefix.messages.prefixtoolong")
     private String prefixTooLong;
 
-
     @ConfigPopulate("features.customprefix.length")
     private int prefixLength;
+
+    @ConfigPopulate("Features.customprefix.blacklist")
+    private List<String> blacklist;
+
+    @ConfigPopulate("features.customprefix.messages.containsblacklistedword")
+    private String containsBlacklistedWord;
 
     public AdminSetPrefixCommand(VoyageCore instance, CustomPrefix feature)
     {
@@ -55,6 +61,12 @@ public class AdminSetPrefixCommand extends VoyageCommand
         if (prefix.length() > prefixLength) {
             sender.sendMessage(Format.colour(Format.format(prefixTooLong, "{prefix};" + prefix, "{length};" + String.valueOf(prefixLength))));
             return;
+        }
+
+        for (String word : blacklist) {
+            if (prefix.toLowerCase().contains(word.toLowerCase())) {
+                sender.sendMessage(Format.colour(Format.format(containsBlacklistedWord, "{word};" + word)));
+            }
         }
 
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player + " meta removeprefix 9000");
