@@ -7,24 +7,24 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Mention extends Feature implements Listener
 {
-    private Pattern mentionPattern = Pattern.compile("(@)\\w+");
+    private Pattern behindCheck = Pattern.compile("(\\w+) (@)\\w+");
+    private Pattern afterCheck = Pattern.compile("(@)\\w+ (\\w+)");
 
     @ConfigPopulate("features.mention.messages.playernotfound")
     private String playerNotFound;
@@ -55,44 +55,45 @@ public class Mention extends Feature implements Listener
     {
 
         String[] splitMessage = e.getMessage().split(" ");
-
-        System.out.println("Invoked chat event.");
-
-        for (String word : splitMessage) {
-            Matcher matcher = mentionPattern.matcher(e.getMessage());
+        LinkedList<String> names = Arrays.stream(splitMessage).filter(w -> w.matches("(@)\\w+")).collect(Collectors.toCollection(Lists::newLinkedList));
+        TextComponent message = new TextComponent();
 
 
-            if (!matcher.matches()) {
-                continue;
+        for (Iterator<String> iterator = names.iterator(); iterator.hasNext(); ) {
+            String name = iterator.next();
+
+            for (String splitMsg : splitMessage) {
+                if (splitMsg.contains(name)) {
+                    continue;
+                }
+
+                String[] innerSplit = splitMsg.split(name);
+
+                if (splitMsg.matches(behindCheck.pattern())) {
+                    message.addExtra(Format.colour(innerSplit[0]));
+                }
+
+                Optional<PlayerProfile> optional = getInstance().getMojangLookup().lookup(name.replace("@", ""));
+
+                if (!optional.isPresent()) {
+                    e.getPlayer().sendMessage(Format.format(playerNotFound, "{player};" + name.replace("@", "")));
+                    return;
+                }
+
+                PlayerProfile profile = optional.get();
+
+                TextComponent mentioned = new TextComponent(name);
+                mentioned.setColor(ChatColor.YELLOW);
+                BaseComponent[] hover = TextComponent.fromLegacyText(Format.format(Joiner.on('\n').join(infoTemplate), "{online};" + String.valueOf(Bukkit.getPlayer(profile.getId()).isOnline()), "{uuid};" + profile.getId().toString()));
+                mentioned.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+                message.addExtra(mentioned);
+
+                if (splitMsg.matches(afterCheck.pattern())) {
+                    mentioned.addExtra(innerSplit[1]);
+                }
+
+                iterator.remove();
             }
-
-            System.out.println("Matcher success.");
-            String[] msg = e.getMessage().split("(@)\\w+");
-            String word1 = Arrays.stream(e.getMessage().split(" ")).filter(w -> mentionPattern.matcher(w).matches()).findFirst().orElse(null);
-
-            if (word1 == null) {
-                throw new UnsupportedOperationException("Found a mention, but couldn't get the mention.");
-            }
-
-            word1 = word1.replace("@", "");
-
-            TextComponent message = new TextComponent(msg[0]);
-
-            Optional<PlayerProfile> profile = getInstance().getMojangLookup().lookup(word1);
-
-            if (!profile.isPresent()) {
-                e.getPlayer().sendMessage(Format.colour(Format.format(playerNotFound, "{player};" + word1)));
-                e.setCancelled(true);
-            }
-
-            PlayerProfile p = profile.get();
-            TextComponent mentioned = new TextComponent(ChatColor.YELLOW + "@" + word1 + ChatColor.RESET);
-            List<String> clone = Lists.newArrayList(infoTemplate);
-            clone.replaceAll(s -> s.replace("{online}", String.valueOf(Bukkit.getPlayer(p.getId()).isOnline())).replace("{uuid}", p.getId().toString()));
-            mentioned.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Joiner.on('\n').join(clone))));
-            message.addExtra(mentioned);
-            if (msg.length != 1) message.addExtra(new TextComponent(msg[1]));
         }
-
     }
 }
