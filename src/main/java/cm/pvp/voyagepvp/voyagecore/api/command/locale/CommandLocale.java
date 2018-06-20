@@ -12,6 +12,9 @@ public interface CommandLocale
         PLAYER_ONLY_COMMAND,
         COMMAND_PREFIX,
         NOT_ENOUGH_ARGUMENTS,
-        ARGUMENT_INCORRECT
+        ARGUMENT_INCORRECT,
+        HELP_TEMPLATE,
+        HELP_COMMAND_ENTRY,
+        HELP_COMMAND_ENTRY_DESCRIPTION
     }
 }

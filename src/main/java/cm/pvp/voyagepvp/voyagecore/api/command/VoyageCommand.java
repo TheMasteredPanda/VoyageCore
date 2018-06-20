@@ -8,6 +8,8 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import com.google.common.collect.Lists;
 import com.jcabi.aspects.Cacheable;
 import lombok.Getter;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -60,12 +62,14 @@ public abstract class VoyageCommand extends BukkitCommand
     {
         boolean required = false;
 
-        for (ArgumentField field : fields) {
-            if (required && field.isRequired()) {
-                throw new OperationNotSupportedException("Cannot have a required argument field after a non-required argument field.");
-            } else {
-                required = field.isRequired();
+        for (int i = 0; i < fields.length; i++) {
+            ArgumentField field = fields[i];
+
+            if (i != 0 && !required && field.isRequired()) {
+                throw new OperationNotSupportedException("You cannot have a required argument after a non-required argument.");
             }
+
+            required = field.isRequired();
         }
 
         this.fields.addAll(Arrays.asList(fields));
@@ -126,7 +130,29 @@ public abstract class VoyageCommand extends BukkitCommand
 
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("help")) {
-                //TODO help command, displaying all commands that seem this command a parent.
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Format.colour(getLocale().get(PLAYER_ONLY_COMMAND)));
+                    return true;
+                }
+
+                TextComponent component = new TextComponent();
+
+                for (int i = 0; i < children.size(); i++) {
+                    VoyageCommand child = children.get(i);
+                    TextComponent entry = new TextComponent(Format.colour(Format.format(getLocale().get(CommandLocale.Key.HELP_COMMAND_ENTRY), "{commandpath};" + child.getCommandPath())));
+                    entry.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Format.format(Format.colour(getLocale().get(HELP_COMMAND_ENTRY_DESCRIPTION)), "{commandusage};" + child.getCommandUsage(), "{description};" + child.getDescription(), "{aliases};" + child.getAliases()))));
+                    component.addExtra(entry);
+
+                    if (i < children.size()) {
+                        component.addExtra("\n");
+                    }
+                }
+
+                String[] textMsg = Format.format(getLocale().get(HELP_TEMPLATE), "{parentcommand};" + getCommandPath(), "{parentdescription};" + getDescription(), "{parentusage};" + getCommandUsage()).split("\\{childcommands}");
+                TextComponent message = new TextComponent(textMsg[0]);
+                message.addExtra(component);
+                if (textMsg.length != 1) message.addExtra(textMsg[1]);
+                ((Player) sender).spigot().sendMessage(message);
                 return true;
             }
 
