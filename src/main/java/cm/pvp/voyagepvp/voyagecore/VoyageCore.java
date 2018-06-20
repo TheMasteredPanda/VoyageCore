@@ -11,6 +11,9 @@ import lombok.Getter;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+/**
+ * Main class.
+ */
 @Getter
 public class VoyageCore extends VoyagePlugin
 {
