@@ -30,7 +30,7 @@ public class StatsCommand extends VoyageCommand
     private String couldNotFindData;
 
     @ConfigPopulate("features.chatreaction.messages.informationtemplate")
-    private List<String> informationTemplate;
+    private List<String> informationTemplate; //TODO this is null, make it not null.
 
     @ConfigPopulate("features.chatreaction.messages.cannotfindplayerprofile")
     private String cannotFindPlayerProfile;
