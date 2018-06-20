@@ -9,6 +9,8 @@ import me.lucko.luckperms.api.LuckPermsApi;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+
+//TODO add blacklisted words.
 @Getter
 public class CustomPrefix extends Feature
 {
