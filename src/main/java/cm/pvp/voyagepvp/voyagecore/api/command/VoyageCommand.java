@@ -8,6 +8,8 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import com.google.common.collect.Lists;
 import com.jcabi.aspects.Cacheable;
 import lombok.Getter;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -128,7 +130,25 @@ public abstract class VoyageCommand extends BukkitCommand
 
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("help")) {
-                //TODO help command, displaying all commands that seem this command a parent.
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Format.colour(getLocale().get(PLAYER_ONLY_COMMAND)));
+                    return true;
+                }
+
+                TextComponent component = new TextComponent();
+
+                for (int i = 0; i < children.size(); i++) {
+                    VoyageCommand child = children.get(i);
+                    TextComponent entry = new TextComponent(child.getCommandPath());
+                    entry.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Format.format(getLocale().get(HELP_COMMAND_ENTRY_DESCRIPTION), "{commandusage};" + child.getCommandUsage(), "{description};" + child.getDescription(), "{aliases};" + child.getAliases()))));
+                    component.addExtra(entry);
+
+                    if (i < children.size()) {
+                        component.addExtra("\n");
+                    }
+                }
+
+                ((Player) sender).spigot().sendMessage(component);
                 return true;
             }
 

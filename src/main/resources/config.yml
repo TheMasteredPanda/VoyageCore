@@ -9,7 +9,7 @@ features:
     random: false
     interval: 15
     announcements:
-      1: '["",{"text":"&8&m&l-------------------------&l&8[ &6&lVOYAGE&b&lPVP &8&l]&8&m&l--------------------\n"},{"text":"test","clickEvent":{"action":"open_url","value":"https://www.google.com/"}},{"text":"\n&8&m&l-------------------------&l&8[ &6&lVOYAGE&b&lPVP &8&l]&8&m&l--------------------"}]'
+      1: '["",{"text":"&8&m&l--------------------&l&8[ &6&lVOYAGE&b&lPVP &8&l]&8&m&l---------------\n"},{"text":"test","clickEvent":{"action":"open_url","value":"https://www.google.com/"}},{"text":"\n&8&m&l--------------------&l&8[ &6&lVOYAGE&b&lPVP &8&l]&8&m&l---------------"}]'
   chatreaction:
     messages:
       countdown: "&b&lChat&e&lReaction &8» &7{duration}."
