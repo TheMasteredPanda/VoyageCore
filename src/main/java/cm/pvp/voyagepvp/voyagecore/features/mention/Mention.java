@@ -7,24 +7,25 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+//TODO this isn't finished. I need to test this.
 public class Mention extends Feature implements Listener
 {
-    private Pattern mentionPattern = Pattern.compile("(@)\\w+");
+    private Pattern behindCheck = Pattern.compile("(\\w+) (@)\\w+");
+    private Pattern afterCheck = Pattern.compile("(@)\\w+ (\\w+)");
 
     @ConfigPopulate("features.mention.messages.playernotfound")
     private String playerNotFound;
@@ -43,39 +44,72 @@ public class Mention extends Feature implements Listener
         }
     }
 
+    @Override
+    protected boolean enable() throws Exception
+    {
+        Bukkit.getServer().getPluginManager().registerEvents(this, getInstance());
+        return true;
+    }
+
     @EventHandler
     public void on(AsyncPlayerChatEvent e)
     {
-        Matcher matcher = mentionPattern.matcher(e.getMessage());
+        System.out.println("Invoked, message: " + e.getMessage());
+        String[] splitMessage = e.getMessage().split(" ");
+        LinkedList<String> names = Arrays.stream(splitMessage).filter(w -> w.matches("(@)\\w+")).collect(Collectors.toCollection(Lists::newLinkedList));
+        TextComponent message = new TextComponent();
 
-        if (!matcher.matches()) {
-            return;
-        }
 
-        String[] msg = e.getMessage().split("(@)\\w+");
-        String word = Arrays.stream(e.getMessage().split(" ")).filter(w -> mentionPattern.matcher(w).matches()).findFirst().orElse(null);
+        for (Iterator<String> iterator = names.iterator(); iterator.hasNext(); ) {
+            String name = iterator.next();
+            System.out.println("Iterating through name " + name + ".");
 
-        if (word == null) {
-            throw new UnsupportedOperationException("Found a mention, but couldn't get the mention.");
-        }
+            for (String splitMsg : splitMessage) {
+                System.out.println("Iterating through split message section " + splitMsg + ".");
 
-        word = word.replace("@", "");
+                if (!splitMsg.contains(name)) {
+                    System.out.println("Doesn't contain name.");
+                    continue;
+                }
 
-        TextComponent message = new TextComponent(msg[0]);
+                System.out.println("Contains name.");
 
-        Optional<PlayerProfile> profile = getInstance().getMojangLookup().lookup(word);
+                String[] innerSplit = splitMsg.split(name);
 
-        if (!profile.isPresent()) {
-            e.getPlayer().sendMessage(Format.colour(Format.format(playerNotFound, "{player};" + word)));
+                if (splitMsg.matches(behindCheck.pattern())) {
+                    System.out.println("Behind checked out.");
+                    message.addExtra(Format.colour(innerSplit[0]));
+                }
+
+                Optional<PlayerProfile> optional = getInstance().getMojangLookup().lookup(name.replace("@", ""));
+
+                if (!optional.isPresent()) {
+                    System.out.println("PlayerProfile is not present.");
+                    e.getPlayer().sendMessage(Format.format(playerNotFound, "{player};" + name.replace("@", "")));
+                    return;
+                }
+
+                System.out.println("PlayerProfile is present.");
+
+                PlayerProfile profile = optional.get();
+
+                TextComponent mentioned = new TextComponent(name);
+                mentioned.setColor(ChatColor.YELLOW);
+                BaseComponent[] hover = TextComponent.fromLegacyText(Format.format(Joiner.on('\n').join(infoTemplate), "{online};" + String.valueOf(Bukkit.getPlayer(profile.getId()).isOnline()), "{uuid};" + profile.getId().toString()));
+                mentioned.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+                message.addExtra(mentioned);
+
+                if (splitMsg.matches(afterCheck.pattern())) {
+                    System.out.println("After checked out.");
+                    mentioned.addExtra(innerSplit[1]);
+                }
+
+                iterator.remove();
+            }
+
             e.setCancelled(true);
-        }
 
-        PlayerProfile p = profile.get();
-        TextComponent mentioned = new TextComponent(ChatColor.YELLOW + "@" + word + ChatColor.RESET);
-        List<String> clone = Lists.newArrayList(infoTemplate);
-        clone.replaceAll(s -> s.replace("{online}", String.valueOf(Bukkit.getPlayer(p.getId()).isOnline())).replace("{uuid}", p.getId().toString()));
-        mentioned.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Joiner.on('\n').join(clone))));
-        message.addExtra(mentioned);
-        message.addExtra(new TextComponent(msg[1]));
+            System.out.println("Sending message.");
+        }
     }
 }
