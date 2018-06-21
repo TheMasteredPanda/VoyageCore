@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+//TODO this isn't finished. I need to test this.
 public class Mention extends Feature implements Listener
 {
     private Pattern behindCheck = Pattern.compile("(\\w+) (@)\\w+");
@@ -53,7 +54,7 @@ public class Mention extends Feature implements Listener
     @EventHandler
     public void on(AsyncPlayerChatEvent e)
     {
-
+        System.out.println("Invoked, message: " + e.getMessage());
         String[] splitMessage = e.getMessage().split(" ");
         LinkedList<String> names = Arrays.stream(splitMessage).filter(w -> w.matches("(@)\\w+")).collect(Collectors.toCollection(Lists::newLinkedList));
         TextComponent message = new TextComponent();
@@ -61,24 +62,34 @@ public class Mention extends Feature implements Listener
 
         for (Iterator<String> iterator = names.iterator(); iterator.hasNext(); ) {
             String name = iterator.next();
+            System.out.println("Iterating through name " + name + ".");
 
             for (String splitMsg : splitMessage) {
-                if (splitMsg.contains(name)) {
+                System.out.println("Iterating through split message section " + splitMsg + ".");
+
+                if (!splitMsg.contains(name)) {
+                    System.out.println("Doesn't contain name.");
                     continue;
                 }
+
+                System.out.println("Contains name.");
 
                 String[] innerSplit = splitMsg.split(name);
 
                 if (splitMsg.matches(behindCheck.pattern())) {
+                    System.out.println("Behind checked out.");
                     message.addExtra(Format.colour(innerSplit[0]));
                 }
 
                 Optional<PlayerProfile> optional = getInstance().getMojangLookup().lookup(name.replace("@", ""));
 
                 if (!optional.isPresent()) {
+                    System.out.println("PlayerProfile is not present.");
                     e.getPlayer().sendMessage(Format.format(playerNotFound, "{player};" + name.replace("@", "")));
                     return;
                 }
+
+                System.out.println("PlayerProfile is present.");
 
                 PlayerProfile profile = optional.get();
 
@@ -89,11 +100,16 @@ public class Mention extends Feature implements Listener
                 message.addExtra(mentioned);
 
                 if (splitMsg.matches(afterCheck.pattern())) {
+                    System.out.println("After checked out.");
                     mentioned.addExtra(innerSplit[1]);
                 }
 
                 iterator.remove();
             }
+
+            e.setCancelled(true);
+
+            System.out.println("Sending message.");
         }
     }
 }
