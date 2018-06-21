@@ -98,5 +98,13 @@
             <scope>system</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>vault</artifactId>
+            <version>1.5.6-b49</version>
+            <systemPath>${project.basedir}/depends/Vault.jar</systemPath>
+            <optional>true</optional>
+            <scope>system</scope>
+        </dependency>
     </dependencies>
 </project>
