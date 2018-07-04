@@ -41,3 +41,20 @@ features:
       infotemplate:
         - "&bOnline&7: {online}"
         - "&bID&7: {uuid}"
+  veconomy:
+    mariadb:
+      host: "127.0.0.1:3306"
+      database: "veconomy"
+      username: "root"
+      password: "password1"
+    sharedaccounts:
+      enabled: true
+    playeraccounts:
+      # -1 - Maximum size the data type 'long' can be.
+      #The maximum positive balance a player can have.
+      maximumbalance: -1
+      #Allow the balance to go into negatives.
+      allownegativebalance: false
+      #The maximum negative balance a player can have.
+      maximumnegativenumber: 10000
+
