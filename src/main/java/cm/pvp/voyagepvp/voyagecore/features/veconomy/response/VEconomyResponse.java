@@ -1,7 +1,9 @@
 package cm.pvp.voyagepvp.voyagecore.features.veconomy.response;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.Getter;
 
+@Getter
 public class VEconomyResponse
 {
     private Action action;

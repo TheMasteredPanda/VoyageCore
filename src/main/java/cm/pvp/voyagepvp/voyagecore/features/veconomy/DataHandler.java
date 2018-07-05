@@ -13,9 +13,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 public class DataHandler
 {
@@ -296,8 +298,7 @@ public class DataHandler
         });
 
         try {
-            future.get();
-            feature.get(owner).getSharedAccounts().add(id);
+            return future.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -326,7 +327,7 @@ public class DataHandler
         });
 
         try {
-            future.get();
+            return future.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -515,7 +516,7 @@ public class DataHandler
         });
 
         try {
-            future.get();
+            return future.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -551,12 +552,50 @@ public class DataHandler
 
 
         try {
-            future.get();
+            return future.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
         throw new RuntimeException("Couldn't generate UUID for a shared account.");
+    }
+
+    public List<UUID> getAccessibleBanks(UUID memberId)
+    {
+        CompletableFuture<List<UUID>> future = CompletableFuture.supplyAsync(new Supplier<List<UUID>>()
+        {
+            @Override
+            public List<UUID> get()
+            {
+                List<UUID> list = Lists.newArrayList();
+                Connection connection = null;
+                PreparedStatement statement = null;
+
+                try {
+                    connection = source.getConnection();
+                    statement = connection.prepareStatement("select accountId from shared_account_members where memberId=?");
+                    ResultSet set = statement.executeQuery();
+
+                    while (set.next()) {
+                        list.add(UUID.fromString(set.getString("accountId")));
+                    }
+                    DBUtil.close(connection, statement, set);
+                    return list;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        });
+
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        throw new RuntimeException("Couldn't get list of accessible members.");
     }
 
     public void shutdown()

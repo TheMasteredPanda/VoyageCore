@@ -17,7 +17,6 @@ public class PlayerAccount
     private DataHandler handler;
     private UUID owner;
     private double balance;
-    private String name;
 
     public VEconomyResponse add(double amount)
     {
@@ -47,13 +46,6 @@ public class PlayerAccount
         }
     }
 
-    public VEconomyResponse setName(String name)
-    {
-        this.name = name;
-        handler.updatePlayerAccount(this);
-        return VEconomyResponse.builder().action(Action.SET_NAME).response(Response.SUCCESS).build();
-    }
-
     public static Builder builder(DataHandler handler)
     {
         return new Builder(handler);
@@ -64,7 +56,6 @@ public class PlayerAccount
         private DataHandler handler;
         private UUID owner;
         private double balance;
-        private String name;
 
         private Builder(DataHandler handler)
         {
@@ -83,15 +74,9 @@ public class PlayerAccount
             return this;
         }
 
-        public Builder name(String name)
-        {
-            this.name = name;
-            return this;
-        }
-
         public PlayerAccount build()
         {
-            return new PlayerAccount(handler, owner, balance, name);
+            return new PlayerAccount(handler, owner, balance);
         }
     }
 }

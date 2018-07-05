@@ -76,7 +76,6 @@ public class SharedAccount
         }
 
         UUID owner = members.entrySet().stream().filter(entry -> entry.getValue() == Type.OWNER).findFirst().get().getKey();
-
         handler.updateSharedAccountMember(id, owner, Type.POA);
         handler.updateSharedAccountMember(id, newOwner, Type.OWNER);
         members.put(owner, Type.POA);

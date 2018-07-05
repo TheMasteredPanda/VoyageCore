@@ -1,0 +1,49 @@
+package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.bank;
+
+import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
+import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
+import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
+import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import javax.naming.OperationNotSupportedException;
+import java.util.LinkedList;
+import java.util.UUID;
+
+public class BankBalanceCommand extends VoyageCommand
+{
+    private VEconomy feature;
+
+    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    private String bankNotFoundMessage;
+
+    @ConfigPopulate("modules.veconomy.messages.balance")
+    private String balance;
+
+    public BankBalanceCommand(VEconomy feature)
+    {
+        super(null, "voyagecore.veconomy.player.bank.balance", "View a banks balance", true, "balance", "bal");
+        this.feature = feature;
+
+        try {
+            addArguments(new ArgumentField("bank name", true));
+        } catch (OperationNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
+    {
+        Player p = (Player) sender;
+        UUID bank = feature.getHandler().getAccessibleBanks(p.getUniqueId()).stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(0))).findFirst().orElse(null);
+
+        if (bank == null) {
+            sender.sendMessage(Format.colour(bankNotFoundMessage));
+        } else {
+            sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{balance};" + String.valueOf(feature.getAccount(bank).getBalance()))));
+        }
+    }
+}

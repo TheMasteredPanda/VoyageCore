@@ -5,6 +5,7 @@ import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,7 +18,9 @@ import java.util.concurrent.TimeUnit;
 public class VEconomy extends Feature implements Listener
 {
     private Cache<UUID, VEconomyPlayer> players = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
-    private Cache<UUID, SharedAccount> sharedAccount = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+    private Cache<UUID, SharedAccount> sharedAccounts = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+
+    @Getter
     private DataHandler handler;
 
     public VEconomy(VoyageCore instance)
@@ -60,12 +63,12 @@ public class VEconomy extends Feature implements Listener
 
     public SharedAccount getAccount(UUID id)
     {
-        if (sharedAccount.asMap().containsKey(id)) {
-            return sharedAccount.getIfPresent(id);
+        if (sharedAccounts.asMap().containsKey(id)) {
+            return sharedAccounts.getIfPresent(id);
         }
 
         SharedAccount account = handler.getSharedAccount(id);
-        sharedAccount.put(id, account);
+        sharedAccounts.put(id, account);
         return account;
     }
 
@@ -80,6 +83,23 @@ public class VEconomy extends Feature implements Listener
             players.put(e.getPlayer().getUniqueId(), handler.createPlayer(e.getPlayer()));
         } else {
             players.put(e.getPlayer().getUniqueId(), handler.getPlayer(e.getPlayer()));
+        }
+    }
+
+    public SharedAccount createSharedAccount(UUID owner, String name)
+    {
+        SharedAccount account = handler.createSharedAccount(owner, name);
+        sharedAccounts.put(account.getId(), account);
+        get(owner).getSharedAccounts().add(account.getId());
+        return account;
+    }
+
+    public void removeSharedAccount(UUID accountId)
+    {
+        handler.removedSharedAccount(accountId);
+
+        if (sharedAccounts.asMap().containsKey(accountId)) {
+            sharedAccounts.invalidate(accountId);
         }
     }
 }
