@@ -38,7 +38,7 @@ public class BankTransferCommand extends VoyageCommand
     private String exceedsMaximumAmountMessage;
 
 
-    private BankTransferCommand(VEconomy feature)
+    public BankTransferCommand(VEconomy feature)
     {
         super(null, "voyagecore.veconomy.player.bank.transfer", "Transfer money from one shared account to a player or another shared account.", true, "transfer");
         this.feature = feature;
