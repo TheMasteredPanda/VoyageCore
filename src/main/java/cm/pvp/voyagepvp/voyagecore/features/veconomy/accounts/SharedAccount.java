@@ -83,7 +83,7 @@ public class SharedAccount
         return VEconomyResponse.builder().response(Response.SUCCESS).action(Action.TRANSFER_OWNERSHIP).build();
     }
 
-    private VEconomyResponse demoteMember(UUID memberId)
+    public VEconomyResponse demoteMember(UUID memberId)
     {
         if (!members.containsKey(memberId)) {
             return VEconomyResponse.builder().action(Action.DEMOTE_MEMBER).response(Response.FAILURE).value("message", "The member is not apart of the shared account.").build();

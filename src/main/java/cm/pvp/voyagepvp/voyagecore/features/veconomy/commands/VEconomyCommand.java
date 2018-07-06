@@ -20,5 +20,6 @@ public class VEconomyCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
+
     }
 }

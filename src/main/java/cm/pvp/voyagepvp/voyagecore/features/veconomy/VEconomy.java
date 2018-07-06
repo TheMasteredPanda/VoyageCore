@@ -90,7 +90,6 @@ public class VEconomy extends Feature implements Listener
     {
         SharedAccount account = handler.createSharedAccount(owner, name);
         sharedAccounts.put(account.getId(), account);
-        get(owner).getSharedAccounts().add(account.getId());
         return account;
     }
 
