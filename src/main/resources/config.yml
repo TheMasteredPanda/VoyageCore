@@ -42,6 +42,7 @@ features:
         - "&bOnline&7: {online}"
         - "&bID&7: {uuid}"
   veconomy:
+    messages: //TODO
     mariadb:
       host: "127.0.0.1:3306"
       database: "veconomy"
