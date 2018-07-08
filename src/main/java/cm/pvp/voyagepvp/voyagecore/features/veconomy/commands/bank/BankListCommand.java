@@ -5,6 +5,7 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -15,7 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,9 +48,9 @@ public class BankListCommand extends VoyageCommand
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
         Player p = (Player) sender;
-        List<UUID> accessibleBanks = feature.getHandler().getAccessibleBanks(p.getUniqueId());
+        VEconomyPlayer player = feature.get(p.getUniqueId());
 
-        if (accessibleBanks.size() == 0) {
+        if (player.getSharedAccounts().size() == 0) {
             sender.sendMessage(Format.colour(noBanksToListMessage));
             return;
         }
@@ -59,7 +59,7 @@ public class BankListCommand extends VoyageCommand
 
         component.addExtra(Format.colour(header));
 
-        for (UUID bank : accessibleBanks) {
+        for (UUID bank : player.getSharedAccounts()) {
             SharedAccount account = feature.getAccount(bank);
 
             TextComponent entry = new TextComponent(Format.format(bankEntry, "{name};" + account.getName()));

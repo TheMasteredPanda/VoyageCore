@@ -90,15 +90,17 @@ public class VEconomy extends Feature implements Listener
     {
         SharedAccount account = handler.createSharedAccount(owner, name);
         sharedAccounts.put(account.getId(), account);
+        get(owner).getSharedAccounts().add(account.getId());
         return account;
     }
 
     public void removeSharedAccount(UUID accountId)
     {
-        handler.removedSharedAccount(accountId);
-
         if (sharedAccounts.asMap().containsKey(accountId)) {
+            getAccount(accountId).getMembers().keySet().forEach(id -> get(id).getSharedAccounts().remove(accountId));
             sharedAccounts.invalidate(accountId);
         }
+
+        handler.removedSharedAccount(accountId);
     }
 }

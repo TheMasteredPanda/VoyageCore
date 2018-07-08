@@ -5,6 +5,7 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
@@ -43,7 +44,8 @@ public class BankCreateCommand extends VoyageCommand
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
         Player p = (Player)sender;
-        List<UUID> ownedBanks = feature.getHandler().getAccessibleBanks(p.getUniqueId()).stream().filter(id -> feature.getAccount(id).getOwner().equals(p.getUniqueId())).collect(Collectors.toCollection(Lists::newArrayList));
+        VEconomyPlayer player = feature.get(p.getUniqueId());
+        List<UUID> ownedBanks = player.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getOwner().equals(p.getUniqueId())).collect(Collectors.toCollection(Lists::newArrayList));
 
         for (UUID ownedBank : ownedBanks) {
             SharedAccount account = feature.getAccount(ownedBank);

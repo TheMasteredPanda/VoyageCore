@@ -5,6 +5,7 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
@@ -59,7 +60,9 @@ public class BankDeleteCommand extends VoyageCommand
             awaitingConfirmation.remove(p.getUniqueId());
         }
 
-        UUID bank = feature.getHandler().getAccessibleBanks(p.getUniqueId()).stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(0))).findFirst().orElse(null);
+        VEconomyPlayer player = feature.get(p.getUniqueId());
+
+        UUID bank = player.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(0))).findFirst().orElse(null);
 
         if (bank == null) {
             sender.sendMessage(Format.colour(bankNotFoundMessage));

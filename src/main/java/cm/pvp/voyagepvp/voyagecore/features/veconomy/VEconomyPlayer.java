@@ -8,14 +8,16 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.UUID;
 
+@Getter
 public class VEconomyPlayer extends PlayerWrapper
 {
-    @Getter
     private PlayerAccount account;
+    private ArrayList<UUID> sharedAccounts;
 
     public VEconomyPlayer(Player p, PlayerAccount account, ArrayList<UUID> sharedAccounts)
     {
         super(p);
         this.account = account;
+        this.sharedAccounts = sharedAccounts;
     }
 }

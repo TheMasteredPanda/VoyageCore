@@ -369,7 +369,7 @@ public class DataHandler
                 DBUtil.close(set);
 
                 connection = source.getConnection();
-                statement = connection.prepareStatement("select * from shared_account_memers where memberId=?");
+                statement = connection.prepareStatement("select * from shared_account_members where memberId=?");
                 statement.setString(1, owner.getUniqueId().toString());
 
                 ResultSet set1 = statement.executeQuery();
@@ -560,32 +560,34 @@ public class DataHandler
         throw new RuntimeException("Couldn't generate UUID for a shared account.");
     }
 
-    public List<UUID> getAccessibleBanks(UUID memberId)
+    public boolean sharedAcccountExists(String name)
     {
-        CompletableFuture<List<UUID>> future = CompletableFuture.supplyAsync(new Supplier<List<UUID>>()
+        CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(new Supplier<Boolean>()
         {
             @Override
-            public List<UUID> get()
+            public Boolean get()
             {
-                List<UUID> list = Lists.newArrayList();
                 Connection connection = null;
                 PreparedStatement statement = null;
+                boolean result = false;
 
                 try {
                     connection = source.getConnection();
-                    statement = connection.prepareStatement("select accountId from shared_account_members where memberId=?");
+                    statement = connection.prepareStatement("select accountId from shared_accounts where name=?");
+                    statement.setString(1, name);
+
                     ResultSet set = statement.executeQuery();
 
                     while (set.next()) {
-                        list.add(UUID.fromString(set.getString("accountId")));
+                        result = true;
                     }
+
                     DBUtil.close(connection, statement, set);
-                    return list;
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
 
-                return null;
+                return result;
             }
         });
 
@@ -595,7 +597,42 @@ public class DataHandler
             e.printStackTrace();
         }
 
-        throw new RuntimeException("Couldn't get list of accessible members.");
+        throw new RuntimeException("Couldn't determine whether an account under the name of " + name + " exists.");
+    }
+
+    public List<UUID> getSharedAccountsNamed(String name)
+    {
+        CompletableFuture<List<UUID>> future = CompletableFuture.supplyAsync(() -> {
+            Connection connection = null;
+            PreparedStatement statement = null;
+            List<UUID> accountIds = Lists.newArrayList();
+
+            try {
+                connection = source.getConnection();
+                statement = connection.prepareStatement("select accountId from shared_accounts where name=?");
+                statement.setString(1, name);
+
+                ResultSet set = statement.executeQuery();
+
+                while (set.next()) {
+                    accountIds.add(UUID.fromString(set.getString("accountId")));
+                }
+
+                DBUtil.close(set, statement, connection);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return accountIds;
+        });
+
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        throw new RuntimeException("Couldn't get the shared accounts under the name " + name + ".");
     }
 
     public void shutdown()
