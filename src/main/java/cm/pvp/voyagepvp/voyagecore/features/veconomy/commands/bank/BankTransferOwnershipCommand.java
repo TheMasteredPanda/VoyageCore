@@ -9,12 +9,16 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -24,7 +28,8 @@ public class BankTransferOwnershipCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    private HashMap<UUID, UUID> awaitingClarification = Maps.newHashMap();
+    private ArrayListMultimap<UUID, UUID> awaitingConfirmation = ArrayListMultimap.create();
+    private ArrayList<CountdownTask> countdowns = Lists.newArrayList();
 
     @ConfigPopulate("modules.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
@@ -40,6 +45,9 @@ public class BankTransferOwnershipCommand extends VoyageCommand
 
     @ConfigPopulate("modules.veconomy.messages.bank.transferred")
     private String tranferredBankMessage;
+
+    @ConfigPopulate("modules.veconomy.messages.bank.awaitingconfirmation")
+    private String awaitingConfirmationMessage;
 
     public BankTransferOwnershipCommand(VEconomy feature)
     {
@@ -80,10 +88,59 @@ public class BankTransferOwnershipCommand extends VoyageCommand
             return;
         }
 
-        if (account.transferOwnership(target).getResponse() == Response.SUCCESS) {
-            sender.sendMessage(Format.colour(tranferredBankMessage));
+        if (!awaitingConfirmation.containsEntry(p.getUniqueId(), account.getId())) {
+            awaitingConfirmation.put(p.getUniqueId(), account.getId());
+            countdowns.add(new CountdownTask(p.getUniqueId(), account.getId()));
+            sender.sendMessage(Format.colour(Format.format(awaitingConfirmationMessage)));
         } else {
-            sender.sendMessage(Format.colour(errorMessage));
+            awaitingConfirmation.remove(p.getUniqueId(), account.getId());
+            CountdownTask task = countdowns.stream().filter(t -> t.getAccount().equals(account.getId()) && t.getOwner().equals(p.getUniqueId())).findFirst().orElse(null);
+
+            if (task != null) {
+                if (Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+                    task.cancel();
+                }
+
+                countdowns.remove(task);
+            }
+
+            if (account.transferOwnership(target).getResponse() == Response.SUCCESS) {
+                sender.sendMessage(Format.colour(tranferredBankMessage));
+            } else {
+                sender.sendMessage(Format.colour(errorMessage));
+            }
+        }
+
+    }
+
+    class CountdownTask extends BukkitRunnable
+    {
+        @Getter
+        private UUID owner;
+
+        @Getter
+        private UUID account;
+
+
+        private int countdown = 30;
+
+        CountdownTask(UUID owner, UUID account)
+        {
+            this.owner = owner;
+            this.account = account;
+        }
+
+        @Override
+        public void run()
+        {
+            countdown--;
+
+            if (countdown <= 0) {
+                awaitingConfirmation.get(owner).remove(account);
+                cancel();
+                countdowns.remove(this);
+            }
         }
     }
 }
+
