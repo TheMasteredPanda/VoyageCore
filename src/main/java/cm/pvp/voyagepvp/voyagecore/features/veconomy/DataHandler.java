@@ -28,7 +28,7 @@ public class DataHandler
     {
         this.feature = feature;
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mariadb:" + feature.getSection().getString("mariadb.host") + "/" + feature.getSection().getString("mariadb.database"));
+        config.setJdbcUrl("jdbc:mysql://" + feature.getSection().getString("mariadb.host") + "/" + feature.getSection().getString("mariadb.database"));
         config.setUsername(feature.getSection().getString("mariadb.username"));
         config.setPassword(feature.getSection().getString("mariadb.password"));
         config.setConnectionTestQuery("SELECT 1");
@@ -84,7 +84,7 @@ public class DataHandler
 
                 try {
                     connection = source.getConnection();
-                    statement = connection.prepareStatement("create table if not exists shared_account_members(accountId VARCHAR(32) primary key, memberId varchar(32), type int, foreign key (accountId) references shared_account_balances (accountId) on delete cascade)");
+                    statement = connection.prepareStatement("create table if not exists shared_account_members(accountId VARCHAR(32) primary key, memberId varchar(32), type int, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
                     statement.execute();
                     feature.getLogger().info("Created shared account members table.");
                     DBUtil.close(connection, statement);

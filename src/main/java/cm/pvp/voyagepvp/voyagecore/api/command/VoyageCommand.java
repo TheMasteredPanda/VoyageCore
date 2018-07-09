@@ -121,7 +121,7 @@ public abstract class VoyageCommand extends BukkitCommand
             return true;
         }
 
-        if (!sender.hasPermission(getPermission())) {
+        if (getPermission() != null && !sender.hasPermission(getPermission())) {
             return true;
         }
 

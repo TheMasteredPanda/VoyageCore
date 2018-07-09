@@ -3,6 +3,7 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy;
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.VEconomyCommand;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class VEconomy extends Feature implements Listener
     protected boolean enable() throws Exception
     {
         Bukkit.getPluginManager().registerEvents(this, getInstance());
+        getInstance().register(new VEconomyCommand(this));
         return true;
     }
 
