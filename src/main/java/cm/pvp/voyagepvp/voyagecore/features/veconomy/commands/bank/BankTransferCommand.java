@@ -45,7 +45,7 @@ public class BankTransferCommand extends VoyageCommand
     @ConfigPopulate("modules.veconomy.messages.bank.specifybankowner")
     private String specifyBankOwnerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.error")
+    @ConfigPopulate("modules.veconomy.messages.error")
     private String errorMessage;
 
     public BankTransferCommand(VEconomy feature)
@@ -101,7 +101,7 @@ public class BankTransferCommand extends VoyageCommand
                 List<UUID> accounts = feature.getHandler().getSharedAccountsNamed(split[0]);
 
                 if (accounts.size() > 1) {
-                    sender.sendMessage(Format.colour(Format.format(specifyBankOwnerMessage, "{amount};" + accounts.size())));
+                    sender.sendMessage(Format.colour(Format.format(specifyBankOwnerMessage, "{bank};" + split[0])));
                     return;
                 } else if (accounts.size() == 1) {
                     to = feature.getAccount(accounts.get(0));
@@ -129,6 +129,11 @@ public class BankTransferCommand extends VoyageCommand
 
             Preconditions.checkNotNull(to);
             Preconditions.checkNotNull(owner);
+
+            if (Double.isInfinite(to.getBalance() + amount)) {
+                sender.sendMessage(Format.colour(Format.format(exceedsMaximumAmountMessage, "{amount};" + String.valueOf(amount), "{receiver};" + to.getName())));
+                return;
+            }
 
             if (from.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && to.add(amount, p.getUniqueId()).getResponse() == Response.SUCCESS) {
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + owner.getName())));

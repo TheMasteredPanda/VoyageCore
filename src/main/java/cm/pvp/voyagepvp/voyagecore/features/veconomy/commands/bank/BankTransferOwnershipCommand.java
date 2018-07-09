@@ -43,11 +43,11 @@ public class BankTransferOwnershipCommand extends VoyageCommand
     @ConfigPopulate("movules.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.transferred")
+    @ConfigPopulate("modules.veconomy.messages.bank.transferredownership")
     private String tranferredBankMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.awaitingconfirmation")
-    private String awaitingConfirmationMessage;
+    @ConfigPopulate("modules.veconomy.messages.bank.transferownershipquestion")
+    private String transferOwnershipQuestionMessage;
 
     public BankTransferOwnershipCommand(VEconomy feature)
     {
@@ -91,7 +91,7 @@ public class BankTransferOwnershipCommand extends VoyageCommand
         if (!awaitingConfirmation.containsEntry(p.getUniqueId(), account.getId())) {
             awaitingConfirmation.put(p.getUniqueId(), account.getId());
             countdowns.add(new CountdownTask(p.getUniqueId(), account.getId()));
-            sender.sendMessage(Format.colour(Format.format(awaitingConfirmationMessage)));
+            sender.sendMessage(Format.colour(Format.format(transferOwnershipQuestionMessage)));
         } else {
             awaitingConfirmation.remove(p.getUniqueId(), account.getId());
             CountdownTask task = countdowns.stream().filter(t -> t.getAccount().equals(account.getId()) && t.getOwner().equals(p.getUniqueId())).findFirst().orElse(null);

@@ -23,8 +23,8 @@ public class BankPromoteMemberCommand extends VoyageCommand
     @ConfigPopulate("modules.veconomy.messages.bank.playerisnotmember")
     private String playerIsNotAMemberMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerisnotpoa")
-    private String playerIsNotPOAMessage;
+    @ConfigPopulate("modules.veconomy.messages.bank.playerispoa")
+    private String playerIsPOAMessage;
 
     @ConfigPopulate("modules.veconomy.messages.bank.nopermission")
     private String noPermissionMessage;
@@ -85,8 +85,8 @@ public class BankPromoteMemberCommand extends VoyageCommand
             return;
         }
 
-        if (account.getMembers().entrySet().stream().noneMatch(entry -> entry.getKey().equals(target) && entry.getValue() == SharedAccount.Type.POA)) {
-            sender.sendMessage(Format.colour(Format.format(playerIsNotPOAMessage, "{target};" + arguments.get(0))));
+        if (account.getMembers().get(target) == SharedAccount.Type.POA) {
+            sender.sendMessage(Format.colour(Format.format(playerIsPOAMessage, "{target};" + arguments.get(0))));
             return;
         }
 

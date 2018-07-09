@@ -21,7 +21,7 @@ public class BankBalanceCommand extends VoyageCommand
     private String bankNotFoundMessage;
 
     @ConfigPopulate("modules.veconomy.messages.balance")
-    private String balance;
+    private String balanceMessage;
 
     public BankBalanceCommand(VEconomy feature)
     {
@@ -43,9 +43,9 @@ public class BankBalanceCommand extends VoyageCommand
         UUID bank = player.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(0))).findFirst().orElse(null);
 
         if (bank == null) {
-            sender.sendMessage(Format.colour(bankNotFoundMessage));
+            sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
         } else {
-            sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{balance};" + String.valueOf(feature.getAccount(bank).getBalance()))));
+            sender.sendMessage(Format.colour(Format.format(balanceMessage, "{balance};" + String.valueOf(feature.getAccount(bank).getBalance()))));
         }
     }
 }

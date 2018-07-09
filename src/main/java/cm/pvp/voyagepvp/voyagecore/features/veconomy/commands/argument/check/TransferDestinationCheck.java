@@ -2,9 +2,9 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.argument.check;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.ArgumentCheckFunction;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 
-import java.util.List;
 import java.util.UUID;
 
 public class TransferDestinationCheck implements ArgumentCheckFunction
@@ -23,9 +23,9 @@ public class TransferDestinationCheck implements ArgumentCheckFunction
             return true;
         } else {
             UUID id = feature.getInstance().getMojangLookup().lookup(argument).get().getId();
-            List<UUID> accessibleBanks = feature.getHandler().getAccessibleBanks(id);
+            VEconomyPlayer player = feature.get(id);
 
-            for (UUID bank : accessibleBanks) {
+            for (UUID bank : player.getSharedAccounts()) {
                 SharedAccount account = feature.getAccount(bank);
 
                 //Just a precautionary check to ensure they cannot access banks they are not membered with.

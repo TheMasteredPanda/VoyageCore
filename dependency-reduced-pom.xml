@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>cm.pvp.voyagepvp</groupId>
   <artifactId>VoyageCore</artifactId>
-  <version>1.00.0124</version>
+  <version>1.00.0125</version>
   <build>
     <plugins>
       <plugin>
@@ -68,6 +68,14 @@
       <version>4.1-SNAPSHOT</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/depends/TTA-4.1.jar</systemPath>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>vault</artifactId>
+      <version>1.5.6-b49</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/depends/Vault.jar</systemPath>
       <optional>true</optional>
     </dependency>
   </dependencies>

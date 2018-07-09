@@ -6,7 +6,6 @@ import cm.pvp.voyagepvp.voyagecore.api.command.locale.DefaultCommandLocale;
 import cm.pvp.voyagepvp.voyagecore.api.exception.CommandException;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import com.google.common.collect.Lists;
-import com.jcabi.aspects.Cacheable;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -218,7 +217,6 @@ public abstract class VoyageCommand extends BukkitCommand
      * Gets the list of required argument fields.
      * @return
      */
-    @Cacheable
     public LinkedList<ArgumentField> getRequiredFields()
     {
         return fields.stream().filter(ArgumentField::isRequired).collect(Collectors.toCollection(Lists::newLinkedList));

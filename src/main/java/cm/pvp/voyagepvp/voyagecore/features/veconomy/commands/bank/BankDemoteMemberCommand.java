@@ -23,7 +23,7 @@ public class BankDemoteMemberCommand extends VoyageCommand
     @ConfigPopulate("modules.veconomy.messages.playerisowner")
     private String playerIsOwnerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.demoteplayer")
+    @ConfigPopulate("modules.veconomy.messages.bank.demotedplayer")
     private String demotedPlayerMessage;
 
     @ConfigPopulate("modules.veconomy.messages.bank.playerismember")
@@ -86,7 +86,7 @@ public class BankDemoteMemberCommand extends VoyageCommand
             return;
         }
 
-        if (account.getMembers().entrySet().stream().anyMatch(entry -> entry.getKey().equals(target) && entry.getValue() == SharedAccount.Type.MEMBER)) {
+        if (account.getMembers().get(target) == SharedAccount.Type.MEMBER) {
             sender.sendMessage(Format.colour(playerIsMemberMessage));
             return;
         }

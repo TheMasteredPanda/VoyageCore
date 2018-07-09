@@ -2,6 +2,7 @@
 ### Java template
 # Compiled class file
 *.class
+complile_and_move.sh
 
 #IntelliJ
 VoyageCore.iml

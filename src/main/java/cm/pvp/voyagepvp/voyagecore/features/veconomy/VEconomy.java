@@ -32,7 +32,8 @@ public class VEconomy extends Feature implements Listener
     @Override
     protected boolean enable() throws Exception
     {
-        return super.enable();
+        Bukkit.getPluginManager().registerEvents(this, getInstance());
+        return true;
     }
 
     public VEconomyPlayer get(Player player)
