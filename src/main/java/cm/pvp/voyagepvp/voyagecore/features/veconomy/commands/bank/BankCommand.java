@@ -10,7 +10,7 @@ public class BankCommand extends VoyageCommand
 {
     public BankCommand(VEconomy feature)
     {
-        super(null, null, "Parent command for the bank feature.", true, "vbank", "bank", "vb");
+        super(null, null, "Parent command for the bank feature.", true, "bank", "vb");
         addChildren(new BankBalanceCommand(feature),
                 new BankCreateCommand(feature),
                 new BankDeleteCommand(feature),

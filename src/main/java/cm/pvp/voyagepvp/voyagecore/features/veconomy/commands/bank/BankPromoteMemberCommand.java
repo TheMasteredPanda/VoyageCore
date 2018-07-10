@@ -20,25 +20,25 @@ public class BankPromoteMemberCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerisnotmember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisnotmember")
     private String playerIsNotAMemberMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerispoa")
+    @ConfigPopulate("features.veconomy.messages.bank.playerispoa")
     private String playerIsPOAMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.nopermission")
+    @ConfigPopulate("features.veconomy.messages.nopermission")
     private String noPermissionMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerisowner")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisowner")
     private String playerIsOwnerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.error")
+    @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.promotedplayer")
+    @ConfigPopulate("features.veconomy.messages.bank.promotedplayer")
     private String promotedPlayerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
     public BankPromoteMemberCommand(VEconomy feature)

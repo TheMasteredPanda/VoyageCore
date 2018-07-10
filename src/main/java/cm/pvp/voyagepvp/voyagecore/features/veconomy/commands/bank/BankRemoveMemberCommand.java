@@ -23,19 +23,19 @@ public class BankRemoveMemberCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerisnotamember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisnotmember")
     private String playerIsNotAMemberMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.removedmember")
+    @ConfigPopulate("features.veconomy.messages.bank.removedmember")
     private String removedMemberMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.nopermission")
+    @ConfigPopulate("features.veconomy.messages.nopermission")
     private String noPermissionMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.error")
+    @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
     public BankRemoveMemberCommand(VEconomy feature)

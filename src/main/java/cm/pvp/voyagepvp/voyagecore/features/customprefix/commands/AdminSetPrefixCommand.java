@@ -29,7 +29,7 @@ public class AdminSetPrefixCommand extends VoyageCommand
     @ConfigPopulate("features.customprefix.length")
     private int prefixLength;
 
-    @ConfigPopulate("Features.customprefix.blacklist")
+    @ConfigPopulate("features.customprefix.blacklist")
     private List<String> blacklist;
 
     @ConfigPopulate("features.customprefix.messages.containsblacklistedword")

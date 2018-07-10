@@ -4,6 +4,7 @@ import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,7 +15,7 @@ public class BalanceCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.balance")
+    @ConfigPopulate("features.veconomy.messages.balance")
     private String balanceMessage;
 
     public BalanceCommand(VEconomy feature)
@@ -32,6 +33,16 @@ public class BalanceCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
+        if (balanceMessage == null) {
+            feature.getLogger().warning("The balance message is null.");
+        }
+
+        VEconomyPlayer player = feature.get(((Player) sender).getUniqueId());
+
+        if (player == null) {
+            feature.getLogger().warning("The VEconomyPlayer instance is null.");
+        }
+
         sender.sendMessage(Format.colour(Format.format(balanceMessage, "{balance};" + String.valueOf(feature.get(((Player) sender)).getAccount().getBalance()))));
     }
 }

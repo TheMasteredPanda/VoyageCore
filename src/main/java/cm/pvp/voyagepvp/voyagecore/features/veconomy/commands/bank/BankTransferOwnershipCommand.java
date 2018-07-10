@@ -31,22 +31,22 @@ public class BankTransferOwnershipCommand extends VoyageCommand
     private ArrayListMultimap<UUID, UUID> awaitingConfirmation = ArrayListMultimap.create();
     private ArrayList<CountdownTask> countdowns = Lists.newArrayList();
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerisowner")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisowner")
     private String playerIsOwnerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.nopermission")
+    @ConfigPopulate("features.veconomy.messages.nopermission")
     private String noPermissionMessage;
 
-    @ConfigPopulate("movules.veconomy.messages.error")
+    @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.transferredownership")
+    @ConfigPopulate("features.veconomy.messages.bank.transferredownership")
     private String tranferredBankMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.transferownershipquestion")
+    @ConfigPopulate("features.veconomy.messages.bank.transferownershipquestion")
     private String transferOwnershipQuestionMessage;
 
     public BankTransferOwnershipCommand(VEconomy feature)

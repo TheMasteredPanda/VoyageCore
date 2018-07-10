@@ -23,10 +23,12 @@ public class Config<T extends VoyagePlugin>
 {
     private File configFile;
     private YamlConfiguration config;
+    private VoyagePlugin instance;
 
     public Config(T instance, File config) throws FileNotFoundException
     {
         this.configFile = config;
+        this.instance = instance;
 
         if (!config.getParentFile().exists()) {
             config.getParentFile().mkdirs();
@@ -69,6 +71,11 @@ public class Config<T extends VoyagePlugin>
         for (Field f : fields) {
             ConfigPopulate annotation = f.getAnnotation(ConfigPopulate.class);
             Object value = config.get(annotation.value());
+
+            if (value == null) {
+                this.instance.getLogger().warning("The value expected at node '" + annotation.value() + "' that was meant to be injected into field " + f.getName() + " in " + clazz.getName() + " is null.");
+                continue;
+            }
 
             try {
                 f.setAccessible(true);

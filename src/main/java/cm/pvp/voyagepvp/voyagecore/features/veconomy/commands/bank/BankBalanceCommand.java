@@ -17,10 +17,10 @@ public class BankBalanceCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.balance")
+    @ConfigPopulate("features.veconomy.messages.balance")
     private String balanceMessage;
 
     public BankBalanceCommand(VEconomy feature)

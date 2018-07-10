@@ -21,10 +21,10 @@ public class BankCreateCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.nameused")
+    @ConfigPopulate("features.veconomy.messages.bank.nameused")
     private String nameUsedMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.created")
+    @ConfigPopulate("features.veconomy.messages.bank.created")
     private String successfullyCreatedBank;
 
     public BankCreateCommand(VEconomy feature)

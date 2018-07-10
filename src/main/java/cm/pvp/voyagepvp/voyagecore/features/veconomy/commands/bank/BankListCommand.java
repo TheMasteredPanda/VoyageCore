@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
@@ -23,25 +24,31 @@ public class BankListCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.list.header")
+    @ConfigPopulate("features.veconomy.messages.bank.list.header")
     private String header;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.list.footer")
+    @ConfigPopulate("features.veconomy.messages.bank.list.footer")
     private String footer;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.list.entry")
+    @ConfigPopulate("features.veconomy.messages.bank.list.entry")
     private String bankEntry;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.list.entryinformationtemplate")
+    @ConfigPopulate("features.veconomy.messages.bank.list.entryinformationtemplate")
     private String informationTemplate;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.list.nobankstolist")
+    @ConfigPopulate("features.veconomy.messages.bank.list.nobankstolist")
     private String noBanksToListMessage;
 
     public BankListCommand(VEconomy feature)
     {
         super(null, "voyagecore.veconomy.player.bank.list", "Lists the banks accessible to you.", true, "list", "l");
         this.feature = feature;
+
+        try {
+            feature.getInstance().getMainConfig().populate(this);
+        } catch (OperationNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -62,7 +69,7 @@ public class BankListCommand extends VoyageCommand
         for (UUID bank : player.getSharedAccounts()) {
             SharedAccount account = feature.getAccount(bank);
 
-            TextComponent entry = new TextComponent(Format.format(bankEntry, "{name};" + account.getName()));
+            TextComponent entry = new TextComponent(Format.colour(Format.format(bankEntry, "{name};" + account.getName())));
 
             LinkedList<String> members = Lists.newLinkedList();
 
@@ -85,5 +92,6 @@ public class BankListCommand extends VoyageCommand
         }
 
         component.addExtra(Format.colour(footer));
+        p.spigot().sendMessage(component);
     }
 }

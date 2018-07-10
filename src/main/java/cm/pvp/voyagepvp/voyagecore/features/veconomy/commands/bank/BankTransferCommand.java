@@ -27,25 +27,25 @@ public class BankTransferCommand extends VoyageCommand
     private VEconomy feature;
 
 
-    @ConfigPopulate("modules.veconomy.messages.playernotfound")
+    @ConfigPopulate("features.veconomy.messages.playernotfound")
     private String playerNotFoundMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.nopermission")
+    @ConfigPopulate("features.veconomy.messages.bank.nopermission")
     private String noPermissionMessage;
 
-    @ConfigPopulate("modules.veconomy.message.transfersuccess")
+    @ConfigPopulate("features.veconomy.message.transfersuccess")
     private String transferSuccessMessage;
 
-    @ConfigPopulate("modules.veconomy.message.exceedsmaximumamount")
+    @ConfigPopulate("features.veconomy.message.exceedsmaximumamount")
     private String exceedsMaximumAmountMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.specifybankowner")
+    @ConfigPopulate("features.veconomy.messages.bank.specifybankowner")
     private String specifyBankOwnerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.error")
+    @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
     public BankTransferCommand(VEconomy feature)

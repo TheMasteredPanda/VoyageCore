@@ -27,10 +27,16 @@ features:
     cooldown: 120
     rewardcommand: "me Congrats, cunt."
   customprefix:
+    blacklist:
+      - "Nigger"
+      - "Cracker"
+      - "Cunt"
+      - "Shit"
     messages:
       resetprefix: "{commandprefix} &cPrefix reset."
       noprefixfound: "{commandprefix} &cPrefix not found."
       prefixsetfor: "{commandprefix} Prefix set for &b{player} &7is &b{prefix}&7."
+      containsblacklistedword: "{commandprefix} &cThe prefix contains the blacklisted word &b{word}&7."
       nocustomprefix: "{commandprefix} &cNo custom prefix found for &b{player}&7."
       setprefix: "{commandprefix} Prefix set as &b{prefix}&7."
       prefixtoolong: "{commandprefix} &cPrefix too long, maximum length is &b{length}&7."
@@ -45,14 +51,14 @@ features:
     messages:
       balance: "&aBalance&8: &7{balance}"
       error: "There was an error, contact an an administrator."
+      nopermission: "{commandprefix} You do not have permission to do this."
       bank:
-        nopermission: "{commandprefix} You do not have permission to do this."
         playerisalreadymember: "{commandprefix} &cPlayer {target} is already a member of this bank."
         addedplayer: "{commandprefix} Added player {target} to bank."
         notfound: "{commandprefix} &cBank {bank} is not found."
         nameused: "{commandprefix} &cYou already own a bank under the name {name}."
         created: "{commandprefix} Successfully created bank named {name}."
-        deletebankequestion: "{commandprefix} Are you sure you want to delete bank {bank}? Bare in mind, all money from that bank will go to the owner that bank account."
+        deletebankquestion: "{commandprefix} Are you sure you want to delete bank {bank}? Bare in mind, all money from that bank will go to the owner of that bank account."
         bankdeleted: "{commandprefix} Deleted bank {bank}. {amount} was transferred to the owner."
         playerisowner: "{commandprefix}&c The targeted player is the owner of this bank."
         demotedplayer: "{commandprefix} Demoted player {target} from POA to Member."
@@ -66,12 +72,12 @@ features:
         exceedmaximumamount: "{commandprefix} Sending {amount} to {receiver} would exceed the maximum amount of money one may keep in a bank."
         specifybankowner: "{commandprefix} There is more than one bank under the name of {name}. Please specify the owner of the bank when you invoke the command again in the format of <owner name>/<bank name>"
         transferownershipquestion: "{commandprefix} To confirm the transferal, invoke the command with the same arguments again."
-        transferred: "{commandprefix} Bank transferred."
+        transferredownership: "{commandprefix} Bank ownership transferred."
         list:
-          header: "========================================================"
-          footer: "========================================================"
-          entry: "&8» &a{name"
-          entryinformationtemplate: "&aBalance&8:&7 {balance}\n&aMembers&8\n{members}"
+          header: "===================================================\n"
+          footer: "==================================================="
+          entry: "&8» &a{name}"
+          entryinformationtemplate: "&aBalance&8:&7 {balance}\n&aMembers&8\n&7{members}"
           nobankstolist: "{commandprefix} There are no banks to list."
     mariadb:
       host: "127.0.0.1:3306"

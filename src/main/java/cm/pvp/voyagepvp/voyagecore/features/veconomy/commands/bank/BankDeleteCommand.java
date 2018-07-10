@@ -27,16 +27,16 @@ public class BankDeleteCommand extends VoyageCommand
     private ArrayListMultimap<UUID, UUID> awaitingConfirmation = ArrayListMultimap.create();
     private ArrayList<CountdownTask> countdowns = Lists.newArrayList();
 
-    @ConfigPopulate("modules.veconomy.messages.bank.deletebankquestion")
+    @ConfigPopulate("features.veconomy.messages.bank.deletebankquestion")
     private String questionMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.bankdeleted")
+    @ConfigPopulate("features.veconomy.messages.bank.bankdeleted")
     private String bankDeletedMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.error")
+    @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
     public BankDeleteCommand(VEconomy feature)
@@ -104,6 +104,7 @@ public class BankDeleteCommand extends VoyageCommand
         {
             this.owner = owner;
             this.account = account;
+            runTaskLaterAsynchronously(feature.getInstance(), 20L);
         }
 
         @Override

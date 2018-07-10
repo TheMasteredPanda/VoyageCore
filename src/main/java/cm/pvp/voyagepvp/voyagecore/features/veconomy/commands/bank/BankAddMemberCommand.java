@@ -19,13 +19,13 @@ public class BankAddMemberCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerisalreadyamember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisalreadymember")
     private String playerIsAlreadyAMemberMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.addedplayer")
+    @ConfigPopulate("features.veconomy.messages.bank.addedplayer")
     private String addedPlayerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
     public BankAddMemberCommand(VEconomy feature)

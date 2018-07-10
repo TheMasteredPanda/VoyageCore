@@ -42,7 +42,7 @@ public class DataHandler
 
             try {
                 connection = source.getConnection();
-                statement = connection.prepareStatement("create table if not exists player_accounts(owner VARCHAR(32), balance DOUBLE(13, 2))");
+                statement = connection.prepareStatement("create table if not exists player_accounts(owner VARCHAR(40), balance DOUBLE(13, 2))");
                 statement.execute();
                 feature.getLogger().info("Created player accounts table.");
                 DBUtil.close(connection, statement);
@@ -55,7 +55,7 @@ public class DataHandler
 
             try {
                 connection = source.getConnection();
-                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(32), transactionType int, balance double(13, 2), amount double(13, 2), date date)");
+                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40), transactionType int, balance double(13, 2), amount double(13, 2), date date)");
                 statement.execute();
                 DBUtil.close(connection, statement);
             } catch (SQLException e) {
@@ -71,7 +71,7 @@ public class DataHandler
 
                 try {
                     connection = source.getConnection();
-                    statement = connection.prepareStatement("create table if not exists shared_accounts(accountId VARCHAR(32) primary key, balance double(13, 2), name TEXT)");
+                    statement = connection.prepareStatement("create table if not exists shared_accounts(accountId VARCHAR(40) primary key, balance double(13, 2), name TEXT)");
                     statement.execute();
                     feature.getLogger().info("Created shared account balances table.");
                     DBUtil.close(config, statement);
@@ -84,7 +84,7 @@ public class DataHandler
 
                 try {
                     connection = source.getConnection();
-                    statement = connection.prepareStatement("create table if not exists shared_account_members(accountId VARCHAR(32) primary key, memberId varchar(32), type int, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
+                    statement = connection.prepareStatement("create table if not exists shared_account_members(accountId VARCHAR(40) primary key, memberId varchar(40), type int, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
                     statement.execute();
                     feature.getLogger().info("Created shared account members table.");
                     DBUtil.close(connection, statement);
@@ -97,7 +97,7 @@ public class DataHandler
 
                 try {
                     connection = source.getConnection();
-                    statement = connection.prepareStatement("create table if not exists shared_account_ledger(accountId varchar(32) primary key , memberId varchar(32), transactionType int, balance double(13, 2), amount double(13, 2))");
+                    statement = connection.prepareStatement("create table if not exists shared_account_ledger(accountId varchar(40) primary key , memberId varchar(40), transactionType int, balance double(13, 2), amount double(13, 2))");
                     statement.execute();
                     DBUtil.close(connection, statement);
                 } catch (SQLException e) {
@@ -289,7 +289,7 @@ public class DataHandler
                 statement.setInt(3, SharedAccount.Type.OWNER.getNumericID());
                 statement.execute();
                 DBUtil.close(connection, statement);
-                account = SharedAccount.builder(this).name(name).member(owner, SharedAccount.Type.OWNER).balance(0D).build();
+                account = SharedAccount.builder(this).id(id).name(name).member(owner, SharedAccount.Type.OWNER).balance(0D).build();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -347,7 +347,6 @@ public class DataHandler
                 statement = connection.prepareStatement("select * from player_accounts where owner=?");
                 statement.setString(1, owner.getUniqueId().toString());
                 result = statement.executeQuery();
-                DBUtil.close(statement);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -410,7 +409,6 @@ public class DataHandler
                 statement = connection.prepareStatement("select * from shared_accounts where accountId=?");
                 statement.setString(1, id.toString());
                 set = statement.executeQuery();
-                DBUtil.close(statement);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -427,7 +425,7 @@ public class DataHandler
                 }
 
                 connection = source.getConnection();
-                statement = connection.prepareStatement("select * from shared_accounts_members where accountId=?");
+                statement = connection.prepareStatement("select * from shared_account_members where accountId=?");
                 statement.setString(1, id.toString());
 
                 ResultSet set1 = statement.executeQuery();

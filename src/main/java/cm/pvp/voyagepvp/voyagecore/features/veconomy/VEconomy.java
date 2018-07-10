@@ -82,7 +82,7 @@ public class VEconomy extends Feature implements Listener
             return;
         }
 
-        if (handler.playerExists(e.getPlayer().getUniqueId())) {
+        if (!handler.playerExists(e.getPlayer().getUniqueId())) {
             players.put(e.getPlayer().getUniqueId(), handler.createPlayer(e.getPlayer()));
         } else {
             players.put(e.getPlayer().getUniqueId(), handler.getPlayer(e.getPlayer()));

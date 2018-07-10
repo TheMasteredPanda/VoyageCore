@@ -20,25 +20,25 @@ public class BankDemoteMemberCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("modules.veconomy.messages.playerisowner")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisowner")
     private String playerIsOwnerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.demotedplayer")
+    @ConfigPopulate("features.veconomy.messages.bank.demotedplayer")
     private String demotedPlayerMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerismember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerismember")
     private String playerIsMemberMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.playerisnotamember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisnotmember")
     private String playerIsNotAMemberMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.error")
+    @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.nopermission")
+    @ConfigPopulate("features.veconomy.messages.nopermission")
     private String noPermission;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
     public BankDemoteMemberCommand(VEconomy feature)

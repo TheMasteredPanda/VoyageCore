@@ -166,7 +166,7 @@ public abstract class VoyageCommand extends BukkitCommand
         }
 
         if (getRequiredFields().size() > arguments.size()) {
-            sender.sendMessage(Format.colour(locale.get(NOT_ENOUGH_ARGUMENTS)));
+            sender.sendMessage(Format.colour(Format.format(locale.get(NOT_ENOUGH_ARGUMENTS), "{commandusage};" + getCommandUsage())));
             return true;
         }
 
@@ -174,7 +174,7 @@ public abstract class VoyageCommand extends BukkitCommand
             for (int i = 0; i < fields.size(); i++) {
                 ArgumentField field = fields.get(i);
 
-                if (!field.getCheckFunction().check(args[i])) {
+                if (field.getCheckFunction() != null && !field.getCheckFunction().check(args[i])) {
                     sender.sendMessage(Format.format(locale.get(ARGUMENT_INCORRECT).replace("{argument}", field.getName())));
                     return true;
                 }
