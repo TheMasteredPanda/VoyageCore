@@ -43,6 +43,6 @@ public class BalanceCommand extends VoyageCommand
             feature.getLogger().warning("The VEconomyPlayer instance is null.");
         }
 
-        sender.sendMessage(Format.colour(Format.format(balanceMessage, "{balance};" + String.valueOf(feature.get(((Player) sender)).getAccount().getBalance()))));
+        sender.sendMessage(Format.colour(Format.format(balanceMessage, "{balance};" + feature.getVaultHook().format(feature.get(((Player) sender)).getAccount().getBalance()))));
     }
 }

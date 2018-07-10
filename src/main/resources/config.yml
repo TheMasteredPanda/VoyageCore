@@ -48,6 +48,8 @@ features:
         - "&bOnline&7: {online}"
         - "&bID&7: {uuid}"
   veconomy:
+  #To limit the amounts of banks a group or user owns, add the permission voyagecore.veconomy.banks.<number of banks they're allowed to own>
+    startamount: 300
     currency:
       symbol: "£"
       name:

@@ -136,7 +136,7 @@ public class BankTransferCommand extends VoyageCommand
             }
 
             if (from.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && to.add(amount, p.getUniqueId()).getResponse() == Response.SUCCESS) {
-                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + owner.getName())));
+                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + owner.getName())));
             } else {
                 sender.sendMessage(Format.colour(errorMessage));
             }

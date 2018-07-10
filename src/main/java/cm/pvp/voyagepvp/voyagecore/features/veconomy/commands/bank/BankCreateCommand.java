@@ -4,6 +4,7 @@ import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
+import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
@@ -27,6 +28,9 @@ public class BankCreateCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.created")
     private String successfullyCreatedBank;
 
+    @ConfigPopulate("features.veconomy.messages.bank.limitexceeded")
+    private String bankLimitExceededMessage;
+
     public BankCreateCommand(VEconomy feature)
     {
         super(null, "voyagecore.veconomy.player.bank.create", "Create a new shared bank.", true, "create");
@@ -46,6 +50,12 @@ public class BankCreateCommand extends VoyageCommand
         Player p = (Player)sender;
         VEconomyPlayer player = feature.get(p.getUniqueId());
         List<UUID> ownedBanks = player.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getOwner().equals(p.getUniqueId())).collect(Collectors.toCollection(Lists::newArrayList));
+        int bankLimit = p.getEffectivePermissions().stream().filter(perm -> perm.getPermission().startsWith("voyagecore.veconomy.banks.")).map(perm -> NumberUtil.parse(perm.getPermission().split("\\.")[3], int.class)).findFirst().orElse(0);
+
+        if (ownedBanks.size() == bankLimit) {
+            sender.sendMessage(Format.colour(Format.format(bankLimitExceededMessage, "{limit};" + String.valueOf(bankLimit))));
+            return;
+        }
 
         for (UUID ownedBank : ownedBanks) {
             SharedAccount account = feature.getAccount(ownedBank);

@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
  * Wrapper for configuration files.
  * @param <T> - generic type.
  */
-@Getter
 public class Config<T extends VoyagePlugin>
 {
+    @Getter
     private File configFile;
     private YamlConfiguration config;
+
+    @Getter
     private VoyagePlugin instance;
 
     public Config(T instance, File config) throws FileNotFoundException

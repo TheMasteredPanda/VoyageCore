@@ -45,7 +45,7 @@ public class BankBalanceCommand extends VoyageCommand
         if (bank == null) {
             sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
         } else {
-            sender.sendMessage(Format.colour(Format.format(balanceMessage, "{balance};" + String.valueOf(feature.getAccount(bank).getBalance()))));
+            sender.sendMessage(Format.colour(Format.format(balanceMessage, "{balance};" + feature.getVaultHook().format(feature.getAccount(bank).getBalance()))));
         }
     }
 }

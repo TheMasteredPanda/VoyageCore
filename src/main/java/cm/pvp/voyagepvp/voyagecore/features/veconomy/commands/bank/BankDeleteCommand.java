@@ -83,7 +83,7 @@ public class BankDeleteCommand extends VoyageCommand
             feature.removeSharedAccount(bank);
 
             if (feature.get(p.getUniqueId()).getAccount().add(balance).getResponse() == Response.SUCCESS) {
-                sender.sendMessage(Format.colour(Format.format(bankDeletedMessage, "{bank};" + arguments.get(0),"{amount};" + String.valueOf(balance))));
+                sender.sendMessage(Format.colour(Format.format(bankDeletedMessage, "{bank};" + arguments.get(0),"{amount};" + feature.getVaultHook().format(balance))));
             } else {
                 sender.sendMessage(Format.colour(errorMessage));
             }

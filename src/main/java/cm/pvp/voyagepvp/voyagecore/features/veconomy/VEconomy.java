@@ -10,11 +10,13 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
 import net.milkbowl.vault.Vault;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 
 import java.util.UUID;
@@ -24,6 +26,9 @@ public class VEconomy extends Feature implements Listener
 {
     private Cache<UUID, VEconomyPlayer> players = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private Cache<UUID, SharedAccount> sharedAccounts = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
+
+    @Getter
+    private Economy vaultHook;
 
     @Getter
     private DataHandler handler;
@@ -42,6 +47,13 @@ public class VEconomy extends Feature implements Listener
 
         MethodAccessor<Void> hookEconomy = ReflectUtil.getMethod(Vault.class, "hookEconomy", true, String.class, Class.class, ServicePriority.class, String[].class);
         hookEconomy.invoke(Vault.getPlugin(Vault.class), "VEconomy", VEconomyVaultHook.class, ServicePriority.Normal, new String[] {"cm.pvp.voyagepvp.voyagecore.VoyageCore"});
+
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+
+        vaultHook = rsp.getProvider();
         return true;
     }
 
@@ -90,7 +102,9 @@ public class VEconomy extends Feature implements Listener
         }
 
         if (!handler.playerExists(e.getPlayer().getUniqueId())) {
-            players.put(e.getPlayer().getUniqueId(), handler.createPlayer(e.getPlayer()));
+            VEconomyPlayer player = handler.createPlayer(e.getPlayer());
+            player.getAccount().add(getInstance().getMainConfig().raw().getDouble("features.veconomy.startamount"));
+            players.put(e.getPlayer().getUniqueId(), player);
         } else {
             players.put(e.getPlayer().getUniqueId(), handler.getPlayer(e.getPlayer()));
         }

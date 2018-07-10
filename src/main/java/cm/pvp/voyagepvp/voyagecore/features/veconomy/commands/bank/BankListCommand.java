@@ -86,7 +86,7 @@ public class BankListCommand extends VoyageCommand
                 members.add(name + ": " + member.getValue().name());
             }
 
-            String filled = Format.colour(Format.format(informationTemplate, "{balance};" + String.valueOf(account.getBalance()), "{members};" + Joiner.on(", ").join(members)));
+            String filled = Format.colour(Format.format(informationTemplate, "{balance};" + feature.getVaultHook().format(account.getBalance()), "{members};" + Joiner.on(", ").join(members)));
             entry.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(filled)));
             component.addExtra(entry);
         }

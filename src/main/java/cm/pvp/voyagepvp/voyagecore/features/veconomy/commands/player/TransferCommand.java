@@ -119,7 +119,7 @@ public class TransferCommand extends VoyageCommand
             }
 
             if (playerAccount.subtract(balance).getResponse() == Response.SUCCESS && target.add(balance, player.getReference().get().getUniqueId()).getResponse() == Response.SUCCESS) {
-                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(balance), "{receiver};" + target.getName())));
+                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(balance), "{receiver};" + target.getName())));
             }
         }
     }
