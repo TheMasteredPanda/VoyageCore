@@ -2,16 +2,20 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
+import cm.pvp.voyagepvp.voyagecore.api.reflect.ReflectUtil;
+import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.VEconomyCommand;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
+import net.milkbowl.vault.Vault;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.ServicePriority;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +39,9 @@ public class VEconomy extends Feature implements Listener
     {
         Bukkit.getPluginManager().registerEvents(this, getInstance());
         getInstance().register(new VEconomyCommand(this));
+
+        MethodAccessor<Void> hookEconomy = ReflectUtil.getMethod(Vault.class, "hookEconomy", true, String.class, Class.class, ServicePriority.class, String[].class);
+        hookEconomy.invoke(Vault.getPlugin(Vault.class), "VEconomy", VEconomyVaultHook.class, ServicePriority.Normal, new String[] {"cm.pvp.voyagepvp.voyagecore.VoyageCore"});
         return true;
     }
 

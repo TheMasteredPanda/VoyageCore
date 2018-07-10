@@ -48,6 +48,11 @@ features:
         - "&bOnline&7: {online}"
         - "&bID&7: {uuid}"
   veconomy:
+    currency:
+      symbol: "£"
+      name:
+        plural: "Pounds"
+        singular: "Pound"
     messages:
       balance: "&aBalance&8: &7{balance}"
       error: "There was an error, contact an an administrator."

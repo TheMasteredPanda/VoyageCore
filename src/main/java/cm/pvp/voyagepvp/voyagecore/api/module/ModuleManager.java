@@ -1,6 +1,7 @@
 package cm.pvp.voyagepvp.voyagecore.api.module;
 
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
+import cm.pvp.voyagepvp.voyagecore.api.generic.GenericUtil;
 import cm.pvp.voyagepvp.voyagecore.api.manager.Manager;
 import com.google.common.collect.ArrayListMultimap;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,6 +35,10 @@ public final class ModuleManager extends Manager<VoyageCore>
         }
     }
 
+    public <T extends Module> T getModule(VoyageCore instance, Class<T> clazz)
+    {
+        return GenericUtil.cast(modules.get(instance).stream().filter(module -> module.getClass().equals(clazz)).findFirst().orElse(null));
+    }
 
     @Override
     public boolean enable() throws Exception
