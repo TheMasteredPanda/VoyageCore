@@ -108,4 +108,6 @@ features:
       # -1 - Maximum size the data type 'long' can be.
       #The maximum positive balance a player can have.
       maximumbalance: -1
+  norain:
+    enabled: true
 

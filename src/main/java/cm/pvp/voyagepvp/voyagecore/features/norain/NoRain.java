@@ -24,6 +24,8 @@ public class NoRain extends Feature implements Listener
     @EventHandler
     public void on(WeatherChangeEvent e)
     {
-        e.setCancelled(true);
+        if (getSection().getBoolean("enabled")) {
+            e.setCancelled(true);
+        }
     }
 }

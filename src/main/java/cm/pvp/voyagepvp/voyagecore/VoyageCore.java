@@ -8,6 +8,7 @@ import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import cm.pvp.voyagepvp.voyagecore.features.chatreaction.ChatReaction;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
 import cm.pvp.voyagepvp.voyagecore.features.mention.Mention;
+import cm.pvp.voyagepvp.voyagecore.features.norain.NoRain;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import lombok.Getter;
 
@@ -58,7 +59,8 @@ public class VoyageCore extends VoyagePlugin
                 new ChatReaction(this),
                 new CustomPrefix(this),
                 new Mention(this),
-                new VEconomy(this)
+                new VEconomy(this),
+                new NoRain(this)
         );
     }
 

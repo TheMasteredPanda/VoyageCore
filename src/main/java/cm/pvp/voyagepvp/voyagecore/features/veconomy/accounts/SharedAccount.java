@@ -136,8 +136,8 @@ public class SharedAccount
             return VEconomyResponse.builder().value("message", "You cannot add a member than is already a member.").response(Response.FAILURE).action(Action.ADD_MEMBER).build();
         }
 
-        members.put(memberId, type);
         handler.addSharedAccountMember(id, memberId, type);
+        members.put(memberId, type);
         return VEconomyResponse.builder().action(Action.ADD_MEMBER).response(Response.SUCCESS).build();
     }
 
