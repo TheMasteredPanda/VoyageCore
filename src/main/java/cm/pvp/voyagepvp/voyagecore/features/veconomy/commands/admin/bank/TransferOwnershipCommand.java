@@ -29,10 +29,10 @@ public class TransferOwnershipCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.transferredownership")
     private String transferredOwnershipMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.playerIsOwner")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisowner")
     private String targetIsOwnerMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.playerIsNotMember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisnotmember")
     private String targetIsNotMemberMessage;
 
     @ConfigPopulate("features.veconomy.messages.bank.notfound")

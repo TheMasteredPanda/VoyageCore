@@ -59,7 +59,17 @@ features:
       balance: "&aBalance&8: &7{balance}"
       error: "There was an error, contact an an administrator."
       nopermission: "{commandprefix} You do not have permission to do this."
+      admin:
+        gavemoney: "{commandprefix} Gave {amount} to {receiver}."
+        clearedbalance: "{commandprefix} Cleared balance of player {target}."
+        removedmoney: "{commandprefix} Removed {amount} from player {target}."
+        resetbalance: "{commandprefix} Reset balance of {target}."
+        bank:
+          addedmoney: "{commandprefix} Added {amount} to bank {bank}."
+          clearedbank: "{commandprefix} Cleared bank {bank}."
+          deleted: "{commandprefix} Bank {bank}, previously owned by {target}, has been deleted."
       bank:
+        limitexceeded: "{commandprefix} &cOwned bank account limit exceeded. Your limit is {limit}."
         playerisalreadymember: "{commandprefix} &cPlayer {target} is already a member of this bank."
         addedplayer: "{commandprefix} Added player {target} to bank."
         notfound: "{commandprefix} &cBank {bank} is not found."
@@ -80,6 +90,7 @@ features:
         specifybankowner: "{commandprefix} There is more than one bank under the name of {name}. Please specify the owner of the bank when you invoke the command again in the format of <owner name>/<bank name>"
         transferownershipquestion: "{commandprefix} To confirm the transferal, invoke the command with the same arguments again."
         transferredownership: "{commandprefix} Bank ownership transferred."
+        exceedsminimumamount: "{commandprefix} Removing {amount} from {receiver}s bank will put them in a negative balance. "
         list:
           header: "===================================================\n"
           footer: "==================================================="
@@ -97,8 +108,4 @@ features:
       # -1 - Maximum size the data type 'long' can be.
       #The maximum positive balance a player can have.
       maximumbalance: -1
-      #Allow the balance to go into negatives.
-      allownegativebalance: false
-      #The maximum negative balance a player can have.
-      maximumnegativenumber: 10000
 

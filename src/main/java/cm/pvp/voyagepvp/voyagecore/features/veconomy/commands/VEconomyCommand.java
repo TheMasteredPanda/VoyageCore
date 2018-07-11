@@ -2,7 +2,6 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin.AdminCommand;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.bank.BankCommand;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.player.BalanceCommand;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.player.TransferCommand;
@@ -15,7 +14,7 @@ public class VEconomyCommand extends VoyageCommand
     public VEconomyCommand(VEconomy feature)
     {
         super(null, null, "Parent command for VEconomy", true, "veconomy", "veco", "eco");
-        addChildren(new BalanceCommand(feature), new TransferCommand(feature), new BankCommand(feature), new AdminCommand(feature));
+        addChildren(new BalanceCommand(feature), new TransferCommand(feature), new BankCommand(feature));
     }
 
     @Override

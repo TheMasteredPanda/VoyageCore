@@ -19,7 +19,7 @@ public class BalanceRemoveCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("features.veconomy.messages.exceedsminimumamount")
+    @ConfigPopulate("features.veconomy.messages.bank.exceedsminimumamount")
     private String exceedsMinimumAmountMessage;
 
     @ConfigPopulate("features.veconomy.messages.error")
@@ -54,7 +54,7 @@ public class BalanceRemoveCommand extends VoyageCommand
         double amount = NumberUtil.parse(arguments.get(1), double.class);
 
         if (player.getAccount().getBalance() < amount) {
-            sender.sendMessage(Format.colour(Format.format(exceedsMinimumAmountMessage, "{amount};" + feature.getVaultHook().format(amount), "{balance};" + feature.getVaultHook().format(player.getAccount().getBalance()), "{target};" + arguments.get(0))));
+            sender.sendMessage(Format.colour(Format.format(exceedsMinimumAmountMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + arguments.get(0))));
             return;
         }
 

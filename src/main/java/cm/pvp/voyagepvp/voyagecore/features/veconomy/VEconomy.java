@@ -6,6 +6,7 @@ import cm.pvp.voyagepvp.voyagecore.api.reflect.ReflectUtil;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.VEconomyCommand;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin.AdminCommand;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
@@ -43,7 +44,7 @@ public class VEconomy extends Feature implements Listener
     protected boolean enable() throws Exception
     {
         Bukkit.getPluginManager().registerEvents(this, getInstance());
-        getInstance().register(new VEconomyCommand(this));
+        getInstance().register(new VEconomyCommand(this), new AdminCommand(this));
 
         MethodAccessor<Void> hookEconomy = ReflectUtil.getMethod(Vault.class, "hookEconomy", true, String.class, Class.class, ServicePriority.class, String[].class);
         hookEconomy.invoke(Vault.getPlugin(Vault.class), "VEconomy", VEconomyVaultHook.class, ServicePriority.Normal, new String[] {"cm.pvp.voyagepvp.voyagecore.VoyageCore"});

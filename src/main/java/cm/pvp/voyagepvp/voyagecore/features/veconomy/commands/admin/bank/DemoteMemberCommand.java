@@ -25,7 +25,7 @@ public class DemoteMemberCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.playernotmember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisnotmember")
     private String targetNotAMemberMessage;
 
     @ConfigPopulate("features.veconomy.messages.bank.notfound")

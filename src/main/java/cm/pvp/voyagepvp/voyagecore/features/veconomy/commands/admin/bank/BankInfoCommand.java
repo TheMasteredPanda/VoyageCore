@@ -22,7 +22,7 @@ public class BankInfoCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("features.veconomy.messages.bank.entryinformationtemplate")
+    @ConfigPopulate("features.veconomy.messages.bank.list.entryinformationtemplate")
     private String informationTemplate;
 
     @ConfigPopulate("features.veconomy.messages.bank.notfound")

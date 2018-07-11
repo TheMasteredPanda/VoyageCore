@@ -69,12 +69,12 @@ public class BankBalanceAddCommand extends VoyageCommand
         SharedAccount account = ownedBanks.stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(1))).map(id -> feature.getAccount(id)).findFirst().get();
 
         if (Double.isInfinite(account.getBalance() + amount)) {
-            sender.sendMessage(Format.colour(Format.format(exceedsMaximumAmoutnMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + arguments.get(0))));
+            sender.sendMessage(Format.colour(Format.format(exceedsMaximumAmoutnMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + arguments.get(1))));
             return;
         }
 
         if (account.add(amount, null).getResponse() == Response.SUCCESS) {
-            sender.sendMessage(Format.colour(Format.format(addedMoneyMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + arguments.get(1))));
+            sender.sendMessage(Format.colour(Format.format(addedMoneyMessage, "{amount};" + feature.getVaultHook().format(amount), "{bank};" + arguments.get(1))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));
         }

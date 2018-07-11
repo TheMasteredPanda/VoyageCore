@@ -28,13 +28,10 @@ public class VEconomyVaultHook extends AbstractEconomy
 
     public VEconomyVaultHook(Plugin plugin)
     {
-        System.out.println("Invoked.");
         feature = VoyageCore.get().get(ModuleManager.class).getModule(VoyageCore.get(), VEconomy.class);
 
         try {
-            System.out.println("Populating.");
             feature.getInstance().getMainConfig().populate(this);
-            System.out.println("Populated.");
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
         }

@@ -25,7 +25,7 @@ public class BalanceAddCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("features.veconomy.messages.exceedsmaximumamount")
+    @ConfigPopulate("features.veconomy.messages.bank.exceedmaximumamount")
     private String exceedsMaximumAmountMessage;
 
     public BalanceAddCommand(VEconomy feature)
