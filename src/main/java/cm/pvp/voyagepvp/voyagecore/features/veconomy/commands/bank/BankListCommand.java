@@ -87,7 +87,7 @@ public class BankListCommand extends VoyageCommand
                     name = profile.getName();
                 }
 
-                members.add(Format.format(memberEntry, "{name};" + name, "{rank};" + WordUtils.capitalize(member.getValue().name())));
+                members.add(Format.colour(Format.format(memberEntry, "{name};" + name, "{rank};" + WordUtils.capitalize(member.getValue().name().toLowerCase()))));
             }
 
             String filled = Format.colour(Format.format(informationTemplate, "{balance};" + feature.getVaultHook().format(account.getBalance()), "{members};" + Joiner.on(", ").join(members)));

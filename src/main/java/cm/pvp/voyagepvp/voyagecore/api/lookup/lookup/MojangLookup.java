@@ -1,6 +1,5 @@
 package cm.pvp.voyagepvp.voyagecore.api.lookup.lookup;
 
-import cm.pvp.voyagepvp.voyagecore.api.exception.HTTPException;
 import cm.pvp.voyagepvp.voyagecore.api.exception.MojangException;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.Lookup;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.LookupUtil;
@@ -56,7 +55,7 @@ public class MojangLookup implements Lookup
             int response = connection.getResponseCode();
 
             if (response != HttpsURLConnection.HTTP_OK) {
-                throw new HTTPException("Response was not 200 when attempting to get properties of player with id " + uuid.toString() + ".");
+                return Optional.empty();
             }
 
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));

@@ -51,7 +51,7 @@ public class TransferCommand extends VoyageCommand
     {
         super(null, "voyagecore.veconomy.player.tranfer", "Transfer money from one bank to another", false, "transfer");
         this.feature = feature;
-        ArgumentField field = new ArgumentField("player name or bank acount name.", true);
+        ArgumentField field = new ArgumentField("player name or bank account name.", true);
         field.setCheckFunction(new TransferDestinationCheck(feature));
         ArgumentField amountArg = new ArgumentField("amount", true);
         amountArg.setCheckFunction(new NumberCheckFunction(double.class));
@@ -71,7 +71,7 @@ public class TransferCommand extends VoyageCommand
         VEconomyPlayer player = feature.get((Player) sender);
         PlayerAccount playerAccount = player.getAccount();
 
-        double balance = NumberUtil.parse(arguments.get(1), double.class);
+        double balance = NumberUtil.parse(arguments.get(2), double.class);
 
         if ((playerAccount.getBalance() - balance) < 0) {
             sender.sendMessage(Format.colour(notEnoughMoneyMessage));
@@ -79,7 +79,7 @@ public class TransferCommand extends VoyageCommand
         }
 
         if (arguments.get(0).toLowerCase().equals("p") && lookup.lookup(arguments.get(1)).isPresent()) {
-            VEconomyPlayer target = feature.get(lookup.lookup(arguments.get(0)).get().getId());
+            VEconomyPlayer target = feature.get(lookup.lookup(arguments.get(1)).get().getId());
 
             if (target == null) {
                 sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{target};" + arguments.get(1))));

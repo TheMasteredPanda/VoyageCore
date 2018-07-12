@@ -309,21 +309,22 @@ public class DataHandler
     {
         CompletableFuture<VEconomyPlayer> future = CompletableFuture.supplyAsync(() -> {
             PreparedStatement statement = null;
+            Connection connection = null;
             ResultSet result = null;
 
-            try (Connection connection = source.getConnection()) {
+            try  {
+                connection = source.getConnection();
                 statement = connection.prepareStatement("select * from player_accounts where owner=?");
                 statement.setString(1, owner.getUniqueId().toString());
                 result = statement.executeQuery();
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                DBUtil.close(statement);
             }
 
             return result;
         }).thenApplyAsync(set -> {
             VEconomyPlayer player = null;
+            ResultSet set1 = null;
             PreparedStatement statement = null;
 
 
@@ -339,7 +340,7 @@ public class DataHandler
                 statement = connection.prepareStatement("select * from shared_account_members where memberId=?");
                 statement.setString(1, owner.getUniqueId().toString());
 
-                ResultSet set1 = statement.executeQuery();
+                set1 = statement.executeQuery();
 
                 ArrayList<UUID> sharedAccounts = Lists.newArrayList();
 
@@ -348,10 +349,11 @@ public class DataHandler
                 }
 
                 player = new VEconomyPlayer(owner, PlayerAccount.builder(DataHandler.this).balance(balance).owner(owner.getUniqueId()).build(), sharedAccounts);
+                DBUtil.close(set);
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
-                DBUtil.close(statement);
+                DBUtil.close(statement, set1);
             }
 
             return player;
@@ -371,8 +373,9 @@ public class DataHandler
         CompletableFuture<SharedAccount> future = CompletableFuture.supplyAsync(() -> {
             PreparedStatement statement = null;
             ResultSet set = null;
-
-            try (Connection connection = source.getConnection()) {
+            Connection connection = null;
+            try  {
+                connection = source.getConnection();
                 statement = connection.prepareStatement("select * from shared_accounts where accountId=?");
                 statement.setString(1, id.toString());
                 set = statement.executeQuery();
@@ -559,13 +562,14 @@ public class DataHandler
 
     public List<UUID> getSharedAccountsNamed(String name)
     {
+        System.out.println(name);
         CompletableFuture<List<UUID>> future = CompletableFuture.supplyAsync(() -> {
             PreparedStatement statement = null;
             ResultSet set = null;
             List<UUID> accountIds = Lists.newArrayList();
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("select accountId from shared_accounts where name=?");
+                statement = connection.prepareStatement("select accountId from shared_accounts where `name`=?");
                 statement.setString(1, name);
 
                 set = statement.executeQuery();
@@ -583,7 +587,7 @@ public class DataHandler
         });
 
         try {
-            future.get();
+            return future.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
