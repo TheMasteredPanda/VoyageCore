@@ -20,7 +20,8 @@ public class BankCommand extends VoyageCommand
                 new BankRemoveMemberCommand(feature),
                 new BankPromoteMemberCommand(feature),
                 new BankTransferOwnershipCommand(feature),
-                new BankTransferCommand(feature));
+                new BankTransferCommand(feature),
+                new BankLeaveCommand(feature));
     }
 
     @Override

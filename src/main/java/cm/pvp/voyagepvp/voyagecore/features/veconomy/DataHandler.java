@@ -3,7 +3,8 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy;
 import cm.pvp.voyagepvp.voyagecore.api.db.DBUtil;
 import cm.pvp.voyagepvp.voyagecore.api.tasks.Tasks;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.PlayerAccount;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.MembershipRequest;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -94,6 +95,17 @@ public class DataHandler
             } finally {
                 DBUtil.close(statement);
             }
+        }).thenRun(() -> {
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("create table if not exists membership_invitations(playerId varchar(40), accountId varchar(40), requesterId varchar(40), date date, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
+                statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
         });
 
         try {
@@ -101,6 +113,43 @@ public class DataHandler
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    public void addMembershipInvitation(UUID playerId, UUID requesterId, UUID accountId)
+    {
+        Tasks.runAsync(() -> {
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("insert into membership_invitations (playerId, accountId, requesterId) values (?,?,?);");
+                statement.setString(1, playerId.toString());
+                statement.setString(2, requesterId.toString());
+                statement.setString(3, accountId.toString());
+                statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        });
+    }
+
+    public void removedMembershipInvitation(UUID playerId, UUID accountId)
+    {
+        Tasks.runAsync(() -> {
+            PreparedStatement statement =  null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("delete from membership_invitations where playerId=? and accountId=?");
+                statement.setString(1, playerId.toString());
+                statement.setString(2, accountId.toString());
+                statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        });
     }
 
     public void updateSharedAccountMember(UUID accountId, UUID memberId, SharedAccount.Type type)
@@ -215,6 +264,7 @@ public class DataHandler
                 statement.setString(1, accountId.toString());
                 statement.setString(2, memberId.toString());
                 statement.execute();
+                feature.getPlayers().invalidate(memberId);
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
@@ -286,7 +336,7 @@ public class DataHandler
                 statement.setString(1, owner.getUniqueId().toString());
                 statement.setDouble(2, 0D);
                 statement.execute();
-                player = new VEconomyPlayer(owner, PlayerAccount.builder(DataHandler.this).balance(0D).owner(owner.getUniqueId()).build(), Lists.newArrayList());
+                player = new VEconomyPlayer(owner, PlayerAccount.builder(DataHandler.this).balance(0D).owner(owner.getUniqueId()).build(), Lists.newArrayList(), Lists.newArrayList());
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
@@ -348,7 +398,7 @@ public class DataHandler
                     sharedAccounts.add(UUID.fromString(set1.getString("accountId")));
                 }
 
-                player = new VEconomyPlayer(owner, PlayerAccount.builder(DataHandler.this).balance(balance).owner(owner.getUniqueId()).build(), sharedAccounts);
+                player = new VEconomyPlayer(owner, PlayerAccount.builder(DataHandler.this).balance(balance).owner(owner.getUniqueId()).build(), sharedAccounts, Lists.newArrayList());
                 DBUtil.close(set);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -357,6 +407,25 @@ public class DataHandler
             }
 
             return player;
+        }).thenApplyAsync(vEconomyPlayer -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("select * from membership_invitations where playerId=?");
+                statement.setString(1, vEconomyPlayer.getReference().get().getUniqueId().toString());
+                set = statement.executeQuery();
+
+                while (set.next()) {
+                    vEconomyPlayer.getMembershipRequests().add(new MembershipRequest(UUID.fromString(set.getString("requesterId")), set.getDate("VALUEDATE"), UUID.fromString(set.getString("accountId"))));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
+            }
+
+            return vEconomyPlayer;
         });
 
         try {

@@ -1,4 +1,4 @@
-package cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts;
+package cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared;
 
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;

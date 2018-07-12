@@ -3,7 +3,7 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.argument.check;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.ArgumentCheckFunction;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 
 import java.util.UUID;
 

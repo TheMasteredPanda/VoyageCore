@@ -10,5 +10,7 @@ public enum Action
         TRANSFER_OWNERSHIP,
         ADD_MEMBER,
         REMOVE_MEMBER,
-        SET_NAME
+        SET_NAME,
+        ADD_MEMBERSHIP_INVITATION,
+        REMOVE_MEMBERSHIP_INVITATION
     }

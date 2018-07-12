@@ -39,7 +39,7 @@ public class BankDeleteCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.nopermission")
+    @ConfigPopulate("features.veconomy.messages.nopermission")
     private String noPermissionMessage;
 
     public BankDeleteCommand(VEconomy feature)

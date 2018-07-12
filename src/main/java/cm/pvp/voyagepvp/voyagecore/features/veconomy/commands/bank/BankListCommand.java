@@ -6,7 +6,7 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import net.md_5.bungee.api.chat.HoverEvent;

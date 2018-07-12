@@ -7,7 +7,7 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount.Type.MEMBER;
+import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount.Type.MEMBER;
 
 public class BankTransferOwnershipCommand extends VoyageCommand
 {
@@ -128,6 +128,7 @@ public class BankTransferOwnershipCommand extends VoyageCommand
         {
             this.owner = owner;
             this.account = account;
+            runTaskTimerAsynchronously(feature.getInstance(), 0L, 20L);
         }
 
         @Override

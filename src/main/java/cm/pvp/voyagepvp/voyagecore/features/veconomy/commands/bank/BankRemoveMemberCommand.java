@@ -7,7 +7,7 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,8 +16,8 @@ import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount.Type.MEMBER;
-import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount.Type.POA;
+import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount.Type.MEMBER;
+import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount.Type.POA;
 
 public class BankRemoveMemberCommand extends VoyageCommand
 {
@@ -68,10 +68,13 @@ public class BankRemoveMemberCommand extends VoyageCommand
 
         UUID target = feature.getInstance().getMojangLookup().lookup(arguments.get(1)).get().getId();
 
-        if (!account.getOwner().equals(p.getUniqueId()) || !account.getMembers().get(p.getUniqueId()).equals(POA)) {
+        System.out.println(account.getOwner().equals(p.getUniqueId()) ? "Is owner." : "Is not owner.");
+
+        if (account.getMembers().get(p.getUniqueId()) == MEMBER) {
             sender.sendMessage(Format.colour(noPermissionMessage));
             return;
         }
+
 
         if ((account.getOwner().equals(target) || account.getMembers().get(target) == MEMBER) && account.getMembers().get(p.getUniqueId()) == POA) {
             sender.sendMessage(playerIsNotAMemberMessage);

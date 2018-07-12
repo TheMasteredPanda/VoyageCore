@@ -4,11 +4,12 @@ import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.ReflectUtil;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.VEconomyCommand;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin.AdminCommand;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 public class VEconomy extends Feature implements Listener
 {
+    @Getter(value = AccessLevel.PROTECTED)
     private Cache<UUID, VEconomyPlayer> players = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private Cache<UUID, SharedAccount> sharedAccounts = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
 

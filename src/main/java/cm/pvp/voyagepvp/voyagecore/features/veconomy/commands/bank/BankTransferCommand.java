@@ -9,7 +9,7 @@ import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.argument.check.TransferDestinationCheck;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.Lists;
@@ -33,13 +33,13 @@ public class BankTransferCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.nopermission")
+    @ConfigPopulate("features.veconomy.messages.nopermission")
     private String noPermissionMessage;
 
-    @ConfigPopulate("features.veconomy.message.transfersuccess")
+    @ConfigPopulate("features.veconomy.messages.transfersuccess")
     private String transferSuccessMessage;
 
-    @ConfigPopulate("features.veconomy.message.exceedsmaximumamount")
+    @ConfigPopulate("features.veconomy.messages.bank.exceedsmaximumamount")
     private String exceedsMaximumAmountMessage;
 
     @ConfigPopulate("features.veconomy.messages.bank.specifybankowner")
