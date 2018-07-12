@@ -39,6 +39,9 @@ public class BankDeleteCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
+    @ConfigPopulate("features.veconomy.messages.bank.nopermission")
+    private String noPermissionMessage;
+
     public BankDeleteCommand(VEconomy feature)
     {
         super(null, "voyagecore.veconomy.player.bank.delete", "Delete a shared bank.", true, "delete");
@@ -61,6 +64,11 @@ public class BankDeleteCommand extends VoyageCommand
         if (bank == null) {
             sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
         } else {
+            if (!feature.getAccount(bank).getOwner().equals(p.getUniqueId())) {
+                sender.sendMessage(Format.colour(noPermissionMessage));
+                return;
+            }
+
             if (!awaitingConfirmation.containsEntry(p.getUniqueId(), bank)) {
                 awaitingConfirmation.put(p.getUniqueId(), bank);
                 countdowns.add(new CountdownTask(p.getUniqueId(), bank));

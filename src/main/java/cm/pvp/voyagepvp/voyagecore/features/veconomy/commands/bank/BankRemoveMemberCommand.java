@@ -40,7 +40,7 @@ public class BankRemoveMemberCommand extends VoyageCommand
 
     public BankRemoveMemberCommand(VEconomy feature)
     {
-        super(null, "voyagecore.veconomy.player.bank.removemember", "Remove a member from the bank.", true, "remove");
+        super(null, "voyagecore.veconomy.player.bank.removemember", "Remove a member from the bank.", true, "removemember");
         this.feature = feature;
         ArgumentField bankCheck = new ArgumentField("bank name", true);
         ArgumentField playerCheck = new ArgumentField("player name", true);

@@ -64,6 +64,7 @@ public class BankTransferCommand extends VoyageCommand
 
         try {
             addArguments(bankExists, new ArgumentField("p or b (p for player, b for bank)", true), destinationExists, amountCheck);
+            feature.getInstance().getMainConfig().populate(this);
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
         }
