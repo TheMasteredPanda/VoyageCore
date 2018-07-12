@@ -11,6 +11,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,6 +39,9 @@ public class BankListCommand extends VoyageCommand
 
     @ConfigPopulate("features.veconomy.messages.bank.list.nobankstolist")
     private String noBanksToListMessage;
+
+    @ConfigPopulate("features.veconomy.messages.bank.list.memberentry")
+    private String memberEntry;
 
     public BankListCommand(VEconomy feature)
     {
@@ -83,7 +87,7 @@ public class BankListCommand extends VoyageCommand
                     name = profile.getName();
                 }
 
-                members.add(name + ": " + member.getValue().name());
+                members.add(Format.format(memberEntry, "{name};" + name, "{rank};" + WordUtils.capitalize(member.getValue().name())));
             }
 
             String filled = Format.colour(Format.format(informationTemplate, "{balance};" + feature.getVaultHook().format(account.getBalance()), "{members};" + Joiner.on(", ").join(members)));
