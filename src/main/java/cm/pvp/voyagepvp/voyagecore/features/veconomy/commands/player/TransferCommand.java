@@ -14,6 +14,7 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.PlayerAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.argument.check.TransferDestinationCheck;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
+import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,22 +23,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TransferCommand extends VoyageCommand
 {
     private VEconomy feature;
 
-    @ConfigPopulate("features.veconomy.message.transfersuccess")
+    @ConfigPopulate("features.veconomy.messages.transfersuccess")
     private String transferSuccessMessage;
 
-    @ConfigPopulate("features.veconomy.message.exceedsmaximumamount")
+    @ConfigPopulate("features.veconomy.messages.bank.exceedmaximumamount")
     private String exceedsMaximumAmountMessage;
 
-    @ConfigPopulate("features.veconomy.message.notenoughmoney")
+    @ConfigPopulate("features.veconomy.messages.notenoughmoney")
     private String notEnoughMoneyMessage;
-
-    @ConfigPopulate("features.veconomy.messages.playernotfound")
-    private String playerNotFoundMessage;
 
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
@@ -45,20 +44,21 @@ public class TransferCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")
     private String specifyAccountOwnerMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.cannotfindowner")
-    private String cannotFindOwnerMessage;
+    @ConfigPopulate("features.veconomy.messages.playernotfound")
+    private String playerNotFoundMessage;
 
     public TransferCommand(VEconomy feature)
     {
         super(null, "voyagecore.veconomy.player.tranfer", "Transfer money from one bank to another", false, "transfer");
         this.feature = feature;
-        ArgumentField field = new ArgumentField("player name/(bank account name or owner/bank account name (i.e. TheMasteredPanda/savings", true);
+        ArgumentField field = new ArgumentField("player name or bank acount name.", true);
         field.setCheckFunction(new TransferDestinationCheck(feature));
         ArgumentField amountArg = new ArgumentField("amount", true);
         amountArg.setCheckFunction(new NumberCheckFunction(double.class));
 
         try {
-            addArguments(field, amountArg);
+            addArguments(new ArgumentField("b or p (b for bank, p for player)", true), field, amountArg);
+            feature.getInstance().getMainConfig().populate(this);
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
         }
@@ -78,43 +78,54 @@ public class TransferCommand extends VoyageCommand
             return;
         }
 
-        if (lookup.lookup(arguments.get(0)).isPresent()) {
+        if (arguments.get(0).toLowerCase().equals("p") && lookup.lookup(arguments.get(1)).isPresent()) {
             VEconomyPlayer target = feature.get(lookup.lookup(arguments.get(0)).get().getId());
 
             if (target == null) {
-                sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{target};" + arguments.get(0))));
+                sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{target};" + arguments.get(1))));
                 return;
             }
 
             if (playerAccount.subtract(balance).getResponse() == Response.SUCCESS && target.getAccount().add(balance).getResponse() == Response.SUCCESS) {
-                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(balance), "{receiver};" + arguments.get(0))));
+                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(balance), "{receiver};" + arguments.get(1))));
             }
-        } else {
+        } else if (arguments.get(0).equals("b")) {
             SharedAccount target = null;
 
-            if (arguments.get(0).split("/").length == 1) {
-                List<UUID> accounts = feature.getHandler().getSharedAccountsNamed(arguments.get(0));
-                if (accounts.size() > 1) {
+            List<UUID> accounts = feature.getHandler().getSharedAccountsNamed(arguments.get(1));
+
+            if (accounts.size() > 1) {
+                if (arguments.get(1).split("/").length == 1) {
                     sender.sendMessage(Format.colour(Format.format(specifyAccountOwnerMessage, "{amount};" + String.valueOf(accounts.size()))));
                     return;
-                } else {
-                    target = feature.getAccount(accounts.get(0));
                 }
-            } else if (arguments.get(0).split("/").length == 2) {
-                String[] split = arguments.get(0).split("/");
-                List<UUID> accounts = feature.getHandler().getSharedAccountsNamed(split[0]);
-                Optional<PlayerProfile> optional = feature.getInstance().getMojangLookup().lookup(split[1]);
 
-                if (!optional.isPresent()) {
-                    sender.sendMessage(Format.colour(Format.format(cannotFindOwnerMessage, "{target};" + split[1])));
+                String split[] = arguments.get(1).split("/");
+
+                Optional<PlayerProfile> ownerProfile = feature.getInstance().getMojangLookup().lookup(split[0]);
+
+                if (!ownerProfile.isPresent()) {
+                    sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{target};" + split[0])));
                     return;
                 }
 
-                target = accounts.stream().filter(id -> feature.getAccount(id).getOwner().equals(optional.get().getId())).map(id -> feature.getAccount(id)).findFirst().get();
+
+                VEconomyPlayer owner = feature.get(ownerProfile.get().getId());
+
+                List<UUID> ownedAccounts = owner.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getOwner().equals(owner.getReference().get().getUniqueId())).collect(Collectors.toCollection(Lists::newArrayList));
+
+                if (ownedAccounts.size() == 0 || ownedAccounts.stream().noneMatch(id -> feature.getAccount(id).getName().equals(split[1]))) {
+                    sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{target};" + split[1])));
+                    return;
+                }
+
+                target = ownedAccounts.stream().filter(id -> feature.getAccount(id).getName().equals(split[1])).map(id -> feature.getAccount(id)).findFirst().get();
+            } else {
+                target = feature.getAccount(accounts.get(0));
             }
 
             if (target == null) {
-                sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{target};" + arguments.get(0))));
+                sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{target};" + arguments.get(1))));
                 return;
             }
 

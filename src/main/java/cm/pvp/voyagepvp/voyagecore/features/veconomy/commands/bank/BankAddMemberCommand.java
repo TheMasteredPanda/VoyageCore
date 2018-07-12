@@ -63,6 +63,8 @@ public class BankAddMemberCommand extends VoyageCommand
             sender.sendMessage(Format.colour(Format.format(playerIsAlreadyAMemberMessage, "{target};" + arguments.get(1))));
         } else {
             account.addMember(id, SharedAccount.Type.MEMBER);
+            VEconomyPlayer target = feature.get(id);
+            target.getSharedAccounts().add(account.getId());
             sender.sendMessage(Format.colour(Format.format(addedPlayerMessage, "{target};" + arguments.get(1))));
         }
     }

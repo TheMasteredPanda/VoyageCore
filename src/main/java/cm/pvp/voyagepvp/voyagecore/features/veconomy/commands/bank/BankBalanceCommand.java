@@ -30,6 +30,7 @@ public class BankBalanceCommand extends VoyageCommand
 
         try {
             addArguments(new ArgumentField("bank name", true));
+            feature.getInstance().getMainConfig().populate(this);
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
         }

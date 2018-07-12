@@ -63,7 +63,7 @@ public class BankPromoteMemberCommand extends VoyageCommand
         Player p = (Player) sender;
         VEconomyPlayer player = feature.get(p.getUniqueId());
         SharedAccount account = player.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(0))).map(id -> feature.getAccount(id)).findFirst().orElse(null);
-        UUID target = feature.getInstance().getMojangLookup().lookup(p.getUniqueId()).get().getId();
+        UUID target = feature.getInstance().getMojangLookup().lookup(arguments.get(1)).get().getId();
 
         if (account == null) {
             sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
@@ -76,7 +76,7 @@ public class BankPromoteMemberCommand extends VoyageCommand
         }
 
         if (account.getOwner().equals(target)) {
-            sender.sendMessage(Format.format(playerIsOwnerMessage));
+            sender.sendMessage(Format.colour(Format.format(playerIsOwnerMessage)));
             return;
         }
 
@@ -90,7 +90,7 @@ public class BankPromoteMemberCommand extends VoyageCommand
             return;
         }
 
-        if (account.demoteMember(target).getResponse() == Response.SUCCESS) {
+        if (account.promoteMember(target).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(promotedPlayerMessage, "{target};" + arguments.get(0))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

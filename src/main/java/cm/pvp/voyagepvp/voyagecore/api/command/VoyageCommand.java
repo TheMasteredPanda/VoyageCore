@@ -149,9 +149,9 @@ public abstract class VoyageCommand extends BukkitCommand
                 }
 
                 String[] textMsg = Format.format(getLocale().get(HELP_TEMPLATE), "{parentcommand};" + getCommandPath(), "{parentdescription};" + getDescription(), "{parentusage};" + getCommandUsage()).split("\\{childcommands}");
-                TextComponent message = new TextComponent(textMsg[0]);
+                TextComponent message = new TextComponent(Format.colour(textMsg[0]));
                 message.addExtra(component);
-                if (textMsg.length != 1) message.addExtra(textMsg[1]);
+                if (textMsg.length != 1) message.addExtra(Format.colour(textMsg[1]));
                 ((Player) sender).spigot().sendMessage(message);
                 return true;
             }
