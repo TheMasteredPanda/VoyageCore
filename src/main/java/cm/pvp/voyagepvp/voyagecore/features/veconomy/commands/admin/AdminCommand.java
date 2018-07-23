@@ -9,12 +9,9 @@ import java.util.LinkedList;
 
 public class AdminCommand extends VoyageCommand
 {
-    private VEconomy feature;
-
     public AdminCommand(VEconomy feature)
     {
         super(null, null, "Parent command for VEconomy admin commands.", true, "aveconomy", "aveco");
-        this.feature = feature;
         addChildren(new BalanceCommand(feature), new AdminBankCommand(feature));
     }
 

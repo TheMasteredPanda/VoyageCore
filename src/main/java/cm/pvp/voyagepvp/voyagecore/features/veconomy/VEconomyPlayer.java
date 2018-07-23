@@ -35,7 +35,12 @@ public class VEconomyPlayer extends PlayerWrapper
 
         membershipRequests.add(request);
         account.getHandler().addMembershipInvitation(getReference().get().getUniqueId(), request.getRequester(), request.getAccountId());
-        return VEconomyResponse.builder().response(Response.SUCCESS).action(Action.ADD_MEMBERSHIP_INVITATION).build()
+        return VEconomyResponse.builder().response(Response.SUCCESS).action(Action.ADD_MEMBERSHIP_INVITATION).build();
+    }
+
+    public boolean hasBeenInvitedTo(UUID bankId)
+    {
+        return membershipRequests.stream().anyMatch(req -> req.getAccountId().equals(bankId));
     }
 
     public VEconomyResponse removeRequest(UUID accountId)

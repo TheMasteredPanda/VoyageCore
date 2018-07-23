@@ -72,6 +72,9 @@ features:
           clearedbank: "{commandprefix} Cleared bank {bank}."
           deleted: "{commandprefix} Bank {bank}, previously owned by {target}, has been deleted."
       bank:
+        alreadyinvitedplayer: "{commandprefix} Already invited player to bank {bank}."
+        invitedplayer: "{commandprefix} Invited player {target} to bank {bank}."
+        playyerisalreadymember: "{commadnprefix} Player is already a member of the bank."
         left: "{commandprefix} Left bank {bank}."
         ownercannotleave: "{commandprefix} THe owner cannot leave his own bank!"
         leavequestion: "{commandprefix} Are you sure you want to leave bank {bank}? Execute the command with the same arguments to confirm."

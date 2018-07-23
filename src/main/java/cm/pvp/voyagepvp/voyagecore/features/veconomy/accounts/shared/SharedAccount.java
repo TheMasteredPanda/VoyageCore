@@ -194,7 +194,7 @@ public class SharedAccount
             return i;
         }
 
-        int i = 0;
+        int i;
 
         Type(int i)
         {
