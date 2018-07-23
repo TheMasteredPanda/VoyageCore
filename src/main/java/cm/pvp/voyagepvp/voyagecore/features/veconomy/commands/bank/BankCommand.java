@@ -22,7 +22,10 @@ public class BankCommand extends VoyageCommand
                 new BankTransferOwnershipCommand(feature),
                 new BankTransferCommand(feature),
                 new BankLeaveCommand(feature),
-                new BankInvitePlayerCommand(feature));
+                new BankInvitePlayerCommand(feature),
+                new BankMembershipRequestAcceptCommand(feature),
+                new BankMembershipRequestDeclineCommand(feature),
+                new BankListInvitesCommand(feature));
     }
 
     @Override

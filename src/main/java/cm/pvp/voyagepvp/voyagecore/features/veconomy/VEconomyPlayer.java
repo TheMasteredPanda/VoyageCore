@@ -34,7 +34,7 @@ public class VEconomyPlayer extends PlayerWrapper
         }
 
         membershipRequests.add(request);
-        account.getHandler().addMembershipInvitation(getReference().get().getUniqueId(), request.getRequester(), request.getAccountId());
+        account.getHandler().addMembershipInvitation(getReference().get().getUniqueId(), request.getRequester(), request.getAccountId(), request.getDate());
         return VEconomyResponse.builder().response(Response.SUCCESS).action(Action.ADD_MEMBERSHIP_INVITATION).build();
     }
 

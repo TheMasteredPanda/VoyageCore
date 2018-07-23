@@ -2,7 +2,6 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.bank;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
-import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.PlayerCheckFunction;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
@@ -50,11 +49,8 @@ public class BankLeaveCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.leave", "Leave a bank.", true, "leave");
         this.feature = feature;
 
-        ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
-
         try {
-            addArguments(new ArgumentField("bank name", true), playerArg);
+            addArguments(new ArgumentField("bank name", true));
             feature.getInstance().getMainConfig().populate(this);
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
@@ -65,10 +61,10 @@ public class BankLeaveCommand extends VoyageCommand
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
         Player p = (Player) sender;
-        SharedAccount account = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId()).getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equalsIgnoreCase(arguments.get(1))).map(id -> feature.getAccount(id)).findFirst().orElse(null);
+        SharedAccount account = feature.get(p.getUniqueId()).getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equalsIgnoreCase(arguments.get(0))).map(id -> feature.getAccount(id)).findFirst().orElse(null);
 
         if (account == null) {
-            sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(1))));
+            sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
             return;
         }
 
@@ -85,6 +81,8 @@ public class BankLeaveCommand extends VoyageCommand
         if (!awaitingConfirmation.containsEntry(account.getId(), p.getUniqueId())) {
             awaitingConfirmation.put(account.getId(), p.getUniqueId());
             sender.sendMessage(Format.colour(Format.format(leaveConfirmationQuestion, "{bank};" + account.getName())));
+            CountdownTask task = new CountdownTask(account.getOwner(), account.getId());
+            countdowns.add(task);
         } else {
             awaitingConfirmation.remove(account.getId(), p.getUniqueId());
             CountdownTask countdownTask = countdowns.stream().filter(task -> task.getAccount().equals(account.getId()) && task.getOwner().equals(account.getOwner())).findFirst().get();
@@ -93,6 +91,7 @@ public class BankLeaveCommand extends VoyageCommand
 
             if (account.removeMember(p.getUniqueId(), account.getMembers().get(p.getUniqueId())).getResponse() == Response.SUCCESS) {
                 sender.sendMessage(Format.colour(Format.format(leftBankMessage, "{bank};" + account.getName())));
+                feature.get(p).getSharedAccounts().remove(account.getId());
             } else {
                 sender.sendMessage(Format.colour(errorMessage));
             }

@@ -72,6 +72,18 @@ features:
           clearedbank: "{commandprefix} Cleared bank {bank}."
           deleted: "{commandprefix} Bank {bank}, previously owned by {target}, has been deleted."
       bank:
+        listRequests:
+          header: "&8&m&l-----------------------------------------"
+          footer: "&8&m&l-----------------------------------------"
+          entry: "&8» {name}'s Request."
+          informationTemplate:
+            - "&8» Date: {date}"
+            - "&8» Bank Name: {bankname}"
+            - "&8» Bank Owner: {bankowner}"
+        norequestfromspecifiedbank: "{commandprefix} You do not have a membership request from that bank."
+        nomembershiprequests: "{commandprefix} You have no membership requests."
+        membershiprequestaccepted: "{commandprefix} Accepted membership request for bank {bank}."
+        membershiprequestdeclined: "{commandprefix} Declined membership request for bank {bank}."
         alreadyinvitedplayer: "{commandprefix} Already invited player to bank {bank}."
         invitedplayer: "{commandprefix} Invited player {target} to bank {bank}."
         playyerisalreadymember: "{commadnprefix} Player is already a member of the bank."

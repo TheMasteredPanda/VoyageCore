@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -115,16 +116,17 @@ public class DataHandler
         }
     }
 
-    public void addMembershipInvitation(UUID playerId, UUID requesterId, UUID accountId)
+    public void addMembershipInvitation(UUID playerId, UUID requesterId, UUID accountId, Date date)
     {
         Tasks.runAsync(() -> {
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("insert into membership_invitations (playerId, accountId, requesterId) values (?,?,?);");
+                statement = connection.prepareStatement("insert into membership_invitations (playerId, accountId, requesterId, date) values (?,?,?,?);");
                 statement.setString(1, playerId.toString());
-                statement.setString(2, requesterId.toString());
-                statement.setString(3, accountId.toString());
+                statement.setString(3, requesterId.toString());
+                statement.setString(2, accountId.toString());
+                statement.setDate(4, new java.sql.Date(date.getTime()));
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -417,7 +419,7 @@ public class DataHandler
                 set = statement.executeQuery();
 
                 while (set.next()) {
-                    vEconomyPlayer.getMembershipRequests().add(MembershipRequest.builder().accountId(UUID.fromString(set.getString("requestId"))).date(set.getDate("VALUEDATE")).accountId(UUID.fromString(set.getString("accountId"))).build());
+                    vEconomyPlayer.getMembershipRequests().add(MembershipRequest.builder().requester(UUID.fromString(set.getString("requesterId"))).date(set.getDate("date")).accountId(UUID.fromString(set.getString("accountId"))).build());
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
