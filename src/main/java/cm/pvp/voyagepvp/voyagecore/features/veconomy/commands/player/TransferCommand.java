@@ -32,7 +32,7 @@ public class TransferCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.transfersuccess")
     private String transferSuccessMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.exceedmaximumamount")
+    @ConfigPopulate("features.veconomy.messages.bank.exceedsmaximumamount")
     private String exceedsMaximumAmountMessage;
 
     @ConfigPopulate("features.veconomy.messages.notenoughmoney")
@@ -71,9 +71,9 @@ public class TransferCommand extends VoyageCommand
         VEconomyPlayer player = feature.get((Player) sender);
         PlayerAccount playerAccount = player.getAccount();
 
-        double balance = NumberUtil.parse(arguments.get(2), double.class);
+        double amount = NumberUtil.parse(arguments.get(2), double.class);
 
-        if ((playerAccount.getBalance() - balance) < 0) {
+        if ((playerAccount.getBalance() - amount) < 0) {
             sender.sendMessage(Format.colour(notEnoughMoneyMessage));
             return;
         }
@@ -85,9 +85,14 @@ public class TransferCommand extends VoyageCommand
                 sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{target};" + arguments.get(1))));
                 return;
             }
-
-            if (playerAccount.subtract(balance).getResponse() == Response.SUCCESS && target.getAccount().add(balance).getResponse() == Response.SUCCESS) {
-                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(balance), "{receiver};" + arguments.get(1))));
+            
+            if (Double.isInfinite(target.getAccount().getBalance() + amount) || (target.getAccount().getBalance() + amount) > feature.getPlayerAccountMaximumBalance()) {
+                sender.sendMessage(Format.colour(Format.format(exceedsMaximumAmountMessage, "{amount};" + String.valueOf(amount), "{receiver};" + sender.getName())));
+                return;
+            }
+            
+            if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.getAccount().add(amount).getResponse() == Response.SUCCESS) {
+                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + arguments.get(1))));
             }
         } else if (arguments.get(0).equals("b")) {
             SharedAccount target = null;
@@ -129,8 +134,13 @@ public class TransferCommand extends VoyageCommand
                 return;
             }
 
-            if (playerAccount.subtract(balance).getResponse() == Response.SUCCESS && target.add(balance, player.getReference().get().getUniqueId()).getResponse() == Response.SUCCESS) {
-                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(balance), "{receiver};" + target.getName())));
+            if (Double.isInfinite(target.getBalance() + amount) || (target.getBalance() + amount) > feature.getSharedAccountMaximumBalance()) {
+                sender.sendMessage(Format.colour(Format.format(exceedsMaximumAmountMessage, "{amount};" + String.valueOf(amount), "{receiver};" + target.getName())));
+                return;
+            }
+
+            if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.add(amount, player.getReference().get().getUniqueId()).getResponse() == Response.SUCCESS) {
+                sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + target.getName())));
             }
         }
     }

@@ -25,7 +25,7 @@ public class BalanceAddCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.exceedmaximumamount")
+    @ConfigPopulate("features.veconomy.messages.bank.exceedsmaximumamount")
     private String exceedsMaximumAmountMessage;
 
     public BalanceAddCommand(VEconomy feature)
@@ -52,7 +52,7 @@ public class BalanceAddCommand extends VoyageCommand
         VEconomyPlayer player = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId());
         double amount = NumberUtil.parse(arguments.get(1), double.class);
 
-        if (Double.isInfinite(player.getAccount().getBalance() + amount)) {
+        if (Double.isInfinite(player.getAccount().getBalance() + amount) || (player.getAccount().getBalance() + amount) > feature.getPlayerAccountMaximumBalance()) {
             sender.sendMessage(Format.colour(Format.format(exceedsMaximumAmountMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + arguments.get(0))));
             return;
         }

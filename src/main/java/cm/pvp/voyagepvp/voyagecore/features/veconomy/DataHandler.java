@@ -417,7 +417,7 @@ public class DataHandler
                 set = statement.executeQuery();
 
                 while (set.next()) {
-                    vEconomyPlayer.getMembershipRequests().add(new MembershipRequest(UUID.fromString(set.getString("requesterId")), set.getDate("VALUEDATE"), UUID.fromString(set.getString("accountId"))));
+                    vEconomyPlayer.getMembershipRequests().add(MembershipRequest.builder().accountId(UUID.fromString(set.getString("requestId"))).date(set.getDate("VALUEDATE")).accountId(UUID.fromString(set.getString("accountId"))).build());
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

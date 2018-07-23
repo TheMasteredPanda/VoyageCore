@@ -29,7 +29,7 @@ public class BankInvitePlayerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.nopermission")
     private String noPermissionMessage;
 
-    @ConfigPopulate("features.veconomy.messages.playerisalreadymember")
+    @ConfigPopulate("features.veconomy.messages.bank.playerisalreadymember")
     private String playerIsAlreadyMemberMessage;
 
     @ConfigPopulate("features.veconomy.messages.bank.notfound")

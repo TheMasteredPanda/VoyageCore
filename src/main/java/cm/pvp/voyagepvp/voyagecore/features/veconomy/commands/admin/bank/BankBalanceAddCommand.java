@@ -30,7 +30,7 @@ public class BankBalanceAddCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.exceedmaximumamount")
+    @ConfigPopulate("features.veconomy.messages.bank.exceedsmaximumamount")
     private String exceedsMaximumAmoutnMessage;
 
     @ConfigPopulate("features.veconomy.messages.admin.bank.addedmoney")
@@ -68,7 +68,7 @@ public class BankBalanceAddCommand extends VoyageCommand
         double amount = NumberUtil.parse(arguments.get(2), double.class);
         SharedAccount account = ownedBanks.stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(1))).map(id -> feature.getAccount(id)).findFirst().get();
 
-        if (Double.isInfinite(account.getBalance() + amount)) {
+        if (Double.isInfinite(account.getBalance() + amount) || (account.getBalance() + amount) > feature.getSharedAccountMaximumBalance()) {
             sender.sendMessage(Format.colour(Format.format(exceedsMaximumAmoutnMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + arguments.get(1))));
             return;
         }

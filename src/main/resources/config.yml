@@ -2,6 +2,7 @@
 #Features
 features:
   ##http://minecraft.tools/en/tellraw.php
+  cannotfindplayerprofile: "{commandprefix} &cCannot find {player}s profile on Mojang API."
   announcements:
     messages:
       announcementthreadrunning: "{commandprefix} &cThe announcement thread is already running."
@@ -22,7 +23,6 @@ features:
       informationtemplate:
         - "&aWins&: &b{wins}"
         - "&aFastest Time&8: &b{fastesttime}"
-      cannotfindplayerprofile: "{commandprefix} &cCannot find {player}s profile on Mojang API."
     countdown: 60
     cooldown: 120
     rewardcommand: "me Congrats, cunt."
@@ -92,11 +92,11 @@ features:
         playerismember: "{commandprefix} &cPlayer is a member, not a POA."
         playerisnotmember: "{commandprefix} &cPlayer is not a member of this bank."
         playerispoa: "{commandprefix} &cPlayer is POA."
-        promotedplayer: "{commandprefix} Promoted player {target} from Member to POA."
+        promotedplayer: "{commandprefix} Promoted player {taexceedsrget} from Member to POA."
         removedmember: "{commandprefix} Removed member from bank {target}."
         playernotfound: "{commandprefix} &cPlayer {target} not found."
         transfersuccess: "{commandprefix} Transferred amount {amount} to {receiver}."
-        exceedmaximumamount: "{commandprefix} Sending {amount} to {receiver} would exceed the maximum amount of money one may keep in a bank."
+        exceedsmaximumamount: "{commandprefix} Sending {amount} to {receiver} would exceed the maximum amount of money one may keep in a bank."
         specifybankowner: "{commandprefix} There is more than one bank under the name of {name}. Please specify the owner of the bank when you invoke the command again in the format of <owner name>/<bank name>"
         transferownershipquestion: "{commandprefix} To confirm the transferal, invoke the command with the same arguments again."
         transferredownership: "{commandprefix} Bank ownership transferred."
@@ -115,6 +115,9 @@ features:
       password: "password1"
     sharedaccounts:
       enabled: true
+      # -1 - Maximum size the data type 'long' can be.
+        #The maximum positive balance a shared account can have.
+      maximumbalance: -1
     playeraccounts:
       # -1 - Maximum size the data type 'long' can be.
       #The maximum positive balance a player can have.

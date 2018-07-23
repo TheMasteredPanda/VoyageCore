@@ -130,4 +130,14 @@ public class VEconomy extends Feature implements Listener
 
         handler.removedSharedAccount(accountId);
     }
+
+    public double getPlayerAccountMaximumBalance()
+    {
+        return getInstance().getMainConfig().raw().getDouble("features.veconomy.playeraccounts.maximumbalance") == -1 ? Double.MAX_VALUE : getInstance().getMainConfig().raw().getDouble("features.veconomy.playeraccounts.maximumbalance");
+    }
+
+    public double getSharedAccountMaximumBalance()
+    {
+        return getInstance().getMainConfig().raw().getDouble("features.veconomy.sharedaccounts.maximumbalance") == -1 ? Double.MAX_VALUE : getInstance().getMainConfig().raw().getDouble("features.veconomy.sharedaccounts.maximumbalance");
+    }
 }
