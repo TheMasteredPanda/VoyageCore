@@ -8,6 +8,8 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccou
 import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
@@ -24,6 +26,8 @@ import java.util.concurrent.ExecutionException;
 public class DataHandler
 {
     private VEconomy feature;
+
+    @Getter(value = AccessLevel.PROTECTED)
     private HikariDataSource source;
 
     public DataHandler(VEconomy feature)
@@ -42,7 +46,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists player_accounts(owner VARCHAR(40), balance DOUBLE(13, 2))");
+                statement = connection.prepareStatement("create table if not exists player_accounts(owner VARCHAR(40) primary key, balance DOUBLE(13, 2) not null)");
                 statement.execute();
                 feature.getLogger().info("Created player accounts table.");
             } catch (SQLException e) {
@@ -54,7 +58,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40), transactionType int, balance double(13, 2), amount double(13, 2), date date)");
+                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null , balance double(13, 2) not null, amount double(13, 2) not null, date date not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -77,7 +81,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection(); ){
-                statement = connection.prepareStatement("create table if not exists shared_account_members(accountId VARCHAR(40), memberId varchar(40), type int, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
+                statement = connection.prepareStatement("create table if not exists shared_account_members(accountId VARCHAR(40) not null, memberId varchar(40) not null, action varchar(20) not null, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
                 statement.execute();
                 feature.getLogger().info("Created shared account members table.");
             } catch (SQLException e) {
@@ -89,7 +93,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists shared_account_ledger(accountId varchar(40) primary key , memberId varchar(40), transactionType int, balance double(13, 2), amount double(13, 2))");
+                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, memberId varchar(40) not null, action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date date not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -100,7 +104,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists membership_invitations(playerId varchar(40), accountId varchar(40), requesterId varchar(40), date date, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
+                statement = connection.prepareStatement("create table if not exists membership_invitations(playerId varchar(40) not null, accountId varchar(40) not null, requesterId varchar(40) not null, date date not null, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
