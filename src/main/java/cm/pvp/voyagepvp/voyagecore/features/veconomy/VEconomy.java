@@ -25,6 +25,10 @@ import org.bukkit.plugin.ServicePriority;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+
+//TODO apply the same fix you did for BankLeaveCommmand
+//TODO (whereby they may need to specify the owner of the bank they are leaving just in case they are members with two banks with the same name) to
+//TODO BankRemoveMemberCommand and Admin/AddMemberCommand, Admin/RemoveMemberCommand, and Admin/UserHistoryCommand
 public class VEconomy extends Feature implements Listener
 {
     @Getter(value = AccessLevel.PROTECTED)

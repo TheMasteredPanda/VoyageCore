@@ -15,7 +15,6 @@ public class BankCommand extends VoyageCommand
                 new BankCreateCommand(feature),
                 new BankDeleteCommand(feature),
                 new BankListCommand(feature),
-                new BankAddMemberCommand(feature),
                 new BankDemoteMemberCommand(feature),
                 new BankRemoveMemberCommand(feature),
                 new BankPromoteMemberCommand(feature),
