@@ -12,7 +12,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.PlayerAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.argument.check.TransferDestinationCheck;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
@@ -52,7 +51,6 @@ public class TransferCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.tranfer", "Transfer money from one bank to another", false, "transfer");
         this.feature = feature;
         ArgumentField field = new ArgumentField("player name or bank account name.", true);
-        field.setCheckFunction(new TransferDestinationCheck(feature));
         ArgumentField amountArg = new ArgumentField("amount", true);
         amountArg.setCheckFunction(new NumberCheckFunction(double.class));
 
@@ -97,15 +95,15 @@ public class TransferCommand extends VoyageCommand
         } else if (arguments.get(0).equals("b")) {
             SharedAccount target = null;
 
-            List<UUID> accounts = feature.getHandler().getSharedAccountsNamed(arguments.get(1));
+
+            String split[] = arguments.get(1).split("/");
+            List<UUID> accounts = feature.getHandler().getSharedAccountsNamed(split[1]);
 
             if (accounts.size() > 1) {
                 if (arguments.get(1).split("/").length == 1) {
                     sender.sendMessage(Format.colour(Format.format(specifyAccountOwnerMessage, "{amount};" + String.valueOf(accounts.size()))));
                     return;
                 }
-
-                String split[] = arguments.get(1).split("/");
 
                 Optional<PlayerProfile> ownerProfile = feature.getInstance().getMojangLookup().lookup(split[0]);
 

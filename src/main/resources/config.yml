@@ -66,7 +66,7 @@ features:
         incorrectdateformat: "{commandprefix} You have used the incorrect date format. Use yyyy/mm/ss (i.g. 2018/8/18)"
         header: "&8&m&l-----------------------------------------"
         footer: "&8&m&l-----------------------------------------"
-        entry: "&8» &aMember&8: &7{member} &8/ &aBalance After Action&8: &7{balance} &8/ &aAmount {addedorremoved}&8: &7{amount} &8/ &aAction&8: &7{action} &8/ &aDate&8: &7{date} &8/ &aTime&8: &7{time}"
+        entry: "&8» &Player&8: &7{player} &8/ &aBalance After Action&8: &7{balance} &8/ &aAmount {addedorremoved}&8: &7{amount} &8/ &aAction&8: &7{action} &8/ &aDate&8: &7{date} &8/ &aTime&8: &7{time}"
         noentries: "{commandprefix} No entries found."
       admin:
         gavemoney: "{commandprefix} Gave {amount} to {receiver}."

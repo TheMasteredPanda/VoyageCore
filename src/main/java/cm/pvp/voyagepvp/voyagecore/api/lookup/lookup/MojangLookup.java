@@ -1,6 +1,5 @@
 package cm.pvp.voyagepvp.voyagecore.api.lookup.lookup;
 
-import cm.pvp.voyagepvp.voyagecore.api.exception.MojangException;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.Lookup;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.LookupUtil;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
@@ -72,7 +71,7 @@ public class MojangLookup implements Lookup
             namesCache.put(profile.getName(), profile.getId());
             return Optional.of(profile);
         } catch (IOException e) {
-            throw new MojangException(e);
+            return Optional.empty();
         }
     }
 }

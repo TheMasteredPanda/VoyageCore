@@ -98,7 +98,7 @@ public class BankLedgerCommand extends VoyageCommand
                     message.add(Format.colour(Format.format(ledgerEntry, "{action};" + getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(),
                             "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()),
                             "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeForat.format(entry.getDate()),
-                            "{addedorremoved};" + (entry.getAction() == Action.DEPOSIT_MONEY ? "Removed" : "Added"))));
+                            "{addedorremoved};" + (entry.getAction() != Action.DEPOSIT_MONEY ? "Removed" : "Added"))));
                 }
 
                 message.add(Format.colour(ledgerFooter));
