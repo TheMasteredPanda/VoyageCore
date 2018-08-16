@@ -25,10 +25,6 @@ import org.bukkit.plugin.ServicePriority;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-
-//TODO Player Ledger Command
-//TODO Admin Ledger View Commands
-//TODO Log Member History?
 public class VEconomy extends Feature implements Listener
 {
     @Getter(value = AccessLevel.PROTECTED)
@@ -111,7 +107,7 @@ public class VEconomy extends Feature implements Listener
 
         if (!handler.playerExists(e.getPlayer().getUniqueId())) {
             VEconomyPlayer player = handler.createPlayer(e.getPlayer());
-            player.getAccount().add(getInstance().getMainConfig().raw().getDouble("features.veconomy.startamount"));
+            player.getAccount().add(getInstance().getMainConfig().raw().getDouble("features.veconomy.startamount"), null);
             players.put(e.getPlayer().getUniqueId(), player);
         } else {
             players.put(e.getPlayer().getUniqueId(), handler.getPlayer(e.getPlayer()));
@@ -153,6 +149,14 @@ public class VEconomy extends Feature implements Listener
                 return "Deposited Money.";
             case WITHDRAW_MONEY:
                 return "Withdrew Money";
+            case ADD_MEMBER:
+                return "Added Member";
+            case REMOVE_MEMBER:
+                return "Removed Member";
+            case PROMOTE_MEMBER:
+                return "Promoted Member";
+            case DEMOTE_MEMBER:
+                return "Demoted Member";
             default:
                 return "ERROR";
         }

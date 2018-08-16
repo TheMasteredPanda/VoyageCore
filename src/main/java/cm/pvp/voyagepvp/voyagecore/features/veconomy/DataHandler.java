@@ -5,10 +5,12 @@ import cm.pvp.voyagepvp.voyagecore.api.tasks.Tasks;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.PlayerAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.PlayerLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.MembershipRequest;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
@@ -32,6 +34,7 @@ public class DataHandler
 
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    private Gson gson = new Gson();
 
     public DataHandler(VEconomy feature)
     {
@@ -61,7 +64,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null, player varchar(40) not null, balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null)");
+                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null, player varchar(40), balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -96,7 +99,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, playerId varchar(40) not null, action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date datetime not null, time time not null)");
+                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, playerId varchar(40), action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date datetime not null, time time not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -108,6 +111,17 @@ public class DataHandler
 
             try (Connection connection = source.getConnection()) {
                 statement = connection.prepareStatement("create table if not exists membership_invitations(playerId varchar(40) not null, accountId varchar(40) not null, requesterId varchar(40) not null, date date not null, foreign key (accountId) references shared_accounts (accountId) on delete cascade)");
+                statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        }).thenRun(() -> {
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("create table if not exists shared_account_user_history(accountId varchar(40) not null, memberId varchar(40) not null, action varchar(50) not null, date date not null, time time not null, data TEXT)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -682,63 +696,50 @@ public class DataHandler
     {
 
         return CompletableFuture.supplyAsync(() -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
+            LinkedList<SharedLedgerEntry> ledger = Lists.newLinkedList();
+
             try {
                 Connection connection = source.getConnection();
-                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=? and date=?");
+                statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=? and date=?");
                 statement.setString(1, sharedAccountId.toString());
                 statement.setDate(2, new java.sql.Date(dateFormat.parse(dateFormat.format(date)).getTime()));
-                return statement.executeQuery();
+                set = statement.executeQuery();
+
+                while (set.next()) {
+                    ledger.add(new SharedLedgerEntry(UUID.fromString(set.getString("accountId")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("memberId")), set.getDouble("balance"), set.getDouble("amount"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
+                }
             } catch (SQLException | ParseException e) {
                 e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
             }
 
-            return null;
-        }).thenApply(resultSet -> {
-            LinkedList<SharedLedgerEntry> ledgerSection = Lists.newLinkedList();
-
-            try {
-                resultSet.last();
-
-                int row = resultSet.getRow();
-
-                if (row == 0) {
-                    resultSet.close();
-                    return ledgerSection;
-                }
-
-                while (resultSet.next()) {
-                    ledgerSection.add(new SharedLedgerEntry(UUID.fromString(resultSet.getString("accountId")), Action.valueOf(resultSet.getString("action").toUpperCase()), UUID.fromString(resultSet.getString("memberId")), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime())));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            return ledgerSection;
+            return ledger;
         });
     }
 
     public CompletableFuture<LinkedList<SharedLedgerEntry>> getEntireLedger(UUID sharedAccountId)
     {
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                Connection connection = source.getConnection();
-                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=?");
-                statement.setString(1, sharedAccountId.toString());
-                return statement.executeQuery();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }).thenApply(rs -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
             LinkedList<SharedLedgerEntry> ledger = Lists.newLinkedList();
 
             try {
-                while (rs.next()) {
-                    ledger.add(new SharedLedgerEntry(UUID.fromString(rs.getString("accountId")), Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("playerId")), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
+                Connection connection = source.getConnection();
+                statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=?");
+                statement.setString(1, sharedAccountId.toString());
+                set = statement.executeQuery();
+
+                while (set.next()) {
+                    ledger.add(new SharedLedgerEntry(UUID.fromString(set.getString("accountId")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("playerId")), set.getDouble("balance"), set.getDouble("amount"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
             }
 
             return ledger;
@@ -748,72 +749,50 @@ public class DataHandler
     public CompletableFuture<LinkedList<PlayerLedgerEntry>> getPersonalLedgersFrom(UUID playerId, Date date)
     {
         return CompletableFuture.supplyAsync(() -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
+            LinkedList<PlayerLedgerEntry> ledger = Lists.newLinkedList();
+
             try {
                 Connection connection = source.getConnection();
-                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=? and date=?");
+                statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=? and date=?");
                 statement.setString(1, playerId.toString());
                 statement.setDate(2, new java.sql.Date(dateFormat.parse(dateFormat.format(date)).getTime()));
-                return statement.executeQuery();
+                set = statement.executeQuery();
+
+                while (set.next()) {
+                    ledger.add(new PlayerLedgerEntry(UUID.fromString(set.getString("owner")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("player")), set.getDouble("amount"), set.getDouble("balance"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
+                }
             } catch (SQLException | ParseException e) {
                 e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
             }
 
-            return null;
-        }).thenApply(resultSet -> {
-            LinkedList<PlayerLedgerEntry> ledgerSection = Lists.newLinkedList();
-
-            try {
-                resultSet.last();
-
-                int row = resultSet.getRow();
-
-                if (row == 0) {
-                    resultSet.close();
-                    return ledgerSection;
-                }
-
-                while (resultSet.next()) {
-                    ledgerSection.add(new PlayerLedgerEntry(UUID.fromString(resultSet.getString("owner")), Action.valueOf(resultSet.getString("action").toUpperCase()), UUID.fromString(resultSet.getString("player")), resultSet.getDouble("amount"), resultSet.getDouble("balance"), new Date(resultSet.getDate("date").getTime() + resultSet.getTime("time").getTime())));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            return ledgerSection;
+            return ledger;
         });
     }
 
     public CompletableFuture<LinkedList<PlayerLedgerEntry>> getEntirePersonalLedger(UUID playerId)
     {
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                Connection connection = source.getConnection();
-                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=?");
-                statement.setString(1, playerId.toString());
-                return statement.executeQuery();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }).thenApply(rs -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
             LinkedList<PlayerLedgerEntry> ledger = Lists.newLinkedList();
 
             try {
-                rs.last();
+                Connection connection = source.getConnection();
+                statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=?");
+                statement.setString(1, playerId.toString());
+                set = statement.executeQuery();
 
-                int row = rs.getRow();
-
-                if (row == 0) {
-                    rs.close();
-                    return ledger;
-                }
-
-                while (rs.next()) {
-                    ledger.add(new PlayerLedgerEntry(UUID.fromString(rs.getString("owner")), Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("player")), rs.getDouble("amount"), rs.getDouble("balance"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
+                while (set.next()) {
+                    ledger.add(new PlayerLedgerEntry(UUID.fromString(set.getString("owner")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("player")), set.getDouble("amount"), set.getDouble("balance"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
             }
 
             return ledger;
@@ -863,6 +842,78 @@ public class DataHandler
             } finally {
                 DBUtil.close(statement);
             }
+        });
+    }
+
+    public void addUserHistoryEntry(HistoryEntry entry)
+    {
+        Tasks.runAsync(() -> {
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("insert into shared_account_user_history (accountId, memberId, action, date, time, data) values (?,?,?,?,?,?)");
+                statement.setString(1, entry.getAccount().toString());
+                statement.setString(2, entry.getMember().toString());
+                statement.setString(3, entry.getAction().name());
+                statement.setDate(4, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
+                statement.setTime(5, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.setString(6, gson.toJson(entry.getData()));
+                statement.execute();
+            } catch (SQLException | ParseException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        });
+    }
+
+    public CompletableFuture<LinkedList<HistoryEntry>> getEntireHistory(UUID accountId)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
+            LinkedList<HistoryEntry> entries = Lists.newLinkedList();
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("select * from shared_account_user_history where accountId=?");
+                statement.setString(1, accountId.toString());
+                set = statement.executeQuery();
+
+                while (set.next()) {
+                    entries.add(new HistoryEntry(UUID.fromString(set.getString("accountId")), UUID.fromString(set.getString("memberId")), Action.valueOf(set.getString("action").toUpperCase()), new Date(set.getDate("date").getTime() + set.getTime("time").getTime()), gson.fromJson(set.getString("data"), HashMap.class)));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            DBUtil.close(statement, set);
+            return entries;
+        });
+    }
+
+    public CompletableFuture<LinkedList<HistoryEntry>> getHistroyFrom(UUID accountId, Date date)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
+            LinkedList<HistoryEntry> entries = Lists.newLinkedList();
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("select * from shared_account_user_history where accountId=? and date=?");
+                statement.setString(1, accountId.toString());
+                statement.setDate(2, new java.sql.Date(dateFormat.parse(dateFormat.format(date)).getTime()));
+                set = statement.executeQuery();
+
+                while (set.next()) {
+                    entries.add(new HistoryEntry(UUID.fromString(set.getString("accountId")), UUID.fromString(set.getString("memberId")), Action.valueOf(set.getString("action")), new Date(set.getDate("date").getTime() + set.getTime("time").getTime()), gson.fromJson(set.getString("data"), HashMap.class)));
+                }
+            } catch (SQLException | ParseException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
+            }
+
+            return entries;
         });
     }
 }

@@ -7,13 +7,18 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.MembershipRequest;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
+import com.google.common.collect.Maps;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class BankInvitePlayerCommand extends VoyageCommand
@@ -81,7 +86,13 @@ public class BankInvitePlayerCommand extends VoyageCommand
             return;
         }
 
-        target.addRequest(MembershipRequest.builder().accountId(bank.getId()).date(new Date()).requester(p.getUniqueId()).build());
-        p.sendMessage(Format.colour(Format.format(invitedPlayerMessage, "{bank};" + arguments.get(0), "{target};" + arguments.get(1))));
+        if (target.addRequest(MembershipRequest.builder().accountId(bank.getId()).date(new Date()).requester(p.getUniqueId()).build()).getResponse() == Response.SUCCESS) {
+
+            HashMap<String, Object> map = Maps.newHashMap();
+            map.put("invited_member", target.getReference().get().getUniqueId());
+            instance.getHandler().addUserHistoryEntry(new HistoryEntry(bank.getId(), p.getUniqueId(), Action.INVITED_MEMBER, new Date(), map));
+            p.sendMessage(Format.colour(Format.format(invitedPlayerMessage, "{bank};" + arguments.get(0), "{target};" + arguments.get(1))));
+        }
+
     }
 }

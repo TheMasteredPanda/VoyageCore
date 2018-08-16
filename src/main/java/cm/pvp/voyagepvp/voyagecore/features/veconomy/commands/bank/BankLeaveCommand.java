@@ -5,10 +5,13 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -90,6 +94,7 @@ public class BankLeaveCommand extends VoyageCommand
             countdowns.remove(countdownTask);
 
             if (account.removeMember(p.getUniqueId(), account.getMembers().get(p.getUniqueId())).getResponse() == Response.SUCCESS) {
+                feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.LEAVE_BANK, new Date(), Maps.newHashMap()));
                 sender.sendMessage(Format.colour(Format.format(leftBankMessage, "{bank};" + account.getName())));
                 feature.get(p).getSharedAccounts().remove(account.getId());
             } else {

@@ -69,8 +69,6 @@ public class LedgerCommand extends VoyageCommand
                     return;
                 }
 
-                instance.getLogger().info("Entries: " + String.valueOf(entries.size()));
-
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(ledgerHeader));
 
@@ -115,12 +113,7 @@ public class LedgerCommand extends VoyageCommand
 
                 for (PlayerLedgerEntry entry : entries) {
                     PlayerProfile targetProfile = instance.getInstance().getMojangLookup().lookup(entry.getPlayer()).orElse(null);
-
-                    if (targetProfile == null) {
-                        throw new MojangException("Couldn't get the username of " + entry.getPlayer().toString() + ".");
-                    }
-
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()))));
+                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + (targetProfile == null ? "Console" : targetProfile.getName()), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()))));
                 }
 
                 message.add(Format.colour(ledgerFooter));

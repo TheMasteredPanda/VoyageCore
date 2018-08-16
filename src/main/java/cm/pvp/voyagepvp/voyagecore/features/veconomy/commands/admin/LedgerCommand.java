@@ -50,7 +50,7 @@ public class LedgerCommand extends VoyageCommand
         this.instance = instance;
 
         try {
-            addArguments(new ArgumentField("player name", false), new ArgumentField("date (yyyy/mm/dd", false));
+            addArguments(new ArgumentField("player name", false), new ArgumentField("date (yyyy/mm/dd)", false));
             instance.getInstance().getMainConfig().populate(this);
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
@@ -79,8 +79,6 @@ public class LedgerCommand extends VoyageCommand
                     sender.sendMessage(Format.colour(Format.format(noEntriesMessage, "{bank};" + arguments.get(0))));
                     return;
                 }
-
-                instance.getLogger().info("Entries: " + String.valueOf(entries.size()));
 
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(ledgerHeader));

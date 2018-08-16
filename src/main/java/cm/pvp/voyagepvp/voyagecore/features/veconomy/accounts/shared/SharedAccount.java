@@ -34,7 +34,7 @@ public class SharedAccount
         } else {
             balance = balance + amount;
             handler.updateSharedAccount(this);
-            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(Action.DEPOSIT_MONEY, player, balance, amount, new Date()));
+            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(id, Action.DEPOSIT_MONEY, player, balance, amount, new Date()));
             return VEconomyResponse.builder().action(Action.DEPOSIT_MONEY)
                     .response(Response.SUCCESS).value("player", player).build();
         }
@@ -49,7 +49,7 @@ public class SharedAccount
         } else {
             balance = balance - amount;
             handler.updateSharedAccount(this);
-            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(Action.WITHDRAW_MONEY, player, balance, amount, new Date()));
+            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(id, Action.WITHDRAW_MONEY, player, balance, amount, new Date()));
             return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY)
                     .response(Response.SUCCESS).value("member", player).build();
         }

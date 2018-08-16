@@ -6,12 +6,17 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.MembershipRequest;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
+import com.google.common.collect.Maps;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class BankMembershipRequestDeclineCommand extends VoyageCommand
@@ -54,6 +59,9 @@ public class BankMembershipRequestDeclineCommand extends VoyageCommand
         }
 
         if (player.removeRequest(req.getAccountId()).getResponse() == Response.SUCCESS) {
+            HashMap<String, Object> map = Maps.newHashMap();
+            map.put("requester", req.getRequester());
+            feature.getHandler().addUserHistoryEntry(new HistoryEntry(req.getAccountId(), p.getUniqueId(), Action.MEMBERSHIP_DENIED, new Date(), map));
             p.sendMessage(Format.colour(Format.format(membershipRequestDeclinedMessage, "{bank};" + arguments.get(0))));
         } else {
             p.sendMessage(Format.colour(errorMessage));

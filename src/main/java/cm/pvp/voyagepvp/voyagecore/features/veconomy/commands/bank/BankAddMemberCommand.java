@@ -7,11 +7,16 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
+import com.google.common.collect.Maps;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -65,6 +70,9 @@ public class BankAddMemberCommand extends VoyageCommand
             account.addMember(id, SharedAccount.Type.MEMBER);
             VEconomyPlayer target = feature.get(id);
             target.getSharedAccounts().add(account.getId());
+            HashMap<String, Object> map = Maps.newHashMap();
+            map.put("memberAdded", target.getReference().get().getUniqueId());
+            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), id, Action.ADD_MEMBER, new Date(), map));
             sender.sendMessage(Format.colour(Format.format(addedPlayerMessage, "{target};" + arguments.get(1))));
         }
     }

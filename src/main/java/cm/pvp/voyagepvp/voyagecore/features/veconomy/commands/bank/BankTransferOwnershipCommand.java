@@ -7,10 +7,13 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -18,9 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.*;
 
 import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount.Type.MEMBER;
 
@@ -105,6 +106,9 @@ public class BankTransferOwnershipCommand extends VoyageCommand
             }
 
             if (account.transferOwnership(target).getResponse() == Response.SUCCESS) {
+                HashMap<String, Object> map = Maps.newHashMap();
+                map.put("transferredOwnershipTo", target);
+                feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.TRANSFER_OWNERSHIP, new Date(), map));
                 sender.sendMessage(Format.colour(tranferredBankMessage));
             } else {
                 sender.sendMessage(Format.colour(errorMessage));

@@ -10,6 +10,7 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
@@ -47,6 +48,9 @@ public class BankLedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.ledger.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
+    @ConfigPopulate("features.veconomy.messages.nopermission")
+    private String noPermissionMessage;
+
     public BankLedgerCommand(VEconomy instance)
     {
         super(null, "voyagecore.player.bank.ledger", "Command to view a banks ledger", true, "ledger");
@@ -64,11 +68,19 @@ public class BankLedgerCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        VEconomyPlayer player = instance.get(((Player) sender).getUniqueId());
+        Player p = (Player) sender;
+        VEconomyPlayer player = instance.get(p.getUniqueId());
         UUID id = player.getSharedAccounts().stream().filter(id1 -> instance.getAccount(id1).getName().equalsIgnoreCase(arguments.get(0))).findFirst().orElse(null);
 
         if (id == null) {
             sender.sendMessage(Format.colour(bankNotFoundMessage));
+            return;
+        }
+
+        SharedAccount account = instance.getAccount(id);
+
+        if (account.isMember(p.getUniqueId()) || !account.getMembers().get(p.getUniqueId()).equals(SharedAccount.Type.POA) || !account.getOwner().equals(p.getUniqueId())) {
+            sender.sendMessage(Format.colour(noPermissionMessage));
             return;
         }
 
@@ -82,8 +94,6 @@ public class BankLedgerCommand extends VoyageCommand
                     sender.sendMessage(Format.colour(Format.format(noEntriesMessage, "{bank};" + arguments.get(0))));
                     return;
                 }
-
-                instance.getLogger().info("Entries: " + String.valueOf(entries.size()));
 
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(ledgerHeader));

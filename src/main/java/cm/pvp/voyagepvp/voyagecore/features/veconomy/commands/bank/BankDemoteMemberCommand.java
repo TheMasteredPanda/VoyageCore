@@ -7,12 +7,17 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
+import com.google.common.collect.Maps;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -92,6 +97,9 @@ public class BankDemoteMemberCommand extends VoyageCommand
         }
 
         if (account.demoteMember(target).getResponse() == Response.SUCCESS) {
+            HashMap<String, Object> map = Maps.newHashMap();
+            map.put("demotedMember", target);
+            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.DEMOTE_MEMBER, new Date(), map));
             sender.sendMessage(Format.colour(Format.format(demotedPlayerMessage, "{target};" + arguments.get(1))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

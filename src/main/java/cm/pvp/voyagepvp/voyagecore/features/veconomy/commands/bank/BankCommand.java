@@ -26,7 +26,8 @@ public class BankCommand extends VoyageCommand
                 new BankMembershipRequestAcceptCommand(feature),
                 new BankMembershipRequestDeclineCommand(feature),
                 new BankListInvitesCommand(feature),
-                new BankLedgerCommand(feature));
+                new BankLedgerCommand(feature),
+                new BankUserHistoryCommand(feature));
     }
 
     @Override
