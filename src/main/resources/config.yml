@@ -112,7 +112,7 @@ features:
         playerispoa: "{commandprefix} &cPlayer is POA."
         promotedplayer: "{commandprefix} Promoted player {taexceedsrget} from Member to POA."
         removedmember: "{commandprefix} Removed member from bank {target}."
-        playernotfound: "{commandprefix} &cPlayer {target} not found."
+#        playernotfound: "{commandprefix} &cPlayer {target} not found."
         transfersuccess: "{commandprefix} Transferred amount {amount} to {receiver}."
         exceedsmaximumamount: "{commandprefix} Sending {amount} to {receiver} would exceed the maximum amount of money one may keep in a bank."
         specifybankowner: "{commandprefix} There is more than one bank under the name of {name}. Please specify the owner of the bank when you invoke the command again in the format of <owner name>/<bank name>"

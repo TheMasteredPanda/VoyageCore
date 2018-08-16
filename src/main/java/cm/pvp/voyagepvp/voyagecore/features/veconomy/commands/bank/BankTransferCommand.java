@@ -169,7 +169,7 @@ public class BankTransferCommand extends VoyageCommand
                 return;
             }
 
-            if (from.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && target.getAccount().add(amount).getResponse() == Response.SUCCESS) {
+            if (from.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && target.getAccount().add(amount, p.getUniqueId()).getResponse() == Response.SUCCESS) {
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + profile.getName())));
             } else {
                 sender.sendMessage(Format.colour(errorMessage));

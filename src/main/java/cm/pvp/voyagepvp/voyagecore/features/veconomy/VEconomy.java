@@ -7,6 +7,7 @@ import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.VEconomyCommand;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin.AdminCommand;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.AccessLevel;
@@ -24,6 +25,10 @@ import org.bukkit.plugin.ServicePriority;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+
+//TODO Player Ledger Command
+//TODO Admin Ledger View Commands
+//TODO Log Member History?
 public class VEconomy extends Feature implements Listener
 {
     @Getter(value = AccessLevel.PROTECTED)
@@ -139,5 +144,17 @@ public class VEconomy extends Feature implements Listener
     public double getSharedAccountMaximumBalance()
     {
         return getInstance().getMainConfig().raw().getDouble("features.veconomy.sharedaccounts.maximumbalance") == -1 ? Double.MAX_VALUE : getInstance().getMainConfig().raw().getDouble("features.veconomy.sharedaccounts.maximumbalance");
+    }
+
+    public String getFancyActionName(Action action)
+    {
+        switch (action) {
+            case DEPOSIT_MONEY:
+                return "Deposited Money.";
+            case WITHDRAW_MONEY:
+                return "Withdrew Money";
+            default:
+                return "ERROR";
+        }
     }
 }

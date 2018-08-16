@@ -65,6 +65,7 @@ public class TransferCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
+        Player p = (Player) sender;
         MojangLookup lookup = feature.getInstance().getMojangLookup();
         VEconomyPlayer player = feature.get((Player) sender);
         PlayerAccount playerAccount = player.getAccount();
@@ -89,7 +90,7 @@ public class TransferCommand extends VoyageCommand
                 return;
             }
             
-            if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.getAccount().add(amount).getResponse() == Response.SUCCESS) {
+            if (playerAccount.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && target.getAccount().add(amount, p.getUniqueId()).getResponse() == Response.SUCCESS) {
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + arguments.get(1))));
             }
         } else if (arguments.get(0).equals("b")) {
@@ -97,7 +98,13 @@ public class TransferCommand extends VoyageCommand
 
 
             String split[] = arguments.get(1).split("/");
-            List<UUID> accounts = feature.getHandler().getSharedAccountsNamed(split[1]);
+            List<UUID> accounts;
+
+            if (split.length == 2) {
+                accounts = feature.getHandler().getSharedAccountsNamed(split[1]);
+            } else {
+                accounts = feature.getHandler().getSharedAccountsNamed(split[0]);
+            }
 
             if (accounts.size() > 1) {
                 if (arguments.get(1).split("/").length == 1) {
@@ -137,7 +144,7 @@ public class TransferCommand extends VoyageCommand
                 return;
             }
 
-            if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.add(amount, player.getReference().get().getUniqueId()).getResponse() == Response.SUCCESS) {
+            if (playerAccount.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && target.add(amount, player.getReference().get().getUniqueId()).getResponse() == Response.SUCCESS) {
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + target.getName())));
             }
         }

@@ -13,8 +13,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SharedLedgerEntry
 {
+    private UUID accountId;
     private Action action;
-    private UUID member;
+    private UUID player;
     private double balance;
     private double amount;
     private Date date;

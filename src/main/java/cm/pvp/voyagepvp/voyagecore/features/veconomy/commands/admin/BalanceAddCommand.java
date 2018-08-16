@@ -11,6 +11,7 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
@@ -57,7 +58,9 @@ public class BalanceAddCommand extends VoyageCommand
             return;
         }
 
-        if (player.getAccount().add(amount).getResponse() == Response.SUCCESS) {
+        Player p = (Player) sender;
+
+        if (player.getAccount().add(amount, p.getUniqueId()).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(gaveMoneyMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + arguments.get(0))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

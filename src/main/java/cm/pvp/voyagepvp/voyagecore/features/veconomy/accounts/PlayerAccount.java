@@ -20,7 +20,7 @@ public class PlayerAccount
     private UUID owner;
     private double balance;
 
-    public VEconomyResponse add(double amount)
+    public VEconomyResponse add(double amount, UUID player)
     {
         if (Double.isInfinite(balance + amount)) {
             return VEconomyResponse.builder().action(Action.DEPOSIT_MONEY).
@@ -29,13 +29,13 @@ public class PlayerAccount
         } else {
             balance = balance + amount;
             handler.updatePlayerAccount(this);
-            handler.addPlayerLedgerEntry(owner, new PlayerLedgerEntry(Action.DEPOSIT_MONEY, amount, balance, new Date()));
+            handler.addPlayerLedgerEntry(owner, new PlayerLedgerEntry(Action.DEPOSIT_MONEY, player, amount, balance, new Date()));
             return VEconomyResponse.builder().action(Action.DEPOSIT_MONEY)
                     .response(Response.SUCCESS).build();
         }
     }
 
-    public VEconomyResponse subtract(double amount)
+    public VEconomyResponse subtract(double amount, UUID player)
     {
         if (Double.isInfinite(balance + amount)) {
             return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY).
@@ -44,7 +44,7 @@ public class PlayerAccount
         } else {
             balance = balance - amount;
             handler.updatePlayerAccount(this);
-            handler.addPlayerLedgerEntry(owner, new PlayerLedgerEntry(Action.WITHDRAW_MONEY, amount, balance, new Date()));
+            handler.addPlayerLedgerEntry(owner, new PlayerLedgerEntry(Action.WITHDRAW_MONEY, player, amount, balance, new Date()));
             return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY)
                     .response(Response.SUCCESS).build();
         }

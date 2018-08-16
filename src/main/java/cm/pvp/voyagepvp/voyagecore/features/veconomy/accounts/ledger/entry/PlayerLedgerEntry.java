@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Date;
+import java.util.UUID;
 
 
 //TODO
@@ -12,7 +13,9 @@ import java.util.Date;
 @AllArgsConstructor
 public class PlayerLedgerEntry
 {
+    private UUID owner;
     private Action action;
+    private UUID player;
     private double amount;
     private double balance;
     private Date date;

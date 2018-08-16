@@ -61,7 +61,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null , balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null)");
+                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null, player varchar(40) not null, balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -707,7 +707,7 @@ public class DataHandler
                 }
 
                 while (resultSet.next()) {
-                    ledgerSection.add(new SharedLedgerEntry(Action.valueOf(resultSet.getString("action").toUpperCase()), UUID.fromString(resultSet.getString("memberId")), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime())));
+                    ledgerSection.add(new SharedLedgerEntry(UUID.fromString(resultSet.getString("accountId")), Action.valueOf(resultSet.getString("action").toUpperCase()), UUID.fromString(resultSet.getString("memberId")), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -735,7 +735,7 @@ public class DataHandler
 
             try {
                 while (rs.next()) {
-                    ledger.add(new SharedLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("playerId")), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
+                    ledger.add(new SharedLedgerEntry(UUID.fromString(rs.getString("accountId")), Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("playerId")), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -773,7 +773,7 @@ public class DataHandler
                 }
 
                 while (resultSet.next()) {
-                    ledgerSection.add(new PlayerLedgerEntry(Action.valueOf(resultSet.getString("action").toUpperCase()), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime() + resultSet.getTime("time").getTime())));
+                    ledgerSection.add(new PlayerLedgerEntry(UUID.fromString(resultSet.getString("owner")), Action.valueOf(resultSet.getString("action").toUpperCase()), UUID.fromString(resultSet.getString("player")), resultSet.getDouble("amount"), resultSet.getDouble("balance"), new Date(resultSet.getDate("date").getTime() + resultSet.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -810,7 +810,7 @@ public class DataHandler
                 }
 
                 while (rs.next()) {
-                    ledger.add(new PlayerLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
+                    ledger.add(new PlayerLedgerEntry(UUID.fromString(rs.getString("owner")), Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("player")), rs.getDouble("amount"), rs.getDouble("balance"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -828,7 +828,7 @@ public class DataHandler
             try (Connection connection = source.getConnection()) {
                 statement = connection.prepareStatement("insert into shared_account_ledgers (accountId, playerId, action, balance, amount, date, time) values (?,?,?,?,?,?,?)");
                 statement.setString(1, accountId.toString());
-                statement.setString(2, entry.getMember().toString());
+                statement.setString(2, entry.getPlayer().toString());
                 statement.setString(3, entry.getAction().name());
                 statement.setDouble(4, entry.getBalance());
                 statement.setDouble(5, entry.getAmount());
@@ -849,13 +849,14 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection())  {
-                statement = connection.prepareStatement("insert into player_ledger (owner, action, balance, amount, date, time) values (?,?,?,?,?,?)");
+                statement = connection.prepareStatement("insert into player_ledger (owner, action, player, balance, amount, date, time) values (?,?,?,?,?,?,?)");
                 statement.setString(1, playerId.toString());
                 statement.setString(2, entry.getAction().name());
-                statement.setDouble(3, entry.getBalance());
-                statement.setDouble(4, entry.getAmount());
-                statement.setDate(5, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
-                statement.setTime(6, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.setString(3, entry.getPlayer().toString());
+                statement.setDouble(4, entry.getBalance());
+                statement.setDouble(5, entry.getAmount());
+                statement.setDate(6, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
+                statement.setTime(7, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
                 statement.execute();
             } catch (SQLException | ParseException e) {
                e.printStackTrace();

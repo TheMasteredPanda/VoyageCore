@@ -1,4 +1,4 @@
-package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.bank;
+package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin.bank;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
@@ -18,16 +18,14 @@ import org.bukkit.entity.Player;
 import javax.naming.OperationNotSupportedException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.*;
 
 public class BankLedgerCommand extends VoyageCommand
 {
     private DataHandler handler;
     private VEconomy instance;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-    private SimpleDateFormat timeForat = new SimpleDateFormat("HH:mm:ss");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     @ConfigPopulate("features.veconomy.messages.ledger.entry")
     private String ledgerEntry;
@@ -47,6 +45,12 @@ public class BankLedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.ledger.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
+    @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")
+    private String specifyBankMessage;
+
+    @ConfigPopulate("features.veconomy.messsages.bank.playernotfound")
+    private String playerNotFoundMessage;
+
     public BankLedgerCommand(VEconomy instance)
     {
         super(null, "voyagecore.player.bank.ledger", "Command to view a banks ledger", true, "ledger");
@@ -65,11 +69,47 @@ public class BankLedgerCommand extends VoyageCommand
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
         VEconomyPlayer player = instance.get(((Player) sender).getUniqueId());
-        UUID id = player.getSharedAccounts().stream().filter(id1 -> instance.getAccount(id1).getName().equalsIgnoreCase(arguments.get(0))).findFirst().orElse(null);
+        UUID id = null;
 
-        if (id == null) {
-            sender.sendMessage(Format.colour(bankNotFoundMessage));
+        String[] split = arguments.get(0).split("/");
+        List<UUID> bankIds;
+
+
+        if (split.length == 2) {
+            bankIds = instance.getHandler().getSharedAccountsNamed(split[1]);
+        } else {
+            bankIds = instance.getHandler().getSharedAccountsNamed(split[0]);
+        }
+
+        if (bankIds.size() == 0) {
+            sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
             return;
+        }
+
+        if (split.length == 1 && bankIds.size() > 1) {
+            sender.sendMessage(Format.colour(Format.format(specifyBankMessage, "{amount};" + String.valueOf(bankIds.size()))));
+            return;
+        }
+
+        if (split.length == 2) {
+            Optional<PlayerProfile> targetProfile = instance.getInstance().getMojangLookup().lookup(split[0]);
+
+            if (!targetProfile.isPresent()) {
+                sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + split[0])));
+                return;
+            }
+
+            VEconomyPlayer targetPlayer = instance.get(targetProfile.get().getId());
+            UUID account = targetPlayer.getSharedAccounts().stream().filter(id1 -> instance.getAccount(id1).getName().equalsIgnoreCase(split[1])).findFirst().orElse(null);
+
+            if (account == null) {
+                sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
+                return;
+            }
+
+            id = account;
+        } else if (split.length == 1) {
+            id = bankIds.get(0);
         }
 
         if (arguments.size() == 1) {
@@ -97,7 +137,7 @@ public class BankLedgerCommand extends VoyageCommand
 
                     message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(),
                             "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()),
-                            "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeForat.format(entry.getDate()),
+                            "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()),
                             "{addedorremoved};" + (entry.getAction() != Action.DEPOSIT_MONEY ? "Removed" : "Added"))));
                 }
 
@@ -105,7 +145,7 @@ public class BankLedgerCommand extends VoyageCommand
                 sender.sendMessage(message.toArray(new String[0]));
             });
         } else {
-            Date date = null;
+            Date date;
 
             try {
                 date = dateFormat.parse(arguments.get(1));
@@ -134,7 +174,7 @@ public class BankLedgerCommand extends VoyageCommand
                         throw new MojangException("Couldn't get the username of " + entry.getPlayer().toString() + ".");
                     }
 
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeForat.format(entry.getDate()))));
+                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()))));
                 }
 
                 message.add(Format.colour(ledgerFooter));
