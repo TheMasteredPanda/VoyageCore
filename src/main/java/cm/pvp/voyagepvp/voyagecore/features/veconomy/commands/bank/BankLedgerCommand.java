@@ -33,7 +33,7 @@ public class BankLedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.ledger.entry")
     private String ledgerEntry;
 
-    @ConfigPopulate("features.veconomy.messages.ledger.noentries")
+    @ConfigPopulate("features.veconomy.messages.noentries")
     private String noEntriesMessage;
 
     @ConfigPopulate("features.veconomy.messages.ledger.header")
@@ -45,7 +45,7 @@ public class BankLedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.ledger.incorrectdateformat")
+    @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
     @ConfigPopulate("features.veconomy.messages.nopermission")

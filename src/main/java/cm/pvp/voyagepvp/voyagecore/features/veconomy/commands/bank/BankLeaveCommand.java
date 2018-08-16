@@ -4,6 +4,7 @@ import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
+import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
@@ -18,10 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BankLeaveCommand extends VoyageCommand
 {
@@ -48,6 +47,12 @@ public class BankLeaveCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.error")
     private String errorMessage;
 
+    @ConfigPopulate("features.veconomy.messages.playernotfound")
+    private String playerNotFoundMessage;
+
+    @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")
+    private String specifyOwnerMessage;
+
     public BankLeaveCommand(VEconomy feature)
     {
         super(null, "voyagecore.veconomy.player.bank.leave", "Leave a bank.", true, "leave");
@@ -65,11 +70,41 @@ public class BankLeaveCommand extends VoyageCommand
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
         Player p = (Player) sender;
-        SharedAccount account = feature.get(p.getUniqueId()).getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equalsIgnoreCase(arguments.get(0))).map(id -> feature.getAccount(id)).findFirst().orElse(null);
 
-        if (account == null) {
+        String[] split = arguments.get(0).split("/");
+        String name;
+
+        if (split.length == 1) {
+            name = split[0];
+        } else {
+            name = split[1];
+        }
+
+        List<UUID> accounts = feature.get(p.getUniqueId()).getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equalsIgnoreCase(name)).collect(Collectors.toCollection(Lists::newArrayList));
+
+        if (accounts.size() == 0) {
             sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
             return;
+        }
+
+        SharedAccount account;
+
+        if (accounts.size() > 1) {
+            if (split.length == 1) {
+                sender.sendMessage(Format.colour(Format.format(specifyOwnerMessage, "{amount};" + String.valueOf(accounts.size()))));
+                return;
+            }
+
+            Optional<PlayerProfile> target = feature.getInstance().getMojangLookup().lookup(split[0]);
+
+            if (!target.isPresent()) {
+                sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + split[0])));
+                return;
+            }
+
+            account = accounts.stream().filter(id -> feature.getAccount(id).getOwner().equals(target.get().getId())).map(id -> feature.getAccount(id)).findFirst().get();
+        } else  {
+            account = feature.getAccount(accounts.get(0));
         }
 
         if (!account.isMember(p.getUniqueId())) {

@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class BankMembershipRequestAcceptCommand extends VoyageCommand
@@ -61,7 +62,9 @@ public class BankMembershipRequestAcceptCommand extends VoyageCommand
         SharedAccount account = feature.getAccount(req.getAccountId());
 
         if (account.addMember(p.getUniqueId(), SharedAccount.Type.MEMBER).getResponse() == Response.SUCCESS && player.removeRequest(req.getAccountId()).getResponse() == Response.SUCCESS) {
-            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.MEMBERSHIP_ACCEPTED, new Date(), Maps.newHashMap()));
+            HashMap<String, Object> map = Maps.newHashMap();
+            map.put("requester", req.getRequester());
+            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.MEMBERSHIP_ACCEPTED, new Date(), map));
             player.getSharedAccounts().add(account.getId());
             p.sendMessage(Format.colour(Format.format(membershipRequestAcceptedMessage, "{bank};" + account.getName())));
         } else {

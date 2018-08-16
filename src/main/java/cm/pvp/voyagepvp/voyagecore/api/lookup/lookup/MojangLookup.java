@@ -49,6 +49,7 @@ public class MojangLookup implements Lookup
             URL url = new URL(SESSION_SERVERS_URL + uuid.toString().replace("-", ""));
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.setConnectTimeout(1000);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Content-Type", "application/json");
             int response = connection.getResponseCode();

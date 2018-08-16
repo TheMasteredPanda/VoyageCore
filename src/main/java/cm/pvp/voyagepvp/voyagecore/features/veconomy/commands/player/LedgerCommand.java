@@ -25,7 +25,7 @@ public class LedgerCommand extends VoyageCommand
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
-    @ConfigPopulate("features.veconomy.messages.ledger.noentries")
+    @ConfigPopulate("features.veconomy.messages.noentries")
     private String noEntriesMessage;
 
     @ConfigPopulate("features.veconomy.messages.ledger.header")
@@ -37,7 +37,7 @@ public class LedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.ledger.entry")
     private String ledgerEntry;
 
-    @ConfigPopulate("features.veconomy.messages.ledger.incorrectdateformat")
+    @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
     private LedgerCommand(VEconomy instance)

@@ -28,6 +28,7 @@ public final class LookupUtil
             URL url = new URL(API_MOJANG_URL + name);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.setConnectTimeout(1000);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Content-Type", "application/json");
 

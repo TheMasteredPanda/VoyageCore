@@ -9,6 +9,7 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,13 +31,34 @@ public class BankUserHistoryCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.history.footer")
     private String historyFooter;
 
-    @ConfigPopulate("features.veconomy.messages.bank.history.entry")
-    private String historyEntry;
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.promoted")
+    private String promotedEntry;
+
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.demoted")
+    private String demotedEntry;
+
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.invite-rejected")
+    private String inviteRejectedEntry;
+
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.invite-accepted")
+    private String inviteAcceptedEntry;
+
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.ownership-transfer")
+    private String ownershipTransferredEntry;
+
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.invite")
+    private String inviteEntry;
+
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.removed")
+    private String removedEntry;
+
+    @ConfigPopulate("features.veconomy.messages.bank.history.entry.left")
+    private String leftEntry;
 
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.history.noentries")
+    @ConfigPopulate("features.veconomy.messages.noentries")
     private String noEntriesMessage;
 
     @ConfigPopulate("features.veconomy.messages.playernotfound")
@@ -45,7 +67,7 @@ public class BankUserHistoryCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.specifybankowner")
     private String specifyBankOwnerMessage;
 
-    @ConfigPopulate("features.veconomy.messages.incorrectDateFormat")
+    @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
     @ConfigPopulate("features.veconomy.messages.nopermission")
@@ -53,7 +75,7 @@ public class BankUserHistoryCommand extends VoyageCommand
 
     public BankUserHistoryCommand(VEconomy instance)
     {
-        super(null, "voyagecore.veconomy.player.bank.userhistory", "View the banks user history (promotions, demotions, etc)", true, "userhistroy");
+        super(null, "voyagecore.veconomy.player.bank.userhistory", "View the banks user history (promotions, demotions, etc)", true, "userhistory");
         this.instance = instance;
 
         try {
@@ -67,6 +89,7 @@ public class BankUserHistoryCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
+        System.out.println("Command invoked.");
         UUID id = null;
         Player p = (Player) sender;
         VEconomyPlayer player = instance.get(p);
@@ -108,13 +131,15 @@ public class BankUserHistoryCommand extends VoyageCommand
 
         SharedAccount account = instance.getAccount(id);
 
-        if (!account.isMember(p.getUniqueId()) || !account.getMembers().get(p.getUniqueId()).equals(SharedAccount.Type.POA) || !account.getOwner().equals(p.getUniqueId())) {
+        if (!account.isMember(p.getUniqueId()) || (!account.getMembers().get(p.getUniqueId()).equals(SharedAccount.Type.POA) && !account.getOwner().equals(p.getUniqueId())) || !account.getOwner().equals(p.getUniqueId())) {
             sender.sendMessage(Format.colour(noPermissionMessage));
             return;
         }
 
         if (arguments.size() == 1) {
             instance.getHandler().getEntireHistory(id).whenCompleteAsync((entries, throwable) -> {
+                System.out.println("Completed. Entries: " + String.valueOf(entries.size()));
+
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
@@ -127,15 +152,54 @@ public class BankUserHistoryCommand extends VoyageCommand
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(histroyHeader));
 
-                for (HistoryEntry entry : entries) {
+                entries.forEach(entry -> {
                     Optional<PlayerProfile> targetPlayer = instance.getInstance().getMojangLookup().lookup(entry.getMember());
+                    String name;
 
                     if (!targetPlayer.isPresent()) {
-                        continue;
+                        name = "Console";
+                    } else {
+                        name = targetPlayer.get().getName();
                     }
 
-                    message.add(Format.colour(Format.format(historyEntry, "{player};" + targetPlayer.get().getName(), "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()))));
-                }
+                    String messageEntry = null;
+
+                    if (entry.getAction().equals(Action.INVITED_MEMBER)) {
+                        String invitedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                        messageEntry = Format.format(inviteEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + invitedPlayer);
+                    }
+
+                    if (entry.getAction().equals(Action.REMOVE_MEMBER)) {
+                        String removedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                        messageEntry = Format.format(removedEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + removedPlayer);
+                    }
+
+                    if (entry.getAction().equals(Action.TRANSFER_OWNERSHIP)) {
+                        String newOwner = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("transferredOwnershipTp"))).get().getName();
+                        messageEntry = Format.format(ownershipTransferredEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{newowner};" + newOwner);
+                    }
+
+                    if (entry.getAction().equals(Action.LEAVE_BANK)) {
+                        messageEntry = Format.format(leftEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
+                    }
+
+                    if (entry.getAction().equals(Action.MEMBERSHIP_DENIED)) {
+                        String requester = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                        messageEntry = Format.format(inviteRejectedEntry, "{player};" + name, "{requester};" + requester, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
+                    }
+
+                    if (entry.getAction().equals(Action.MEMBERSHIP_ACCEPTED)) {
+                        String requester = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                        String member = instance.getInstance().getMojangLookup().lookup(entry.getMember()).get().getName();
+                        messageEntry = Format.format(inviteAcceptedEntry, "{player};" + member, "{requester};" + requester, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
+                    }
+
+                    if (messageEntry == null) {
+                        instance.getLogger().info("Message entry was null.");
+                        return;
+                    }
+                    message.add(Format.colour(messageEntry));
+                });
 
                 message.add(Format.colour(historyFooter));
                 sender.sendMessage(message.toArray(new String[0]));
@@ -166,12 +230,47 @@ public class BankUserHistoryCommand extends VoyageCommand
 
                 for (HistoryEntry entry : entries) {
                     Optional<PlayerProfile> targetPlayer = instance.getInstance().getMojangLookup().lookup(entry.getMember());
+                    String name;
 
                     if (!targetPlayer.isPresent()) {
+                        name = "Console";
+                    } else {
+                        name = targetPlayer.get().getName();
+                    }
+
+                    String messageEntry = null;
+
+                    switch (entry.getAction()) {
+                        case INVITED_MEMBER:
+                            String invitedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                            messageEntry = Format.format(inviteEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + invitedPlayer);
+                            break;
+                        case REMOVE_MEMBER:
+                            String removedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                            messageEntry = Format.format(removedEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + removedPlayer);
+                            break;
+                        case TRANSFER_OWNERSHIP:
+                            String newOwner = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("transferredOwnershipTp"))).get().getName();
+                            messageEntry = Format.format(ownershipTransferredEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{newowner};" + newOwner);
+                            break;
+                        case LEAVE_BANK:
+                            messageEntry = Format.format(leftEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
+                            break;
+                        case MEMBERSHIP_DENIED:
+                            String requestor = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                            messageEntry = Format.format(inviteRejectedEntry, "{player};" + name, "{requester};" + requestor, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
+                            break;
+                        case MEMBERSHIP_ACCEPTED:
+                            String requester = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                            messageEntry = Format.format(inviteAcceptedEntry, "{player};" + name, "{requester};" + requester, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
+                    }
+
+                    if (messageEntry == null) {
                         continue;
                     }
 
-                    message.add(Format.colour(Format.format(historyEntry, "{player};" + targetPlayer.get().getName(), "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()))));
+                    message.add(Format.colour(messageEntry));
+
                 }
 
                 message.add(Format.colour(historyFooter));

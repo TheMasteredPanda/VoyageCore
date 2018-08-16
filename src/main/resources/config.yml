@@ -62,12 +62,12 @@ features:
       transfersuccess: "{commandprefix} Transferred {amount} to {receiver}."
       notenoughmoney: "{commandprefix} &cYou do not have enough money to send {amount} to {receiver}."
       playernotfound: "{commandprefix} &cPlayer {target} not found."
+      incorrectdateformat: "{commandprefix} You have used the incorrect date format. Use yyyy/mm/ss (i.g. 2018/8/18)"
+      noentries: "{commandprefix} No entries found."
       ledger:
-        incorrectdateformat: "{commandprefix} You have used the incorrect date format. Use yyyy/mm/ss (i.g. 2018/8/18)"
         header: "&8&m&l-----------------------------------------"
         footer: "&8&m&l-----------------------------------------"
         entry: "&8» &Player&8: &7{player} &8/ &aBalance After Action&8: &7{balance} &8/ &aAmount {addedorremoved}&8: &7{amount} &8/ &aAction&8: &7{action} &8/ &aDate&8: &7{date} &8/ &aTime&8: &7{time}"
-        noentries: "{commandprefix} No entries found."
       admin:
         gavemoney: "{commandprefix} Gave {amount} to {receiver}."
         clearedbalance: "{commandprefix} Cleared balance of player {target}."
@@ -78,6 +78,18 @@ features:
           clearedbank: "{commandprefix} Cleared bank {bank}."
           deleted: "{commandprefix} Bank {bank}, previously owned by {target}, has been deleted."
       bank:
+        history:
+          header: "&8&m&l-----------------------------------------"
+          footer: "&8&m&l-----------------------------------------"
+          entry:
+            promoted: "&8» &a{member} promoted {target} on {date} at {time}."
+            demoted: "&8» &a{member} demoted {target} on {date} at {time}."
+            invite-rejected: "&8» &a{player} rejected a membership invitation sent by {requester} on {date} at {time}."
+            invite-accepted: "&8» &a{player} accept a membership invitation sent by {requester} on {date} at {time}."
+            ownership-transfer: "&8» &a{member} transferred the ownership to {newowner} on {date} at {time}."
+            invite: "&8» &a{member} invited {player} to this bank on {date} at {time}."
+            removed: "&8» &a{member} removed {player} on {date} at {time}."
+            left: "&8» &a{member} left the bank on {date} at {time}."
         listRequests:
           header: "&8&m&l-----------------------------------------"
           footer: "&8&m&l-----------------------------------------"
@@ -115,7 +127,7 @@ features:
 #        playernotfound: "{commandprefix} &cPlayer {target} not found."
         transfersuccess: "{commandprefix} Transferred amount {amount} to {receiver}."
         exceedsmaximumamount: "{commandprefix} Sending {amount} to {receiver} would exceed the maximum amount of money one may keep in a bank."
-        specifybankowner: "{commandprefix} There is more than one bank under the name of {name}. Please specify the owner of the bank when you invoke the command again in the format of <owner name>/<bank name>"
+#        specifybankowner: "{commandprefix} There is more than one bank under the name of {name}. Please specify the owner of the bank when you invoke the command again in the format of <owner name>/<bank name>"
         transferownershipquestion: "{commandprefix} To confirm the transferal, invoke the command with the same arguments again."
         transferredownership: "{commandprefix} Bank ownership transferred."
         exceedsminimumamount: "{commandprefix} Removing {amount} from {receiver}s bank will put them in a negative balance. "

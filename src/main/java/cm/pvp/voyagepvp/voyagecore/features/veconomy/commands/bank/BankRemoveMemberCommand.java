@@ -88,7 +88,7 @@ public class BankRemoveMemberCommand extends VoyageCommand
 
         if (account.removeMember(target, account.getMembers().get(target)).getResponse() == Response.SUCCESS) {
             HashMap<String, Object> map = Maps.newHashMap();
-            map.put("removedMember", target);
+            map.put("removedMember", target.toString());
             feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.REMOVE_MEMBER, new Date(), map));
             sender.sendMessage(Format.colour(Format.format(removedMemberMessage, "{target};" + arguments.get(1))));
         } else {

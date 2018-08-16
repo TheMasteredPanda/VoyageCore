@@ -11,6 +11,7 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ public class BalanceRemoveCommand extends VoyageCommand
 
     public BalanceRemoveCommand(VEconomy feature)
     {
-        super(null, "voyagecore.veconomy.admin.balance.remove", "Remove a sum of money from a players balance", false, "remove");
+        super(null, "voyagecore.veconomy.admin.balance.remove", "Remove a sum of money from a players balance", true, "remove");
         this.feature = feature;
 
         ArgumentField playerArg = new ArgumentField("player name", true);
@@ -58,7 +59,7 @@ public class BalanceRemoveCommand extends VoyageCommand
             return;
         }
 
-        if (player.getAccount().subtract(amount).getResponse() == Response.SUCCESS) {
+        if (player.getAccount().subtract(amount, ((Player) sender).getUniqueId()).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(removedMoneyMessage, "{amount};" + feature.getVaultHook().format(amount), "{target};" + arguments.get(0))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

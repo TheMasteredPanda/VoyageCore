@@ -42,7 +42,7 @@ public class BankLedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.ledger.incorrectdateformat")
+    @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
     @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")

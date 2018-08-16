@@ -10,6 +10,7 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.VEconomyResponse;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 
@@ -81,10 +82,13 @@ public class RemoveMemberCommand extends VoyageCommand
             return;
         }
 
-        if (account.removeMember(memberId, account.getMembers().get(memberId)).getResponse() == Response.SUCCESS) {
+
+        VEconomyResponse response = account.removeMember(memberId, account.getMembers().get(memberId));
+
+        if (response.getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(removedMemberMessage, "{target};" + arguments.get(1))));
         } else {
-            sender.sendMessage(Format.colour(errorMessage));
+            sender.sendMessage(Format.colour(errorMessage + "// " + response.getValues().get("message")));
         }
     }
 }

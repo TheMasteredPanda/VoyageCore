@@ -89,7 +89,7 @@ public class BankInvitePlayerCommand extends VoyageCommand
         if (target.addRequest(MembershipRequest.builder().accountId(bank.getId()).date(new Date()).requester(p.getUniqueId()).build()).getResponse() == Response.SUCCESS) {
 
             HashMap<String, Object> map = Maps.newHashMap();
-            map.put("invited_member", target.getReference().get().getUniqueId());
+            map.put("invitedMember", target.getReference().get().getUniqueId().toString());
             instance.getHandler().addUserHistoryEntry(new HistoryEntry(bank.getId(), p.getUniqueId(), Action.INVITED_MEMBER, new Date(), map));
             p.sendMessage(Format.colour(Format.format(invitedPlayerMessage, "{bank};" + arguments.get(0), "{target};" + arguments.get(1))));
         }
