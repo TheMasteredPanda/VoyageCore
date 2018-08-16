@@ -67,6 +67,7 @@ features:
         header: "&8&m&l-----------------------------------------"
         footer: "&8&m&l-----------------------------------------"
         entry: "&8» &aMember&8: &7{member} &8/ &aBalance&8: &7{balance} &8/ &aAmount&8: &7{amount} &8/ &aAction&8: &7{action}"
+        noentries: "{commandprefix} No entries found."
       admin:
         gavemoney: "{commandprefix} Gave {amount} to {receiver}."
         clearedbalance: "{commandprefix} Cleared balance of player {target}."
@@ -80,7 +81,7 @@ features:
         listRequests:
           header: "&8&m&l-----------------------------------------"
           footer: "&8&m&l-----------------------------------------"
-          entry: "&8» {name}'s Request."
+          entry: "&8» &a{name}'s Request."
           informationTemplate:
             - "&8» Date: {date}"
             - "&8» Bank Name: {bankname}"

@@ -1,4 +1,4 @@
-package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin.bank;
+package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.bank;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
@@ -27,22 +27,22 @@ public class BankLedgerCommand extends VoyageCommand
     private VEconomy instance;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
-    @ConfigPopulate("modules.veconomy.messages.ledger.entry")
+    @ConfigPopulate("features.veconomy.messages.ledger.entry")
     private String ledgerEntry;
 
-    @ConfigPopulate("modules.veconomy.messages.ledger.noentries")
+    @ConfigPopulate("features.veconomy.messages.ledger.noentries")
     private String noEntriesMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.ledger.header")
+    @ConfigPopulate("features.veconomy.messages.ledger.header")
     private String ledgerHeader;
 
-    @ConfigPopulate("modules.veconomy.messages.ledger.footer")
+    @ConfigPopulate("features.veconomy.messages.ledger.footer")
     private String ledgerFooter;
 
-    @ConfigPopulate("modules.veconomy.messages.bank.notfound")
+    @ConfigPopulate("features.veconomy.messages.bank.notfound")
     private String bankNotFoundMessage;
 
-    @ConfigPopulate("modules.veconomy.messages.ledger.incorrectdateformat")
+    @ConfigPopulate("features.veconomy.messages.ledger.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
     public BankLedgerCommand(VEconomy instance)

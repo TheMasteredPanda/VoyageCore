@@ -842,7 +842,7 @@ public class DataHandler
                 statement.setDouble(4, entry.getBalance());
                 statement.setDouble(5, entry.getAmount());
                 statement.setDate(6, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
-                statement.setTime(7, new Time(dateFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.setTime(7, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
                 statement.execute();
             } catch (SQLException | ParseException e) {
                 e.printStackTrace();
