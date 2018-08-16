@@ -96,7 +96,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, memberId varchar(40) not null, action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date datetime not null, time time not null)");
+                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, playerId varchar(40) not null, action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date datetime not null, time time not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -734,17 +734,8 @@ public class DataHandler
             LinkedList<SharedLedgerEntry> ledger = Lists.newLinkedList();
 
             try {
-                rs.last();
-
-                int row = rs.getRow();
-
-                if (row == 0) {
-                    rs.close();
-                    return ledger;
-                }
-
                 while (rs.next()) {
-                    ledger.add(new SharedLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("memberId")), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime())));
+                    ledger.add(new SharedLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("playerId")), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -782,7 +773,7 @@ public class DataHandler
                 }
 
                 while (resultSet.next()) {
-                    ledgerSection.add(new PlayerLedgerEntry(Action.valueOf(resultSet.getString("action").toUpperCase()), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime())));
+                    ledgerSection.add(new PlayerLedgerEntry(Action.valueOf(resultSet.getString("action").toUpperCase()), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime() + resultSet.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -819,7 +810,7 @@ public class DataHandler
                 }
 
                 while (rs.next()) {
-                    ledger.add(new PlayerLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime())));
+                    ledger.add(new PlayerLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime() + rs.getTime("time").getTime())));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -835,7 +826,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("insert into shared_account_ledgers (accountId, memberId, action, balance, amount, date) values (?,?,?,?,?,?, ?)");
+                statement = connection.prepareStatement("insert into shared_account_ledgers (accountId, playerId, action, balance, amount, date, time) values (?,?,?,?,?,?,?)");
                 statement.setString(1, accountId.toString());
                 statement.setString(2, entry.getMember().toString());
                 statement.setString(3, entry.getAction().name());

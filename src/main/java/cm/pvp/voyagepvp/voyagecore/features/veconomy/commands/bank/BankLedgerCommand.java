@@ -10,6 +10,7 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ public class BankLedgerCommand extends VoyageCommand
     private DataHandler handler;
     private VEconomy instance;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    private SimpleDateFormat timeForat = new SimpleDateFormat("HH:mm:ss");
 
     @ConfigPopulate("features.veconomy.messages.ledger.entry")
     private String ledgerEntry;
@@ -71,7 +73,7 @@ public class BankLedgerCommand extends VoyageCommand
         }
 
         if (arguments.size() == 1) {
-            handler.getEntireLedger(id).whenComplete((entries, throwable) -> {
+            handler.getEntireLedger(id).whenCompleteAsync((entries, throwable) -> {
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
@@ -80,6 +82,8 @@ public class BankLedgerCommand extends VoyageCommand
                     sender.sendMessage(Format.colour(Format.format(noEntriesMessage, "{bank};" + arguments.get(0))));
                     return;
                 }
+
+                instance.getLogger().info("Entries: " + String.valueOf(entries.size()));
 
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(ledgerHeader));
@@ -91,7 +95,10 @@ public class BankLedgerCommand extends VoyageCommand
                         throw new MojangException("Couldn't get the username of " + entry.getMember().toString());
                     }
 
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + entry.getAction().name(), "{member};" + targetProfile.getName(), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()))));
+                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(),
+                            "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()),
+                            "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeForat.format(entry.getDate()),
+                            "{addedorremoved};" + (entry.getAction() == Action.DEPOSIT_MONEY ? "Removed" : "Added"))));
                 }
 
                 message.add(Format.colour(ledgerFooter));
@@ -107,7 +114,7 @@ public class BankLedgerCommand extends VoyageCommand
                 return;
             }
 
-            handler.getLedgersFrom(id, date).whenComplete((entries, throwable) -> {
+            handler.getLedgersFrom(id, date).whenCompleteAsync((entries, throwable) -> {
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
@@ -127,12 +134,24 @@ public class BankLedgerCommand extends VoyageCommand
                         throw new MojangException("Couldn't get the username of " + entry.getMember().toString() + ".");
                     }
 
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + entry.getAction().name(), "{member};" + targetProfile.getName(), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()))));
+                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeForat.format(entry.getDate()))));
                 }
 
                 message.add(Format.colour(ledgerFooter));
                 sender.sendMessage(message.toArray(new String[0]));
             });
+        }
+    }
+
+    public String getFancyActionName(Action action)
+    {
+        switch (action) {
+            case DEPOSIT_MONEY:
+                return "Deposited Money.";
+            case WITHDRAW_MONEY:
+                return "Withdrew Money";
+            default:
+                return "ERROR";
         }
     }
 }
