@@ -1,6 +1,7 @@
 package cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared;
 
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.VEconomyResponse;
@@ -9,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +34,7 @@ public class SharedAccount
         } else {
             balance = balance + amount;
             handler.updateSharedAccount(this);
+            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(Action.DEPOSIT_MONEY, member, balance, amount, new Date()));
             return VEconomyResponse.builder().action(Action.DEPOSIT_MONEY)
                     .response(Response.SUCCESS).value("member", member).build();
         }
@@ -46,6 +49,7 @@ public class SharedAccount
         } else {
             balance = balance - amount;
             handler.updateSharedAccount(this);
+            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(Action.WITHDRAW_MONEY, member, balance, amount, new Date()));
             return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY)
                     .response(Response.SUCCESS).value("member", member).build();
         }

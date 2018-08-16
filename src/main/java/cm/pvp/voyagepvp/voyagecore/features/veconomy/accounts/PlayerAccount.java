@@ -1,6 +1,7 @@
 package cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts;
 
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.PlayerLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.VEconomyResponse;
@@ -8,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Getter
@@ -27,6 +29,7 @@ public class PlayerAccount
         } else {
             balance = balance + amount;
             handler.updatePlayerAccount(this);
+            handler.addPlayerLedgerEntry(owner, new PlayerLedgerEntry(Action.DEPOSIT_MONEY, amount, balance, new Date()));
             return VEconomyResponse.builder().action(Action.DEPOSIT_MONEY)
                     .response(Response.SUCCESS).build();
         }
@@ -41,6 +44,7 @@ public class PlayerAccount
         } else {
             balance = balance - amount;
             handler.updatePlayerAccount(this);
+            handler.addPlayerLedgerEntry(owner, new PlayerLedgerEntry(Action.WITHDRAW_MONEY, amount, balance, new Date()));
             return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY)
                     .response(Response.SUCCESS).build();
         }

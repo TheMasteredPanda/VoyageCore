@@ -3,8 +3,11 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy;
 import cm.pvp.voyagepvp.voyagecore.api.db.DBUtil;
 import cm.pvp.voyagepvp.voyagecore.api.tasks.Tasks;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.PlayerAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.PlayerLedgerEntry;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.MembershipRequest;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -12,14 +15,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -29,6 +29,9 @@ public class DataHandler
 
     @Getter(value = AccessLevel.PROTECTED)
     private HikariDataSource source;
+
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
     public DataHandler(VEconomy feature)
     {
@@ -58,7 +61,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null , balance double(13, 2) not null, amount double(13, 2) not null, date date not null)");
+                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null , balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -93,7 +96,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, memberId varchar(40) not null, action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date date not null)");
+                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, memberId varchar(40) not null, action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date datetime not null, time time not null)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -675,5 +678,199 @@ public class DataHandler
         source.close();
     }
 
+    public CompletableFuture<LinkedList<SharedLedgerEntry>> getLedgersFrom(UUID sharedAccountId, Date date)
+    {
 
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Connection connection = source.getConnection();
+                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=? and date=?");
+                statement.setString(1, sharedAccountId.toString());
+                statement.setDate(2, new java.sql.Date(dateFormat.parse(dateFormat.format(date)).getTime()));
+                return statement.executeQuery();
+            } catch (SQLException | ParseException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }).thenApply(resultSet -> {
+            LinkedList<SharedLedgerEntry> ledgerSection = Lists.newLinkedList();
+
+            try {
+                resultSet.last();
+
+                int row = resultSet.getRow();
+
+                if (row == 0) {
+                    resultSet.close();
+                    return ledgerSection;
+                }
+
+                while (resultSet.next()) {
+                    ledgerSection.add(new SharedLedgerEntry(Action.valueOf(resultSet.getString("action").toUpperCase()), UUID.fromString(resultSet.getString("memberId")), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime())));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return ledgerSection;
+        });
+    }
+
+    public CompletableFuture<LinkedList<SharedLedgerEntry>> getEntireLedger(UUID sharedAccountId)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Connection connection = source.getConnection();
+                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=?");
+                statement.setString(1, sharedAccountId.toString());
+                return statement.executeQuery();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }).thenApply(rs -> {
+            LinkedList<SharedLedgerEntry> ledger = Lists.newLinkedList();
+
+            try {
+                rs.last();
+
+                int row = rs.getRow();
+
+                if (row == 0) {
+                    rs.close();
+                    return ledger;
+                }
+
+                while (rs.next()) {
+                    ledger.add(new SharedLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), UUID.fromString(rs.getString("memberId")), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime())));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return ledger;
+        });
+    }
+
+    public CompletableFuture<LinkedList<PlayerLedgerEntry>> getPersonalLedgersFrom(UUID playerId, Date date)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Connection connection = source.getConnection();
+                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=? and date=?");
+                statement.setString(1, playerId.toString());
+                statement.setDate(2, new java.sql.Date(dateFormat.parse(dateFormat.format(date)).getTime()));
+                return statement.executeQuery();
+            } catch (SQLException | ParseException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }).thenApply(resultSet -> {
+            LinkedList<PlayerLedgerEntry> ledgerSection = Lists.newLinkedList();
+
+            try {
+                resultSet.last();
+
+                int row = resultSet.getRow();
+
+                if (row == 0) {
+                    resultSet.close();
+                    return ledgerSection;
+                }
+
+                while (resultSet.next()) {
+                    ledgerSection.add(new PlayerLedgerEntry(Action.valueOf(resultSet.getString("action").toUpperCase()), resultSet.getDouble("balance"), resultSet.getDouble("amount"), new Date(resultSet.getDate("date").getTime())));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return ledgerSection;
+        });
+    }
+
+    public CompletableFuture<LinkedList<PlayerLedgerEntry>> getEntirePersonalLedger(UUID playerId)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Connection connection = source.getConnection();
+                PreparedStatement statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=?");
+                statement.setString(1, playerId.toString());
+                return statement.executeQuery();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }).thenApply(rs -> {
+            LinkedList<PlayerLedgerEntry> ledger = Lists.newLinkedList();
+
+            try {
+                rs.last();
+
+                int row = rs.getRow();
+
+                if (row == 0) {
+                    rs.close();
+                    return ledger;
+                }
+
+                while (rs.next()) {
+                    ledger.add(new PlayerLedgerEntry(Action.valueOf(rs.getString("action").toUpperCase()), rs.getDouble("balance"), rs.getDouble("amount"), new Date(rs.getDate("date").getTime())));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return ledger;
+        });
+    }
+
+    public void addSharedLedgerEntry(UUID accountId, SharedLedgerEntry entry)
+    {
+        Tasks.runAsync(() -> {
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("insert into shared_account_ledgers (accountId, memberId, action, balance, amount, date) values (?,?,?,?,?,?, ?)");
+                statement.setString(1, accountId.toString());
+                statement.setString(2, entry.getMember().toString());
+                statement.setString(3, entry.getAction().name());
+                statement.setDouble(4, entry.getBalance());
+                statement.setDouble(5, entry.getAmount());
+                statement.setDate(6, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
+                statement.setTime(7, new Time(dateFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.execute();
+            } catch (SQLException | ParseException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        });
+    }
+
+    public void addPlayerLedgerEntry(UUID playerId, PlayerLedgerEntry entry)
+    {
+        Tasks.runAsync(() -> {
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection())  {
+                statement = connection.prepareStatement("insert into player_ledger (owner, action, balance, amount, date, time) values (?,?,?,?,?,?)");
+                statement.setString(1, playerId.toString());
+                statement.setString(2, entry.getAction().name());
+                statement.setDouble(3, entry.getBalance());
+                statement.setDouble(4, entry.getAmount());
+                statement.setDate(5, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
+                statement.setTime(6, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.execute();
+            } catch (SQLException | ParseException e) {
+               e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        });
+    }
 }

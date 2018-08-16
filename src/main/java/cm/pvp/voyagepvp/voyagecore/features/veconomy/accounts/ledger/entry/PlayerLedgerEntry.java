@@ -15,5 +15,5 @@ public class PlayerLedgerEntry
     private Action action;
     private double amount;
     private double balance;
-    private Date datee;
+    private Date date;
 }
