@@ -43,7 +43,7 @@ public class BankTransferCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.exceedsmaximumamount")
     private String exceedsMaximumAmountMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.specifybankowner")
+    @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")
     private String specifyBankOwnerMessage;
 
     @ConfigPopulate("features.veconomy.messages.error")
@@ -123,7 +123,6 @@ public class BankTransferCommand extends VoyageCommand
                 to = feature.getAccount(bankRequested);
             }
 
-
             if (to == null) {
                 sender.sendMessage(Format.colour(errorMessage));
                 return;
@@ -174,7 +173,7 @@ public class BankTransferCommand extends VoyageCommand
 
             if (from.subtract(amount).getResponse() == Response.SUCCESS && target.getAccount().add(amount).getResponse() == Response.SUCCESS) {
                 feature.getHandler().addSharedLedgerEntry(from.getId(), new SharedLedgerEntry(from.getId(), Action.WITHDRAW_MONEY, p.getUniqueId(), from.getBalance(), amount, new Date(), ImmutableMap.<String, Object>builder().put("destinationIsBank", false).put("destination", target.getAccount().getOwner().toString()).build()));
-                feature.getHandler().addPlayerLedgerEntry(target.getAccount().getOwner(), new PlayerLedgerEntry(target.getAccount().getOwner(), Action.DEPOSIT_MONEY, amount, target.getAccount().getBalance(), new Date(), ImmutableMap.<String, Object>builder().put("originIsBank", true).put("origin", from.getName()).build()));
+                feature.getHandler().addPlayerLedgerEntry(target.getAccount().getOwner(), new PlayerLedgerEntry(target.getAccount().getOwner(), Action.DEPOSIT_MONEY, amount, target.getAccount().getBalance(), new Date(), ImmutableMap.<String, Object>builder().put("originIsBank", true).put("origin", feature.getInstance().getMojangLookup().lookup(from.getOwner()).get().getName() + "/" + from.getName()).build()));
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + profile.getName())));
             } else {
                 sender.sendMessage(Format.colour(errorMessage));

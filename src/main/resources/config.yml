@@ -68,8 +68,8 @@ features:
         header: "&8&m&l-----------------------------------------"
         footer: "&8&m&l-----------------------------------------"
         entry:
-          withdrew: "You withdrew {amount} to {destination} on {date} at {time}."
-          deposited: "{player} Deposited {amount} from {origin} on {date} at {time}."
+          withdrew: "&8» &aYou withdrew {amount} to {destination} on {date} at {time}."
+          deposited: "&8» &a{player} Deposited {amount} from {origin} on {date} at {time}."
       admin:
         gavemoney: "{commandprefix} Gave {amount} to {receiver}."
         clearedbalance: "{commandprefix} Cleared balance of player {target}."
@@ -81,14 +81,15 @@ features:
           deleted: "{commandprefix} Bank {bank}, previously owned by {target}, has been deleted."
       bank:
         ledger:
-          withdrew: "&8» {member} withdrew {amount} to {destination} on {date} at {time}."
-          deposited: "&8» &a{player} deposited {amount} from {destination}, making the total balance {balance}, on {date} at {time}."
+          entry:
+            withdrew: "&8» &a{member} withdrew {amount} to {destination} on {date} at {time}."
+            deposited: "&8» &a{player} deposited {amount} from {origin}, making the total balance {balance}, on {date} at {time}."
         history:
           header: "&8&m&l-----------------------------------------"
           footer: "&8&m&l-----------------------------------------"
           entry:
             promoted: "&8» &a{member} promoted {target} on {date} at {time}."
-            demoted: "&8» &a{member} demoted {target} on {date} at {time}."
+            demoted: "&8» &a{member} demoted bank{target} on {date} at {time}."
             invite-rejected: "&8» &a{player} rejected a membership invitation sent by {requester} on {date} at {time}."
             invite-accepted: "&8» &a{player} accept a membership invitation sent by {requester} on {date} at {time}."
             ownership-transfer: "&8» &a{membemesssagesr} transferred the ownership to {newowner} on {date} at {time}."
@@ -129,10 +130,8 @@ features:
         playerispoa: "{commandprefix} &cPlayer is POA."
         promotedplayer: "{commandprefix} Promoted player {taexceedsrget} from Member to POA."
         removedmember: "{commandprefix} Removed member from bank {target}."
-#        playernotfound: "{commandprefix} &cPlayer {target} not found."
         transfersuccess: "{commandprefix} Transferred amount {amount} to {receiver}."
         exceedsmaximumamount: "{commandprefix} Sending {amount} to {receiver} would exceed the maximum amount of money one may keep in a bank."
-#        specifybankowner: "{commandprefix} There is more than one bank under the name of {name}. Please specify the owner of the bank when you invoke the command again in the format of <owner name>/<bank name>"
         transferownershipquestion: "{commandprefix} To confirm the transferal, invoke the command with the same arguments again."
         transferredownership: "{commandprefix} Bank ownership transferred."
         exceedsminimumamount: "{commandprefix} Removing {amount} from {receiver}s bank will put them in a negative balance. "

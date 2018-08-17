@@ -34,7 +34,7 @@ public class BankBalanceClearCommand extends VoyageCommand
 
     public BankBalanceClearCommand(VEconomy feature)
     {
-        super(null, "voyagecore.veconomy.admin.bank.balance.clear", "Clear a banks balance.", true, "clear");
+        super(null, "voyagecore.veconomy.admin.bank.balance.clear", "Clear a banks balance.", false, "clear");
         this.feature = feature;
 
         ArgumentField playerArg = new ArgumentField("owner's name (player name)", true);
@@ -62,7 +62,7 @@ public class BankBalanceClearCommand extends VoyageCommand
 
         SharedAccount account = feature.getAccount(accountId);
 
-        if (account.subtract(account.getBalance(), null).getResponse() == Response.SUCCESS) {
+        if (account.subtract(account.getBalance()).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(clearedBankMessage, "{bank};" + arguments.get(1))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

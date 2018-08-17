@@ -95,7 +95,7 @@ public class TransferCommand extends VoyageCommand
                 feature.getHandler().addPlayerLedgerEntry(p.getUniqueId(), new PlayerLedgerEntry(p.getUniqueId(), Action.WITHDRAW_MONEY, amount, player.getAccount().getBalance(), new Date(), ImmutableMap.<String, Object>builder()
                         .put("destinationIsBank", false).put("destination", target.getReference().get().getUniqueId().toString()).build()));
                 feature.getHandler().addPlayerLedgerEntry(target.getAccount().getOwner(), new PlayerLedgerEntry(target.getAccount().getOwner(), Action.DEPOSIT_MONEY, amount, target.getAccount().getBalance(), new Date(),
-                        ImmutableMap.<String, Object>builder().put("originIsBank", true).put("origin", p.getUniqueId().toString()).build()));
+                        ImmutableMap.<String, Object>builder().put("originIsBank", false).put("origin", "their personal account").build()));
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + arguments.get(1))));
             }
         } else if (arguments.get(0).equals("b")) {
@@ -150,10 +150,11 @@ public class TransferCommand extends VoyageCommand
             }
 
             if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.add(amount).getResponse() == Response.SUCCESS) {
+
                 feature.getHandler().addPlayerLedgerEntry(p.getUniqueId(), new PlayerLedgerEntry(p.getUniqueId(), Action.WITHDRAW_MONEY, amount, player.getAccount().getBalance(), new Date(), ImmutableMap.<String, Object>builder()
-                        .put("destinationIsBank", true).put("destination", target.getName()).build()));
+                        .put("destinationIsBank", true).put("destination", feature.getInstance().getMojangLookup().lookup(target.getOwner()).get().getName() + "/" + target.getName()).build()));
                 feature.getHandler().addSharedLedgerEntry(target.getId(), new SharedLedgerEntry(target.getId(), Action.DEPOSIT_MONEY, p.getUniqueId(), target.getBalance(), amount, new Date(),
-                        ImmutableMap.<String, Object>builder().put("originIsBank", false).put("origin", p.getUniqueId().toString()).build()));
+                        ImmutableMap.<String, Object>builder().put("originIsBank", false).put("origin", "their personal account").build()));
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + target.getName())));
             }
         }

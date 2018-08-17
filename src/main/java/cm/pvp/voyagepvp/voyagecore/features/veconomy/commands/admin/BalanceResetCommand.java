@@ -9,7 +9,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
@@ -29,7 +28,7 @@ public class BalanceResetCommand extends VoyageCommand
 
     public BalanceResetCommand(VEconomy feature)
     {
-        super(null, "voyagecore.veconomy.admin.balance.reset", "Reset a players balance to the starting amount", true, "reset");
+        super(null, "voyagecore.veconomy.admin.balance.reset", "Reset a players balance to the starting amount", false, "reset");
 
         ArgumentField playerArg = new ArgumentField("player name", true);
         playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
@@ -50,7 +49,7 @@ public class BalanceResetCommand extends VoyageCommand
 
         double subtractionAmount = player.getAccount().getBalance() - startAmount;
 
-        if (player.getAccount().subtract(subtractionAmount, ((Player) sender).getUniqueId()).getResponse() == Response.SUCCESS) {
+        if (player.getAccount().subtract(subtractionAmount).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(resetBalanceMessage, "{target};" + arguments.get(0))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

@@ -116,7 +116,7 @@ public class BankLedgerCommand extends VoyageCommand
             id = bankIds.get(0);
         }
 
-        if (arguments.size() == 0) {
+        if (arguments.size() == 1) {
             instance.getHandler().getEntireLedger(id).whenCompleteAsync((entries, throwable) -> {
                 if (throwable != null) {
                     throw new RuntimeException(throwable);

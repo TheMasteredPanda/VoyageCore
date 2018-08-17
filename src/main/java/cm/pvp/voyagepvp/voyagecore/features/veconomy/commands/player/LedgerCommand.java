@@ -45,13 +45,13 @@ public class LedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
-    private LedgerCommand(VEconomy instance)
+    public LedgerCommand(VEconomy instance)
     {
         super(null, "voyagecore.veconomy.player.ledger", "View the ledger for your own personal account.", true, "ledger");
         this.instance = instance;
 
         try {
-            addArguments(new ArgumentField("date (yyyy/mm/dd", false));
+            addArguments(new ArgumentField("date (yyyy/mm/dd)", false));
             instance.getInstance().getMainConfig().populate(this);
         } catch (OperationNotSupportedException e) {
             e.printStackTrace();
@@ -65,12 +65,14 @@ public class LedgerCommand extends VoyageCommand
 
         if (arguments.size() == 0) {
             instance.getHandler().getEntirePersonalLedger(p.getUniqueId()).whenCompleteAsync((entries, throwable) -> {
+                System.out.println("Called. Entries: " + (String.valueOf(entries.size())));
+
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
 
                 if (entries.size() == 0) {
-                    sender.sendMessage(Format.colour(Format.format(noEntriesMessage, "{bank};" + arguments.get(0))));
+                    sender.sendMessage(Format.colour(Format.format(noEntriesMessage)));
                     return;
                 }
 
@@ -78,6 +80,7 @@ public class LedgerCommand extends VoyageCommand
                 message.add(Format.colour(ledgerHeader));
 
                 for (PlayerLedgerEntry entry : entries) {
+                    System.out.println("Entry");
                     String messageEntry = null;
 
                     if (entry.getAction().equals(Action.WITHDRAW_MONEY)) {
@@ -86,13 +89,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
-
-                            if (!player.isPresent()) {
-                                throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
-                            }
-
-                            destination = player.get().getName();
+                            destination = (String) entry.getData().get("destination");
                         }
 
                         messageEntry = Format.format(withdrewEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
@@ -106,13 +103,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
-
-                            if (!playerOrigin.isPresent()) {
-                                throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
-                            }
-
-                            origin = playerOrigin.get().getName();
+                            origin = (String) entry.getData().get("origin");
                         }
 
                         messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
@@ -121,6 +112,7 @@ public class LedgerCommand extends VoyageCommand
                     }
 
                     if (messageEntry == null) {
+                        System.out.println("Message is null.");
                         continue;
                     }
 

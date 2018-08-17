@@ -8,7 +8,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
@@ -25,7 +24,7 @@ public class BalanceClearCommand extends VoyageCommand
 
     public BalanceClearCommand(VEconomy feature)
     {
-        super(null, "voyagecore.veconomy.admin.balance.clear", "Clear a players balance", true, "clear");
+        super(null, "voyagecore.veconomy.admin.balance.clear", "Clear a players balance", false, "clear");
         this.feature = feature;
 
         ArgumentField playerArg = new ArgumentField("player name", true);
@@ -42,7 +41,7 @@ public class BalanceClearCommand extends VoyageCommand
     {
         VEconomyPlayer player = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId());
 
-        if (player.getAccount().subtract(player.getAccount().getBalance(), ((Player) sender).getUniqueId()).getResponse() == Response.SUCCESS) {
+        if (player.getAccount().subtract(player.getAccount().getBalance()).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(clearedBalanceMessage, "{target};" + arguments.get(0))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

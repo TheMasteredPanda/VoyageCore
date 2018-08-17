@@ -9,7 +9,6 @@ import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.PlayerLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
@@ -84,12 +83,12 @@ public class BankLedgerCommand extends VoyageCommand
 
         SharedAccount account = instance.getAccount(id);
 
-        if (account.isMember(p.getUniqueId()) || !account.getMembers().get(p.getUniqueId()).equals(SharedAccount.Type.POA) || !account.getOwner().equals(p.getUniqueId())) {
+        if (!account.isMember(p.getUniqueId()) || (!account.getMembers().get(p.getUniqueId()).equals(SharedAccount.Type.POA) && !account.getOwner().equals(p.getUniqueId())) || !account.getOwner().equals(p.getUniqueId())) {
             sender.sendMessage(Format.colour(noPermissionMessage));
             return;
         }
 
-        if (arguments.size() == 0) {
+        if (arguments.size() == 1) {
             instance.getHandler().getEntireLedger(id).whenCompleteAsync((entries, throwable) -> {
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
@@ -112,13 +111,7 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player1 = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
-
-                            if (!player1.isPresent()) {
-                                throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
-                            }
-
-                            destination = player1.get().getName();
+                            destination = (String) entry.getData().get("destination");
                         }
 
                         messageEntry = Format.format(withdrewEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
@@ -132,17 +125,17 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+                            origin = (String) entry.getData().get("origin");
+                        }
 
-                            if (!playerOrigin.isPresent()) {
-                                throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
-                            }
+                        Optional<PlayerProfile> entryPlayer = instance.getInstance().getMojangLookup().lookup(entry.getPlayer());
 
-                            origin = playerOrigin.get().getName();
+                        if (!entryPlayer.isPresent()) {
+                            throw new MojangException("Couldn't get " + entry.getPlayer().toString() + " from Mojang DB.");
                         }
 
                         messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
-                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin);
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin, "{player};" + entryPlayer.get().getName());
 
                     }
 
@@ -150,7 +143,7 @@ public class BankLedgerCommand extends VoyageCommand
                         continue;
                     }
 
-                    message.add(messageEntry);
+                    message.add(Format.colour(messageEntry));
                 }
 
                 message.add(Format.colour(ledgerFooter));
@@ -166,7 +159,7 @@ public class BankLedgerCommand extends VoyageCommand
                 return;
             }
 
-            instance.getHandler().getPersonalLedgersFrom(p.getUniqueId(), date).whenCompleteAsync((entries, throwable) -> {
+            instance.getHandler().getLedgersFrom(p.getUniqueId(), date).whenCompleteAsync((entries, throwable) -> {
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
@@ -174,12 +167,13 @@ public class BankLedgerCommand extends VoyageCommand
                 if (entries.size() == 0) {
                     sender.sendMessage(Format.colour(Format.format(noEntriesMessage, "{bank};" + arguments.get(0))));
                     return;
+
                 }
 
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(ledgerHeader));
 
-                for (PlayerLedgerEntry entry : entries) {
+                for (SharedLedgerEntry entry : entries) {
                     String messageEntry = null;
 
                     if (entry.getAction().equals(Action.WITHDRAW_MONEY)) {
@@ -188,13 +182,7 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player1 = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
-
-                            if (!player1.isPresent()) {
-                                throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
-                            }
-
-                            destination = player1.get().getName();
+                            destination = (String) entry.getData().get("destination");
                         }
 
                         messageEntry = Format.format(withdrewEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
@@ -208,21 +196,27 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
-
-                            if (!playerOrigin.isPresent()) {
-                                throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
-                            }
-
-                            origin = playerOrigin.get().getName();
+                            origin = (String) entry.getData().get("origin");
                         }
 
-                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
-                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin);
+                        System.out.println("Origin: " + origin);
 
+                        Optional<PlayerProfile> entryPlayer = instance.getInstance().getMojangLookup().lookup(entry.getPlayer());
+
+                        if (!entryPlayer.isPresent()) {
+                            throw new MojangException("Couldn't get " + entry.getPlayer().toString() + " from Mojang DB.");
+                        }
+
+                        System.out.println("Entry player is present.");
+
+                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin, "{player};" + entryPlayer.get().getName());
+
+                        System.out.println("Formatted entry.");
                     }
 
                     if (messageEntry == null) {
+                        System.out.println("Entry is null. Action: " + entry.getAction().name());
                         continue;
                     }
 

@@ -99,7 +99,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, playerId varchar(40), action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date datetime not null, time time not null)");
+                statement = connection.prepareStatement("create table if not exists shared_account_ledgers(accountId varchar(40) not null, playerId varchar(40), action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null, data text)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -755,7 +755,7 @@ public class DataHandler
 
             try {
                 Connection connection = source.getConnection();
-                statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=? and date=?");
+                statement = connection.prepareStatement("select * from player_ledger where owner=? and date=?");
                 statement.setString(1, playerId.toString());
                 statement.setDate(2, new java.sql.Date(dateFormat.parse(dateFormat.format(date)).getTime()));
                 set = statement.executeQuery();
@@ -782,7 +782,7 @@ public class DataHandler
 
             try {
                 Connection connection = source.getConnection();
-                statement = connection.prepareStatement("select * from shared_account_ledgers where accountId=?");
+                statement = connection.prepareStatement("select * from player_ledger where owner=?");
                 statement.setString(1, playerId.toString());
                 set = statement.executeQuery();
 
@@ -805,14 +805,16 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("insert into shared_account_ledgers (accountId, playerId, action, balance, amount, date, time) values (?,?,?,?,?,?,?)");
+                statement = connection.prepareStatement("insert into shared_account_ledgers (accountId, playerId, action, balance, amount, date, time, data) values (?,?,?,?,?,?,?,?)");
                 statement.setString(1, accountId.toString());
                 statement.setString(2, entry.getPlayer().toString());
                 statement.setString(3, entry.getAction().name());
                 statement.setDouble(4, entry.getBalance());
                 statement.setDouble(5, entry.getAmount());
+                System.out.println(entry.getDate().toString());
                 statement.setDate(6, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
                 statement.setTime(7, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.setString(8, gson.toJson(entry.getData(), HashMap.class));
                 statement.execute();
             } catch (SQLException | ParseException e) {
                 e.printStackTrace();
@@ -828,7 +830,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection())  {
-                statement = connection.prepareStatement("insert into player_ledger (owner, action, player, balance, amount, date, time) values (?,?,?,?,?,?,?)");
+                statement = connection.prepareStatement("insert into player_ledger (owner, action, balance, amount, date, time, data) values (?,?,?,?,?,?,?)");
                 statement.setString(1, playerId.toString());
                 statement.setString(2, entry.getAction().name());
                 statement.setDouble(3, entry.getBalance());

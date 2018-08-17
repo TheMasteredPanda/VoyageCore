@@ -73,7 +73,7 @@ public class BankBalanceAddCommand extends VoyageCommand
             return;
         }
 
-        if (account.add(amount, null).getResponse() == Response.SUCCESS) {
+        if (account.add(amount).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(addedMoneyMessage, "{amount};" + feature.getVaultHook().format(amount), "{bank};" + arguments.get(1))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

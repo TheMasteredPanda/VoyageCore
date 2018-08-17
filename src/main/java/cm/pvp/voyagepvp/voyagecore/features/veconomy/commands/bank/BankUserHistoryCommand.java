@@ -64,7 +64,7 @@ public class BankUserHistoryCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.playernotfound")
     private String playerNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.bank.specifybankowner")
+    @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")
     private String specifyBankOwnerMessage;
 
     @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
