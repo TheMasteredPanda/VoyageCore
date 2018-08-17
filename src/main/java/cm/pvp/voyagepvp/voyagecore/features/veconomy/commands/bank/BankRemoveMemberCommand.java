@@ -46,7 +46,7 @@ public class BankRemoveMemberCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.playernotfound")
     private String playerNotFoundMessage;
 
-    @ConfigPopulate("features.veconomy.messages.specifyaccountowner")
+    @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")
     private String specifyBankOwnerMessage;
 
     public BankRemoveMemberCommand(VEconomy feature)

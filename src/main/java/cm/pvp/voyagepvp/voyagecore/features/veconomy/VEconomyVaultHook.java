@@ -280,7 +280,7 @@ public class VEconomyVaultHook extends AbstractEconomy
     {
         VEconomyPlayer vEconomyPlayer = feature.get(player.getUniqueId());
 
-        VEconomyResponse res = vEconomyPlayer.getAccount().subtract(amount, null);
+        VEconomyResponse res = vEconomyPlayer.getAccount().subtract(amount);
 
         if (res.getResponse() == Response.SUCCESS) {
             return new EconomyResponse(amount, vEconomyPlayer.getAccount().getBalance(), EconomyResponse.ResponseType.SUCCESS, null);
@@ -311,7 +311,7 @@ public class VEconomyVaultHook extends AbstractEconomy
     {
         VEconomyPlayer vEconomyPlayer = feature.get(player.getUniqueId());
 
-        VEconomyResponse res = vEconomyPlayer.getAccount().subtract(amount, null);
+        VEconomyResponse res = vEconomyPlayer.getAccount().subtract(amount);
 
         if (res.getResponse() == Response.SUCCESS) {
             return new EconomyResponse(amount, vEconomyPlayer.getAccount().getBalance(), EconomyResponse.ResponseType.SUCCESS, null);
@@ -341,7 +341,7 @@ public class VEconomyVaultHook extends AbstractEconomy
     {
         VEconomyPlayer vEconomyPlayer = feature.get(player.getUniqueId());
 
-        VEconomyResponse res = vEconomyPlayer.getAccount().add(amount, null);
+        VEconomyResponse res = vEconomyPlayer.getAccount().add(amount);
 
         if (res.getResponse() == Response.SUCCESS) {
             return new EconomyResponse(amount, vEconomyPlayer.getAccount().getBalance(), EconomyResponse.ResponseType.SUCCESS, null);
@@ -373,7 +373,7 @@ public class VEconomyVaultHook extends AbstractEconomy
     {
         VEconomyPlayer vEconomyPlayer = feature.get(player.getUniqueId());
 
-        VEconomyResponse res = vEconomyPlayer.getAccount().add(amount, null);
+        VEconomyResponse res = vEconomyPlayer.getAccount().add(amount);
 
         if (res.getResponse() == Response.SUCCESS) {
             return new EconomyResponse(amount, vEconomyPlayer.getAccount().getBalance(), EconomyResponse.ResponseType.SUCCESS, null);

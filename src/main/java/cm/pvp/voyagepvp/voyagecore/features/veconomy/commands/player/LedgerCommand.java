@@ -18,6 +18,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Optional;
+import java.util.UUID;
 
 public class LedgerCommand extends VoyageCommand
 {
@@ -34,8 +36,11 @@ public class LedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.ledger.footer")
     private String ledgerFooter;
 
-    @ConfigPopulate("features.veconomy.messages.ledger.entry")
-    private String ledgerEntry;
+    @ConfigPopulate("features.veconomy.messages.ledger.entry.withdrew")
+    private String withdrewEntry;
+
+    @ConfigPopulate("features.veconomy.messages.ledger.entry.deposited")
+    private String depositedEntry;
 
     @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
     private String incorrectDateFormatMessage;
@@ -73,16 +78,53 @@ public class LedgerCommand extends VoyageCommand
                 message.add(Format.colour(ledgerHeader));
 
                 for (PlayerLedgerEntry entry : entries) {
-                    PlayerProfile targetProfile = instance.getInstance().getMojangLookup().lookup(entry.getPlayer()).orElse(null);
+                    String messageEntry = null;
 
-                    if (targetProfile == null) {
-                        throw new MojangException("Couldn't get the username of " + entry.getPlayer().toString());
+                    if (entry.getAction().equals(Action.WITHDRAW_MONEY)) {
+                        String destination;
+
+                        if ((boolean) entry.getData().get("destinationIsBank")) {
+                            destination = "Bank " + entry.getData().get("destination");
+                        } else {
+                            Optional<PlayerProfile> player = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+
+                            if (!player.isPresent()) {
+                                throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
+                            }
+
+                            destination = player.get().getName();
+                        }
+
+                        messageEntry = Format.format(withdrewEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()),
+                                "{time};" + timeFormat.format(entry.getDate()), "{destination};" + destination);
                     }
 
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(),
-                            "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()),
-                            "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()),
-                            "{addedorremoved};" + (entry.getAction() != Action.DEPOSIT_MONEY ? "Removed" : "Added"))));
+                    if (entry.getAction().equals(Action.DEPOSIT_MONEY)) {
+                        String origin;
+
+                        if ((boolean) entry.getData().get("originIsBank")) {
+                            origin = "Bank " + entry.getData().get("origin");
+                        } else {
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+
+                            if (!playerOrigin.isPresent()) {
+                                throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
+                            }
+
+                            origin = playerOrigin.get().getName();
+                        }
+
+                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin);
+
+                    }
+
+                    if (messageEntry == null) {
+                        continue;
+                    }
+
+                    message.add(messageEntry);
                 }
 
                 message.add(Format.colour(ledgerFooter));
@@ -112,8 +154,53 @@ public class LedgerCommand extends VoyageCommand
                 message.add(Format.colour(ledgerHeader));
 
                 for (PlayerLedgerEntry entry : entries) {
-                    PlayerProfile targetProfile = instance.getInstance().getMojangLookup().lookup(entry.getPlayer()).orElse(null);
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + (targetProfile == null ? "Console" : targetProfile.getName()), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()))));
+                    String messageEntry = null;
+
+                    if (entry.getAction().equals(Action.WITHDRAW_MONEY)) {
+                        String destination;
+
+                        if ((boolean) entry.getData().get("destinationIsBank")) {
+                            destination = "Bank " + entry.getData().get("destination");
+                        } else {
+                            Optional<PlayerProfile> player = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+
+                            if (!player.isPresent()) {
+                                throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
+                            }
+
+                            destination = player.get().getName();
+                        }
+
+                        messageEntry = Format.format(withdrewEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()),
+                                "{time};" + timeFormat.format(entry.getDate()), "{destination};" + destination);
+                    }
+
+                    if (entry.getAction().equals(Action.DEPOSIT_MONEY)) {
+                        String origin;
+
+                        if ((boolean) entry.getData().get("originIsBank")) {
+                            origin = "Bank " + entry.getData().get("origin");
+                        } else {
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+
+                            if (!playerOrigin.isPresent()) {
+                                throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
+                            }
+
+                            origin = playerOrigin.get().getName();
+                        }
+
+                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin);
+
+                    }
+
+                    if (messageEntry == null) {
+                        continue;
+                    }
+
+                    message.add(messageEntry);
                 }
 
                 message.add(Format.colour(ledgerFooter));

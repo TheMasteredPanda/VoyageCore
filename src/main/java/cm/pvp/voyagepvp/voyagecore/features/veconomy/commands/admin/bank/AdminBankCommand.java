@@ -15,7 +15,8 @@ public class AdminBankCommand extends VoyageCommand
                 new DeleteBankCommand(feature), new DemoteMemberCommand(feature),
                 new PromoteMemberCommand(feature), new RemoveMemberCommand(feature),
                 new TransferOwnershipCommand(feature), new BankBalanceAddCommand(feature),
-                new BankInfoCommand(feature));
+                new BankInfoCommand(feature), new BankLedgerCommand(feature),
+                new BankUserHistoryCommand(feature));
     }
 
     @Override

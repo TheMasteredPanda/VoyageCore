@@ -39,7 +39,7 @@ public class VEconomy extends Feature implements Listener
 
     public VEconomy(VoyageCore instance)
     {
-        super(instance, "VEconomy", 1.0);
+        super(instance, "VEconomy", 3.1);
         handler = new DataHandler(this);
     }
 
@@ -107,7 +107,7 @@ public class VEconomy extends Feature implements Listener
 
         if (!handler.playerExists(e.getPlayer().getUniqueId())) {
             VEconomyPlayer player = handler.createPlayer(e.getPlayer());
-            player.getAccount().add(getInstance().getMainConfig().raw().getDouble("features.veconomy.startamount"), null);
+            player.getAccount().add(getInstance().getMainConfig().raw().getDouble("features.veconomy.startamount"));
             players.put(e.getPlayer().getUniqueId(), player);
         } else {
             players.put(e.getPlayer().getUniqueId(), handler.getPlayer(e.getPlayer()));

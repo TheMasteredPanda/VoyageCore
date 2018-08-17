@@ -11,17 +11,18 @@ import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.PlayerAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.PlayerLedgerEntry;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TransferCommand extends VoyageCommand
@@ -90,7 +91,11 @@ public class TransferCommand extends VoyageCommand
                 return;
             }
             
-            if (playerAccount.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && target.getAccount().add(amount, p.getUniqueId()).getResponse() == Response.SUCCESS) {
+            if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.getAccount().add(amount).getResponse() == Response.SUCCESS) {
+                feature.getHandler().addPlayerLedgerEntry(p.getUniqueId(), new PlayerLedgerEntry(p.getUniqueId(), Action.WITHDRAW_MONEY, amount, player.getAccount().getBalance(), new Date(), ImmutableMap.<String, Object>builder()
+                        .put("destinationIsBank", false).put("destination", target.getReference().get().getUniqueId().toString()).build()));
+                feature.getHandler().addPlayerLedgerEntry(target.getAccount().getOwner(), new PlayerLedgerEntry(target.getAccount().getOwner(), Action.DEPOSIT_MONEY, amount, target.getAccount().getBalance(), new Date(),
+                        ImmutableMap.<String, Object>builder().put("originIsBank", true).put("origin", p.getUniqueId().toString()).build()));
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + String.valueOf(amount), "{receiver};" + arguments.get(1))));
             }
         } else if (arguments.get(0).equals("b")) {
@@ -144,7 +149,11 @@ public class TransferCommand extends VoyageCommand
                 return;
             }
 
-            if (playerAccount.subtract(amount, p.getUniqueId()).getResponse() == Response.SUCCESS && target.add(amount, player.getReference().get().getUniqueId()).getResponse() == Response.SUCCESS) {
+            if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.add(amount).getResponse() == Response.SUCCESS) {
+                feature.getHandler().addPlayerLedgerEntry(p.getUniqueId(), new PlayerLedgerEntry(p.getUniqueId(), Action.WITHDRAW_MONEY, amount, player.getAccount().getBalance(), new Date(), ImmutableMap.<String, Object>builder()
+                        .put("destinationIsBank", true).put("destination", target.getName()).build()));
+                feature.getHandler().addSharedLedgerEntry(target.getId(), new SharedLedgerEntry(target.getId(), Action.DEPOSIT_MONEY, p.getUniqueId(), target.getBalance(), amount, new Date(),
+                        ImmutableMap.<String, Object>builder().put("originIsBank", false).put("origin", p.getUniqueId().toString()).build()));
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + target.getName())));
             }
         }

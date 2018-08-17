@@ -67,7 +67,9 @@ features:
       ledger:
         header: "&8&m&l-----------------------------------------"
         footer: "&8&m&l-----------------------------------------"
-        entry: "&8» &Player&8: &7{player} &8/ &aBalance After Action&8: &7{balance} &8/ &aAmount {addedorremoved}&8: &7{amount} &8/ &aAction&8: &7{action} &8/ &aDate&8: &7{date} &8/ &aTime&8: &7{time}"
+        entry:
+          withdrew: "You withdrew {amount} to {destination} on {date} at {time}."
+          deposited: "{player} Deposited {amount} from {origin} on {date} at {time}."
       admin:
         gavemoney: "{commandprefix} Gave {amount} to {receiver}."
         clearedbalance: "{commandprefix} Cleared balance of player {target}."
@@ -78,6 +80,9 @@ features:
           clearedbank: "{commandprefix} Cleared bank {bank}."
           deleted: "{commandprefix} Bank {bank}, previously owned by {target}, has been deleted."
       bank:
+        ledger:
+          withdrew: "&8» {member} withdrew {amount} to {destination} on {date} at {time}."
+          deposited: "&8» &a{player} deposited {amount} from {destination}, making the total balance {balance}, on {date} at {time}."
         history:
           header: "&8&m&l-----------------------------------------"
           footer: "&8&m&l-----------------------------------------"
@@ -86,7 +91,7 @@ features:
             demoted: "&8» &a{member} demoted {target} on {date} at {time}."
             invite-rejected: "&8» &a{player} rejected a membership invitation sent by {requester} on {date} at {time}."
             invite-accepted: "&8» &a{player} accept a membership invitation sent by {requester} on {date} at {time}."
-            ownership-transfer: "&8» &a{member} transferred the ownership to {newowner} on {date} at {time}."
+            ownership-transfer: "&8» &a{membemesssagesr} transferred the ownership to {newowner} on {date} at {time}."
             invite: "&8» &a{member} invited {player} to this bank on {date} at {time}."
             removed: "&8» &a{member} removed {player} on {date} at {time}."
             left: "&8» &a{member} left the bank on {date} at {time}."

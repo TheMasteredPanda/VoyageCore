@@ -64,7 +64,7 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null, player varchar(40), balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null)");
+                statement = connection.prepareStatement("create table if not exists player_ledger(owner varchar(40) not null, action varchar(20) not null, balance double(13, 2) not null, amount double(13, 2) not null, date date not null, time time not null, data text)");
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -708,7 +708,7 @@ public class DataHandler
                 set = statement.executeQuery();
 
                 while (set.next()) {
-                    ledger.add(new SharedLedgerEntry(UUID.fromString(set.getString("accountId")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("memberId")), set.getDouble("balance"), set.getDouble("amount"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
+                    ledger.add(new SharedLedgerEntry(UUID.fromString(set.getString("accountId")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("memberId")), set.getDouble("balance"), set.getDouble("amount"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime()), gson.fromJson(set.getString("data"), HashMap.class)));
                 }
             } catch (SQLException | ParseException e) {
                 e.printStackTrace();
@@ -734,7 +734,7 @@ public class DataHandler
                 set = statement.executeQuery();
 
                 while (set.next()) {
-                    ledger.add(new SharedLedgerEntry(UUID.fromString(set.getString("accountId")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("playerId")), set.getDouble("balance"), set.getDouble("amount"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
+                    ledger.add(new SharedLedgerEntry(UUID.fromString(set.getString("accountId")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("playerId")), set.getDouble("balance"), set.getDouble("amount"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime()), gson.fromJson(set.getString("data"), HashMap.class)));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -761,7 +761,7 @@ public class DataHandler
                 set = statement.executeQuery();
 
                 while (set.next()) {
-                    ledger.add(new PlayerLedgerEntry(UUID.fromString(set.getString("owner")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("player")), set.getDouble("amount"), set.getDouble("balance"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
+                    ledger.add(new PlayerLedgerEntry(UUID.fromString(set.getString("owner")), Action.valueOf(set.getString("action").toUpperCase()), set.getDouble("amount"), set.getDouble("balance"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime()), gson.fromJson(set.getString("data"), HashMap.class)));
                 }
             } catch (SQLException | ParseException e) {
                 e.printStackTrace();
@@ -787,7 +787,7 @@ public class DataHandler
                 set = statement.executeQuery();
 
                 while (set.next()) {
-                    ledger.add(new PlayerLedgerEntry(UUID.fromString(set.getString("owner")), Action.valueOf(set.getString("action").toUpperCase()), UUID.fromString(set.getString("player")), set.getDouble("amount"), set.getDouble("balance"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime())));
+                    ledger.add(new PlayerLedgerEntry(UUID.fromString(set.getString("owner")), Action.valueOf(set.getString("action").toUpperCase()), set.getDouble("amount"), set.getDouble("balance"), new Date(set.getDate("date").getTime() + set.getTime("time").getTime()), gson.fromJson(set.getString("data"), HashMap.class)));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -831,11 +831,11 @@ public class DataHandler
                 statement = connection.prepareStatement("insert into player_ledger (owner, action, player, balance, amount, date, time) values (?,?,?,?,?,?,?)");
                 statement.setString(1, playerId.toString());
                 statement.setString(2, entry.getAction().name());
-                statement.setString(3, entry.getPlayer().toString());
-                statement.setDouble(4, entry.getBalance());
-                statement.setDouble(5, entry.getAmount());
-                statement.setDate(6, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
-                statement.setTime(7, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.setDouble(3, entry.getBalance());
+                statement.setDouble(4, entry.getAmount());
+                statement.setDate(5, new java.sql.Date(dateFormat.parse(dateFormat.format(entry.getDate())).getTime()));
+                statement.setTime(6, new Time(timeFormat.parse(timeFormat.format(entry.getDate())).getTime()));
+                statement.setString(7, gson.toJson(entry.getData()));
                 statement.execute();
             } catch (SQLException | ParseException e) {
                e.printStackTrace();

@@ -9,6 +9,7 @@ import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
+import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.PlayerLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
@@ -27,10 +28,13 @@ public class BankLedgerCommand extends VoyageCommand
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
-    @ConfigPopulate("features.veconomy.messages.ledger.entry")
-    private String ledgerEntry;
+    @ConfigPopulate("features.veconomy.messages.bank.ledger.entry.withdrew")
+    private String withdrewEntry;
 
-    @ConfigPopulate("features.veconomy.messages.ledger.noentries")
+    @ConfigPopulate("features.veconomy.messages.bank.ledger.entry.deposited")
+    private String depositedEntry;
+
+    @ConfigPopulate("features.veconomy.messages.noentries")
     private String noEntriesMessage;
 
     @ConfigPopulate("features.veconomy.messages.ledger.header")
@@ -48,7 +52,7 @@ public class BankLedgerCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.bank.specifyaccountowner")
     private String specifyBankMessage;
 
-    @ConfigPopulate("features.veconomy.messsages.bank.playernotfound")
+    @ConfigPopulate("features.veconomy.messages.playernotfound")
     private String playerNotFoundMessage;
 
     public BankLedgerCommand(VEconomy instance)
@@ -112,8 +116,8 @@ public class BankLedgerCommand extends VoyageCommand
             id = bankIds.get(0);
         }
 
-        if (arguments.size() == 1) {
-            handler.getEntireLedger(id).whenCompleteAsync((entries, throwable) -> {
+        if (arguments.size() == 0) {
+            instance.getHandler().getEntireLedger(id).whenCompleteAsync((entries, throwable) -> {
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
@@ -123,29 +127,64 @@ public class BankLedgerCommand extends VoyageCommand
                     return;
                 }
 
-                instance.getLogger().info("Entries: " + String.valueOf(entries.size()));
-
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(ledgerHeader));
 
                 for (SharedLedgerEntry entry : entries) {
-                    PlayerProfile targetProfile = instance.getInstance().getMojangLookup().lookup(entry.getPlayer()).orElse(null);
+                    String messageEntry = null;
 
-                    if (targetProfile == null) {
-                        throw new MojangException("Couldn't get the username of " + entry.getPlayer().toString());
+                    if (entry.getAction().equals(Action.WITHDRAW_MONEY)) {
+                        String destination;
+
+                        if ((boolean) entry.getData().get("destinationIsBank")) {
+                            destination = "Bank " + entry.getData().get("destination");
+                        } else {
+                            Optional<PlayerProfile> player1 = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+
+                            if (!player1.isPresent()) {
+                                throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
+                            }
+
+                            destination = player1.get().getName();
+                        }
+
+                        messageEntry = Format.format(withdrewEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()),
+                                "{time};" + timeFormat.format(entry.getDate()), "{destination};" + destination);
                     }
 
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(),
-                            "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()),
-                            "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()),
-                            "{addedorremoved};" + (entry.getAction() != Action.DEPOSIT_MONEY ? "Removed" : "Added"))));
+                    if (entry.getAction().equals(Action.DEPOSIT_MONEY)) {
+                        String origin;
+
+                        if ((boolean) entry.getData().get("originIsBank")) {
+                            origin = "Bank " + entry.getData().get("origin");
+                        } else {
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+
+                            if (!playerOrigin.isPresent()) {
+                                throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
+                            }
+
+                            origin = playerOrigin.get().getName();
+                        }
+
+                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin);
+
+                    }
+
+                    if (messageEntry == null) {
+                        continue;
+                    }
+
+                    message.add(messageEntry);
                 }
 
                 message.add(Format.colour(ledgerFooter));
                 sender.sendMessage(message.toArray(new String[0]));
             });
         } else {
-            Date date;
+            Date date = null;
 
             try {
                 date = dateFormat.parse(arguments.get(1));
@@ -154,7 +193,7 @@ public class BankLedgerCommand extends VoyageCommand
                 return;
             }
 
-            handler.getLedgersFrom(id, date).whenCompleteAsync((entries, throwable) -> {
+            instance.getHandler().getPersonalLedgersFrom(id, date).whenCompleteAsync((entries, throwable) -> {
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
@@ -167,14 +206,54 @@ public class BankLedgerCommand extends VoyageCommand
                 LinkedList<String> message = Lists.newLinkedList();
                 message.add(Format.colour(ledgerHeader));
 
-                for (SharedLedgerEntry entry : entries) {
-                    PlayerProfile targetProfile = instance.getInstance().getMojangLookup().lookup(entry.getPlayer()).orElse(null);
+                for (PlayerLedgerEntry entry : entries) {
+                    String messageEntry = null;
 
-                    if (targetProfile == null) {
-                        throw new MojangException("Couldn't get the username of " + entry.getPlayer().toString() + ".");
+                    if (entry.getAction().equals(Action.WITHDRAW_MONEY)) {
+                        String destination;
+
+                        if ((boolean) entry.getData().get("destinationIsBank")) {
+                            destination = "Bank " + entry.getData().get("destination");
+                        } else {
+                            Optional<PlayerProfile> player1 = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+
+                            if (!player1.isPresent()) {
+                                throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
+                            }
+
+                            destination = player1.get().getName();
+                        }
+
+                        messageEntry = Format.format(withdrewEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()),
+                                "{time};" + timeFormat.format(entry.getDate()), "{destination};" + destination);
                     }
 
-                    message.add(Format.colour(Format.format(ledgerEntry, "{action};" + instance.getFancyActionName(entry.getAction()), "{player};" + targetProfile.getName(), "{balance};" + String.valueOf(entry.getBalance()), "{amount};" + String.valueOf(entry.getAmount()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()))));
+                    if (entry.getAction().equals(Action.DEPOSIT_MONEY)) {
+                        String origin;
+
+                        if ((boolean) entry.getData().get("originIsBank")) {
+                            origin = "Bank " + entry.getData().get("origin");
+                        } else {
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+
+                            if (!playerOrigin.isPresent()) {
+                                throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
+                            }
+
+                            origin = playerOrigin.get().getName();
+                        }
+
+                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
+                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin);
+
+                    }
+
+                    if (messageEntry == null) {
+                        continue;
+                    }
+
+                    message.add(messageEntry);
                 }
 
                 message.add(Format.colour(ledgerFooter));

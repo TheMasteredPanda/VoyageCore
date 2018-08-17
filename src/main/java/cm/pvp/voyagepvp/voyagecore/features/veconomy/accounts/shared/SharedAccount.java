@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared;
 
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.DataHandler;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.SharedLedgerEntry;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.VEconomyResponse;
@@ -10,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -25,33 +23,30 @@ public class SharedAccount
     private HashMap<UUID, Type> members;
     private double balance;
 
-    public VEconomyResponse add(double amount, UUID player)
+    public VEconomyResponse add(double amount)
     {
         if (Double.isInfinite(balance + amount)) {
             return VEconomyResponse.builder().action(Action.DEPOSIT_MONEY)
                     .response(Response.INFINITY_OCCURRED)
-                    .value("amount", amount).value("currentBalance", balance).value("player", player).build();
+                    .value("amount", amount).value("currentBalance", balance).build();
         } else {
             balance = balance + amount;
             handler.updateSharedAccount(this);
-            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(id, Action.DEPOSIT_MONEY, player, balance, amount, new Date()));
             return VEconomyResponse.builder().action(Action.DEPOSIT_MONEY)
-                    .response(Response.SUCCESS).value("player", player).build();
+                    .response(Response.SUCCESS).build();
         }
     }
 
-    public VEconomyResponse subtract(double amount, UUID player)
+    public VEconomyResponse subtract(double amount)
     {
         if (Double.isInfinite(balance - amount)) {
             return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY)
                     .response(Response.INFINITY_OCCURRED).value("amount", amount)
-                    .value("currentBalance", balance).value("member", player).build();
+                    .value("currentBalance", balance).build();
         } else {
             balance = balance - amount;
             handler.updateSharedAccount(this);
-            handler.addSharedLedgerEntry(id, new SharedLedgerEntry(id, Action.WITHDRAW_MONEY, player, balance, amount, new Date()));
-            return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY)
-                    .response(Response.SUCCESS).value("member", player).build();
+            return VEconomyResponse.builder().action(Action.WITHDRAW_MONEY).response(Response.SUCCESS).build();
         }
     }
 
