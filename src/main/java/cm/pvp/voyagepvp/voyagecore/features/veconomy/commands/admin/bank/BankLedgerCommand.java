@@ -53,7 +53,7 @@ public class BankLedgerCommand extends VoyageCommand
 
     public BankLedgerCommand(VEconomy instance)
     {
-        super(null, "voyagecore.player.bank.ledger", "Command to view a banks ledger", true, "ledger");
+        super(null, "voyagecore.veconomy.admin.bank.ledger", "Command to view a banks ledger", true, "ledger");
         this.instance = instance;
         this.handler = instance.getHandler();
 

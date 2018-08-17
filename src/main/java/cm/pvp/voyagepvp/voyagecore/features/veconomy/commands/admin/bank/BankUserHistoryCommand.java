@@ -1,4 +1,4 @@
-package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.bank;
+package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin.bank;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
@@ -8,7 +8,6 @@ import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntry;
-import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
@@ -70,12 +69,9 @@ public class BankUserHistoryCommand extends VoyageCommand
     @ConfigPopulate("features.veconomy.messages.incorrectdateformat")
     private String incorrectDateFormatMessage;
 
-    @ConfigPopulate("features.veconomy.messages.nopermission")
-    private String noPermissionMessage;
-
     public BankUserHistoryCommand(VEconomy instance)
     {
-        super(null, "voyagecore.veconomy.player.bank.userhistory", "View the banks user history (promotions, demotions, etc)", true, "userhistory");
+        super(null, "voyagecore.veconomy.admin.bank.userhistory", "View the banks user history (promotions, demotions, etc)", true, "userhistory");
         this.instance = instance;
 
         try {
@@ -91,11 +87,10 @@ public class BankUserHistoryCommand extends VoyageCommand
     {
         UUID id = null;
         Player p = (Player) sender;
-        VEconomyPlayer player = instance.get(p);
         String[] split = arguments.get(0).split("/");
 
         if (split.length == 1) {
-            List<UUID> bankIds = player.getSharedAccounts();
+            List<UUID> bankIds = instance.getHandler().getSharedAccountsNamed(split[0]);
 
             if (bankIds.size() == 0) {
                 sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
@@ -118,7 +113,7 @@ public class BankUserHistoryCommand extends VoyageCommand
 
             VEconomyPlayer targetPlayer = instance.get(targetProfile.get().getId());
 
-            UUID account = targetPlayer.getSharedAccounts().stream().filter(id1 -> instance.getAccount(id1).getName().equalsIgnoreCase(split[1])).findFirst().orElse(null);
+            UUID account = targetPlayer.getSharedAccounts().stream().filter(id1 -> instance.getAccount(id1).getName().equalsIgnoreCase(split[1]) && instance.getAccount(id1).getOwner().equals(targetProfile.get().getId())).findFirst().orElse(null);
 
             if (account == null) {
                 sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank];" + arguments.get(0))));
@@ -126,13 +121,6 @@ public class BankUserHistoryCommand extends VoyageCommand
             }
 
             id = account;
-        }
-
-        SharedAccount account = instance.getAccount(id);
-
-        if (!account.isMember(p.getUniqueId()) || (!account.getMembers().get(p.getUniqueId()).equals(SharedAccount.Type.POA) && !account.getOwner().equals(p.getUniqueId())) || !account.getOwner().equals(p.getUniqueId())) {
-            sender.sendMessage(Format.colour(noPermissionMessage));
-            return;
         }
 
         if (arguments.size() == 1) {
