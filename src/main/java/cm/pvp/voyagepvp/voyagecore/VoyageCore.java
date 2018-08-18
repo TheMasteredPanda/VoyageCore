@@ -1,7 +1,10 @@
 package cm.pvp.voyagepvp.voyagecore;
 
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.Config;
+import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.BackupLookup;
+import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.LocalLookup;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.MojangLookup;
+import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.local.DefaultStore;
 import cm.pvp.voyagepvp.voyagecore.api.module.ModuleManager;
 import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
 import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
@@ -23,6 +26,8 @@ public class VoyageCore extends VoyagePlugin
 {
     private static VoyageCore instance;
     private MojangLookup mojangLookup;
+    private LocalLookup localLookup;
+    private BackupLookup backupLookup;
     private Config<VoyageCore> mainConfig;
 
     public VoyageCore()
@@ -43,6 +48,32 @@ public class VoyageCore extends VoyagePlugin
 
         return mojangLookup;
     }
+
+    public LocalLookup getLocalLookup()
+    {
+        if (localLookup == null) {
+            if (!mainConfig.raw().getBoolean("core.mariadb")) {
+                localLookup = new LocalLookup(new DefaultStore(null, null, null, null, 0), this);
+            } else {
+                localLookup = new LocalLookup(new DefaultStore(
+                        mainConfig.raw().getString("core.mariadb.username"), mainConfig.raw().getString("core.mariadb.passowrd"),
+                        mainConfig.raw().getString("core.mariadb.database"), mainConfig.raw().getString("core.mariadb.ip"),
+                        mainConfig.raw().getInt("core.mariadb.port")), this);
+            }
+        }
+
+        return localLookup;
+    }
+
+    public BackupLookup getBackupLookup()
+    {
+        if (backupLookup == null) {
+            backupLookup = new BackupLookup(this);
+        }
+
+        return backupLookup;
+    }
+
 
     @Override
     public void onLoad()

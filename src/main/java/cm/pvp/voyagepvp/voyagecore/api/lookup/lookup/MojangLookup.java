@@ -34,12 +34,23 @@ public class MojangLookup implements Lookup
             return lookup(namesCache.getIfPresent(name));
         }
 
-        return lookup(LookupUtil.getUniqueId(name));
+        UUID id = LookupUtil.getUniqueId(name);
+
+        if (id == null) {
+            return Optional.empty();
+        }
+
+        return lookup(id);
     }
 
     @Override
     public Optional<PlayerProfile> lookup(UUID uuid)
     {
+        System.out.println(uuid);
+        if (uuid == null) {
+            return Optional.empty();
+        }
+
         if (idCache.asMap().containsKey(uuid)) {
             return Optional.of(idCache.getIfPresent(uuid));
         }

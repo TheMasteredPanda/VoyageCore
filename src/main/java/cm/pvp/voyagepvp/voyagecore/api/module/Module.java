@@ -46,7 +46,7 @@ public class Module<T extends JavaPlugin>
         this.instance = instance;
         this.name = name;
         this.version = version;
-        logger = Logger.getLogger(getClass().getName());
+        logger = Logger.getLogger("Module " + getClass().getSimpleName());
         logger.setParent(instance.getLogger());
     }
 

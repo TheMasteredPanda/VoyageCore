@@ -1,3 +1,7 @@
+core:
+  locallookup:
+    #1 - Default (SQLite store), 2 - MariaDB
+    store: 1
 
 #Features
 features:
@@ -158,4 +162,3 @@ features:
       maximumbalance: -1
   norain:
     enabled: true
-

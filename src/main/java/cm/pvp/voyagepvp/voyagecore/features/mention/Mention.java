@@ -26,6 +26,7 @@ public class Mention extends Feature implements Listener
 {
     private Pattern behindCheck = Pattern.compile("(\\w+) (@)\\w+");
     private Pattern afterCheck = Pattern.compile("(@)\\w+ (\\w+)");
+    private Pattern check = Pattern.compile("@([a-zA-Z0-9_]{3,16})");
 
     @ConfigPopulate("features.mention.messages.playernotfound")
     private String playerNotFound;
@@ -55,10 +56,11 @@ public class Mention extends Feature implements Listener
     public void on(AsyncPlayerChatEvent e)
     {
         System.out.println("Invoked, message: " + e.getMessage());
-        String[] splitMessage = e.getMessage().split(" ");
-        LinkedList<String> names = Arrays.stream(splitMessage).filter(w -> w.matches("(@)\\w+")).collect(Collectors.toCollection(Lists::newLinkedList));
+        String[] splitMessage = Format.format(e.getFormat(), "%1$s;" + e.getPlayer().getDisplayName(), "%2$s;" + e.getMessage()).split(" ");
+        LinkedList<String> names = Arrays.stream(splitMessage).filter(w -> check.matcher(w).matches()).collect(Collectors.toCollection(Lists::newLinkedList));
         TextComponent message = new TextComponent();
 
+        System.out.println("Names: " + String.valueOf(names.size()));
 
         for (Iterator<String> iterator = names.iterator(); iterator.hasNext(); ) {
             String name = iterator.next();
@@ -69,17 +71,14 @@ public class Mention extends Feature implements Listener
 
                 if (!splitMsg.contains(name)) {
                     System.out.println("Doesn't contain name.");
+                    message.addExtra(splitMsg);
+                    message.addExtra(" ");
                     continue;
                 }
 
                 System.out.println("Contains name.");
 
                 String[] innerSplit = splitMsg.split(name);
-
-                if (splitMsg.matches(behindCheck.pattern())) {
-                    System.out.println("Behind checked out.");
-                    message.addExtra(Format.colour(innerSplit[0]));
-                }
 
                 Optional<PlayerProfile> optional = getInstance().getMojangLookup().lookup(name.replace("@", ""));
 
@@ -95,21 +94,15 @@ public class Mention extends Feature implements Listener
 
                 TextComponent mentioned = new TextComponent(name);
                 mentioned.setColor(ChatColor.YELLOW);
-                BaseComponent[] hover = TextComponent.fromLegacyText(Format.format(Joiner.on('\n').join(infoTemplate), "{online};" + String.valueOf(Bukkit.getPlayer(profile.getId()).isOnline()), "{uuid};" + profile.getId().toString()));
+                BaseComponent[] hover = TextComponent.fromLegacyText(Format.colour(Format.format(Joiner.on('\n').join(infoTemplate), "{online};" + String.valueOf(Bukkit.getOfflinePlayer(profile.getId()).isOnline()), "{uuid};" + profile.getId().toString())));
                 mentioned.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
                 message.addExtra(mentioned);
-
-                if (splitMsg.matches(afterCheck.pattern())) {
-                    System.out.println("After checked out.");
-                    mentioned.addExtra(innerSplit[1]);
-                }
-
+                mentioned.addExtra(" ");
                 iterator.remove();
             }
 
             e.setCancelled(true);
-
-            System.out.println("Sending message.");
+            Bukkit.spigot().broadcast(message);
         }
     }
 }

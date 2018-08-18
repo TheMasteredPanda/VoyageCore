@@ -35,8 +35,7 @@ public final class LookupUtil
             int response = connection.getResponseCode();
 
             if (response != HttpsURLConnection.HTTP_OK) {
-                throw new HTTPException("Attempted to retrieve player " + name + "s unique id. However, we didn't get the response code 200." +
-                        " Response code: " + response + " using method GET on " + API_MOJANG_URL + name + ".");
+                return null;
             }
 
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
