@@ -21,11 +21,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-//TODO this isn't finished. I need to test this.
 public class Mention extends Feature implements Listener
 {
-    private Pattern behindCheck = Pattern.compile("(\\w+) (@)\\w+");
-    private Pattern afterCheck = Pattern.compile("(@)\\w+ (\\w+)");
     private Pattern check = Pattern.compile("@([a-zA-Z0-9_]{3,16})");
 
     @ConfigPopulate("features.mention.messages.playernotfound")
@@ -36,7 +33,7 @@ public class Mention extends Feature implements Listener
 
     public Mention(VoyageCore instance)
     {
-        super(instance, "Mention", 1.0);
+        super(instance, "Mention", 2.0);
 
         try {
             instance.getMainConfig().populate(this);
@@ -55,43 +52,31 @@ public class Mention extends Feature implements Listener
     @EventHandler
     public void on(AsyncPlayerChatEvent e)
     {
-        System.out.println("Invoked, message: " + e.getMessage());
         String[] splitMessage = Format.format(e.getFormat(), "%1$s;" + e.getPlayer().getDisplayName(), "%2$s;" + e.getMessage()).split(" ");
         LinkedList<String> names = Arrays.stream(splitMessage).filter(w -> check.matcher(w).matches()).collect(Collectors.toCollection(Lists::newLinkedList));
         TextComponent message = new TextComponent();
 
-        System.out.println("Names: " + String.valueOf(names.size()));
-
         for (Iterator<String> iterator = names.iterator(); iterator.hasNext(); ) {
             String name = iterator.next();
-            System.out.println("Iterating through name " + name + ".");
 
             for (String splitMsg : splitMessage) {
-                System.out.println("Iterating through split message section " + splitMsg + ".");
 
                 if (!splitMsg.contains(name)) {
-                    System.out.println("Doesn't contain name.");
                     message.addExtra(splitMsg);
                     message.addExtra(" ");
                     continue;
                 }
 
-                System.out.println("Contains name.");
-
-                String[] innerSplit = splitMsg.split(name);
-
                 Optional<PlayerProfile> optional = getInstance().getLocalLookup().lookup(name.replace("@", ""));
 
                 if (!optional.isPresent()) {
-                    System.out.println("PlayerProfile is not present.");
                     e.getPlayer().sendMessage(Format.format(playerNotFound, "{player};" + name.replace("@", "")));
-                    return;
+                    message.addExtra(splitMsg);
+                    message.addExtra(" ");
+                    continue;
                 }
 
-                System.out.println("PlayerProfile is present.");
-
                 PlayerProfile profile = optional.get();
-
                 TextComponent mentioned = new TextComponent(name);
                 mentioned.setColor(ChatColor.YELLOW);
                 BaseComponent[] hover = TextComponent.fromLegacyText(Format.colour(Format.format(Joiner.on('\n').join(infoTemplate), "{online};" + String.valueOf(Bukkit.getOfflinePlayer(profile.getId()).isOnline()), "{uuid};" + profile.getId().toString())));

@@ -55,10 +55,24 @@
 
     <dependencies>
         <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>LATEST</version>
+            <systemPath>${project.basedir}/depends/PlaceholderAPI-2.9.1.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vexsoftware</groupId>
+            <artifactId>nuvotifier-universal</artifactId>
+            <version>2.3.7</version>
+            <systemPath>${project.basedir}/depends/nuvotifier.jar</systemPath>
+            <scope>system</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
