@@ -95,7 +95,7 @@ public class BankLeaveCommand extends VoyageCommand
                 return;
             }
 
-            Optional<PlayerProfile> target = feature.getInstance().getMojangLookup().lookup(split[0]);
+            Optional<PlayerProfile> target = feature.getInstance().getBackupLookup().lookup(split[0]);
 
             if (!target.isPresent()) {
                 sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + split[0])));

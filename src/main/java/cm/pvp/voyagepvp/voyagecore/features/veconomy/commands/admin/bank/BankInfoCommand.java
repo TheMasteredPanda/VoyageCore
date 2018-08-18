@@ -34,7 +34,7 @@ public class BankInfoCommand extends VoyageCommand
         this.feature = feature;
 
         ArgumentField ownerArg = new ArgumentField("owner's name (player name)", true);
-        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
         try {
             addArguments(ownerArg, new ArgumentField("bank name", true));
@@ -47,7 +47,7 @@ public class BankInfoCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        VEconomyPlayer owner = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId());
+        VEconomyPlayer owner = feature.get(feature.getInstance().getBackupLookup().lookup(arguments.get(0)).get().getId());
         List<UUID> ownedBanks = owner.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getOwner().equals(owner.getReference().get().getUniqueId())).collect(Collectors.toCollection(Lists::newArrayList));
 
         if (ownedBanks.size() == 0 || ownedBanks.stream().noneMatch(id -> feature.getAccount(id).getName().equals(arguments.get(1)))) {
@@ -56,7 +56,7 @@ public class BankInfoCommand extends VoyageCommand
         }
 
         SharedAccount account = ownedBanks.stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(1))).map(id -> feature.getAccount(id)).findFirst().get();
-        List<String> members = account.getMembers().entrySet().stream().map(entry -> feature.getInstance().getMojangLookup().lookup(entry.getKey()).get().getName() + " (" + entry.getValue().name() + ")").collect(Collectors.toCollection(Lists::newArrayList));
+        List<String> members = account.getMembers().entrySet().stream().map(entry -> feature.getInstance().getBackupLookup().lookup(entry.getKey()).get().getName() + " (" + entry.getValue().name() + ")").collect(Collectors.toCollection(Lists::newArrayList));
         String info = Format.colour(Format.format(informationTemplate, "{balance};" + feature.getVaultHook().format(account.getBalance()), "{members};" + Joiner.on(", ").join(members)));
         sender.sendMessage(info);
     }

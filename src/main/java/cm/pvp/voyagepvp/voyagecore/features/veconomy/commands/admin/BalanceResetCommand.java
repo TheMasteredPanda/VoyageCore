@@ -31,7 +31,7 @@ public class BalanceResetCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.balance.reset", "Reset a players balance to the starting amount", false, "reset");
 
         ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
 
         try {
@@ -45,7 +45,7 @@ public class BalanceResetCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        VEconomyPlayer player = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId());
+        VEconomyPlayer player = feature.get(feature.getInstance().getBackupLookup().lookup(arguments.get(0)).get().getId());
 
         double subtractionAmount = player.getAccount().getBalance() - startAmount;
 

@@ -1,7 +1,12 @@
 core:
   locallookup:
-    #1 - Default (SQLite store), 2 - MariaDB
-    store: 1
+    sqlite: false
+    mariadb:
+      username: "root"
+      password: "password"
+      database: "voyagecore"
+      ip: "127.0.0.1"
+      port: "3306"
 
 #Features
 features:

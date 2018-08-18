@@ -128,7 +128,7 @@ public class BankLedgerCommand extends VoyageCommand
                             origin = (String) entry.getData().get("origin");
                         }
 
-                        Optional<PlayerProfile> entryPlayer = instance.getInstance().getMojangLookup().lookup(entry.getPlayer());
+                        Optional<PlayerProfile> entryPlayer = instance.getInstance().getBackupLookup().lookup(entry.getPlayer());
 
                         if (!entryPlayer.isPresent()) {
                             throw new MojangException("Couldn't get " + entry.getPlayer().toString() + " from Mojang DB.");
@@ -199,20 +199,14 @@ public class BankLedgerCommand extends VoyageCommand
                             origin = (String) entry.getData().get("origin");
                         }
 
-                        System.out.println("Origin: " + origin);
 
-                        Optional<PlayerProfile> entryPlayer = instance.getInstance().getMojangLookup().lookup(entry.getPlayer());
+                        Optional<PlayerProfile> entryPlayer = instance.getInstance().getBackupLookup().lookup(entry.getPlayer());
 
                         if (!entryPlayer.isPresent()) {
                             throw new MojangException("Couldn't get " + entry.getPlayer().toString() + " from Mojang DB.");
                         }
 
-                        System.out.println("Entry player is present.");
-
-                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()),
-                                "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin, "{player};" + entryPlayer.get().getName());
-
-                        System.out.println("Formatted entry.");
+                        messageEntry = Format.format(depositedEntry, "{amount};" + String.valueOf(entry.getAmount()), "{balance};" + String.valueOf(entry.getBalance()), "{action};" + instance.getFancyActionName(entry.getAction()), "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{origin};" + origin, "{player};" + entryPlayer.get().getName());
                     }
 
                     if (messageEntry == null) {

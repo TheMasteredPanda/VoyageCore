@@ -109,7 +109,7 @@ public class BankTransferCommand extends VoyageCommand
 
                 to = feature.getAccount(targetIds.get(0));
             } else if (split.length == 2) {
-                PlayerProfile profile = feature.getInstance().getMojangLookup().lookup(split[0]).get();
+                PlayerProfile profile = feature.getInstance().getBackupLookup().lookup(split[0]).get();
                 VEconomyPlayer owner = feature.get(profile.getId());
 
 
@@ -151,7 +151,7 @@ public class BankTransferCommand extends VoyageCommand
                 sender.sendMessage(Format.colour(errorMessage));
             }
         } else if (arguments.get(1).toLowerCase().equals("p")) {
-            Optional<PlayerProfile> optional = feature.getInstance().getMojangLookup().lookup(arguments.get(2));
+            Optional<PlayerProfile> optional = feature.getInstance().getBackupLookup().lookup(arguments.get(2));
 
             if (!optional.isPresent()) {
                 sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{target};" + arguments.get(2))));

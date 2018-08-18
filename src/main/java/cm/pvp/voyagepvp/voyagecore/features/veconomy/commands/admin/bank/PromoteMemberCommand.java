@@ -5,7 +5,7 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.PlayerCheckFunction;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
-import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.MojangLookup;
+import cm.pvp.voyagepvp.voyagecore.api.lookup.Lookup;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
@@ -45,9 +45,9 @@ public class PromoteMemberCommand extends VoyageCommand
         this.feature = feature;
 
         ArgumentField ownerArg = new ArgumentField("owner's name (player name)", true);
-        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
         ArgumentField memberArg = new ArgumentField("member's name (player name)", true);
-        memberArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        memberArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
         try {
             addArguments(ownerArg, new ArgumentField("bank name", true), memberArg);
@@ -60,7 +60,7 @@ public class PromoteMemberCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        MojangLookup lookup = feature.getInstance().getMojangLookup();
+        Lookup lookup = feature.getInstance().getBackupLookup();
         VEconomyPlayer player = feature.get(lookup.lookup(arguments.get(0)).get().getId());
         List<UUID> ownedBanks = player.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getOwner().equals(player.getReference().get().getUniqueId())).collect(Collectors.toCollection(Lists::newArrayList));
 

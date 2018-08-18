@@ -11,13 +11,12 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntr
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -52,7 +51,7 @@ public class BankPromoteMemberCommand extends VoyageCommand
         this.feature = feature;
         ArgumentField checkBank = new ArgumentField("bank name", true);
         ArgumentField playerCheck = new ArgumentField("player name", true);
-        playerCheck.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        playerCheck.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getLocalLookup()));
 
         try {
             addArguments(checkBank, playerCheck);
@@ -68,7 +67,7 @@ public class BankPromoteMemberCommand extends VoyageCommand
         Player p = (Player) sender;
         VEconomyPlayer player = feature.get(p.getUniqueId());
         SharedAccount account = player.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getName().equals(arguments.get(0))).map(id -> feature.getAccount(id)).findFirst().orElse(null);
-        UUID target = feature.getInstance().getMojangLookup().lookup(arguments.get(1)).get().getId();
+        UUID target = feature.getInstance().getBackupLookup().lookup(arguments.get(1)).get().getId();
 
         if (account == null) {
             sender.sendMessage(Format.colour(Format.format(bankNotFoundMessage, "{bank};" + arguments.get(0))));
@@ -96,9 +95,7 @@ public class BankPromoteMemberCommand extends VoyageCommand
         }
 
         if (account.promoteMember(target).getResponse() == Response.SUCCESS) {
-            HashMap<String, Object> map = Maps.newHashMap();
-            map.put("promotedMember", target);
-            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.PROMOTE_MEMBER, new Date(), map));
+            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.PROMOTE_MEMBER, new Date(), ImmutableMap.<String, Object>builder().put("promotedMember", target.toString()).build()));
             sender.sendMessage(Format.colour(Format.format(promotedPlayerMessage, "{target};" + arguments.get(0))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));

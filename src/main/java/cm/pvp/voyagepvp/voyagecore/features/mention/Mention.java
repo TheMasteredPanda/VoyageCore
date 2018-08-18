@@ -80,7 +80,7 @@ public class Mention extends Feature implements Listener
 
                 String[] innerSplit = splitMsg.split(name);
 
-                Optional<PlayerProfile> optional = getInstance().getMojangLookup().lookup(name.replace("@", ""));
+                Optional<PlayerProfile> optional = getInstance().getLocalLookup().lookup(name.replace("@", ""));
 
                 if (!optional.isPresent()) {
                     System.out.println("PlayerProfile is not present.");

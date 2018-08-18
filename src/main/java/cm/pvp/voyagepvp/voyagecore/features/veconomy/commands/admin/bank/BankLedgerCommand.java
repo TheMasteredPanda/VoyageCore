@@ -14,7 +14,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.ledger.entry.Share
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.text.ParseException;
@@ -72,9 +71,7 @@ public class BankLedgerCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        VEconomyPlayer player = instance.get(((Player) sender).getUniqueId());
         UUID id = null;
-
         String[] split = arguments.get(0).split("/");
         List<UUID> bankIds;
 
@@ -96,7 +93,7 @@ public class BankLedgerCommand extends VoyageCommand
         }
 
         if (split.length == 2) {
-            Optional<PlayerProfile> targetProfile = instance.getInstance().getMojangLookup().lookup(split[0]);
+            Optional<PlayerProfile> targetProfile = instance.getInstance().getBackupLookup().lookup(split[0]);
 
             if (!targetProfile.isPresent()) {
                 sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + split[0])));
@@ -139,7 +136,7 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player1 = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+                            Optional<PlayerProfile> player1 = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
 
                             if (!player1.isPresent()) {
                                 throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
@@ -159,7 +156,7 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
 
                             if (!playerOrigin.isPresent()) {
                                 throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
@@ -215,7 +212,7 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player1 = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+                            Optional<PlayerProfile> player1 = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
 
                             if (!player1.isPresent()) {
                                 throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
@@ -235,7 +232,7 @@ public class BankLedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
 
                             if (!playerOrigin.isPresent()) {
                                 throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");

@@ -65,8 +65,6 @@ public class LedgerCommand extends VoyageCommand
 
         if (arguments.size() == 0) {
             instance.getHandler().getEntirePersonalLedger(p.getUniqueId()).whenCompleteAsync((entries, throwable) -> {
-                System.out.println("Called. Entries: " + (String.valueOf(entries.size())));
-
                 if (throwable != null) {
                     throw new RuntimeException(throwable);
                 }
@@ -154,7 +152,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+                            Optional<PlayerProfile> player = instance.getInstance().getLocalLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
 
                             if (!player.isPresent()) {
                                 throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
@@ -174,7 +172,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
 
                             if (!playerOrigin.isPresent()) {
                                 throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");

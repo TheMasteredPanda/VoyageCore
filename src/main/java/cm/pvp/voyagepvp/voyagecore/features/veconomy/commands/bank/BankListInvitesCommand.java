@@ -3,7 +3,7 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.bank;
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
-import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.MojangLookup;
+import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.LocalLookup;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.MembershipRequest;
@@ -77,7 +77,7 @@ public class BankListInvitesCommand extends VoyageCommand
 
             SharedAccount account = feature.getAccount(req.getAccountId());
 
-            MojangLookup lookup = feature.getInstance().getMojangLookup();
+            LocalLookup lookup = feature.getInstance().getLocalLookup();
 
             Preconditions.checkNotNull(req);
             Preconditions.checkNotNull(req.getRequester());

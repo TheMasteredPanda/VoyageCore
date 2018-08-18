@@ -11,13 +11,12 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.MembershipR
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 public class BankMembershipRequestAcceptCommand extends VoyageCommand
@@ -62,9 +61,7 @@ public class BankMembershipRequestAcceptCommand extends VoyageCommand
         SharedAccount account = feature.getAccount(req.getAccountId());
 
         if (account.addMember(p.getUniqueId(), SharedAccount.Type.MEMBER).getResponse() == Response.SUCCESS && player.removeRequest(req.getAccountId()).getResponse() == Response.SUCCESS) {
-            HashMap<String, Object> map = Maps.newHashMap();
-            map.put("requester", req.getRequester());
-            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.MEMBERSHIP_ACCEPTED, new Date(), map));
+            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.MEMBERSHIP_ACCEPTED, new Date(), ImmutableMap.<String, Object>builder().put("requester", req.getRequester()).build()));
             player.getSharedAccounts().add(account.getId());
             p.sendMessage(Format.colour(Format.format(membershipRequestAcceptedMessage, "{bank};" + account.getName())));
         } else {

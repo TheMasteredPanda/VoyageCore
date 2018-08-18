@@ -36,7 +36,7 @@ public class BalanceAddCommand extends VoyageCommand
         ArgumentField numberArg = new ArgumentField("amount", true);
         numberArg.setCheckFunction(new NumberCheckFunction(double.class));
         ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
         try {
             addArguments(playerArg, numberArg);
@@ -49,7 +49,7 @@ public class BalanceAddCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        VEconomyPlayer player = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId());
+        VEconomyPlayer player = feature.get(feature.getInstance().getBackupLookup().lookup(arguments.get(0)).get().getId());
         double amount = NumberUtil.parse(arguments.get(1), double.class);
 
         if (Double.isInfinite(player.getAccount().getBalance() + amount) || (player.getAccount().getBalance() + amount) > feature.getPlayerAccountMaximumBalance()) {

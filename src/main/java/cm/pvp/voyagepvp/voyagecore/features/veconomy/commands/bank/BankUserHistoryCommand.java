@@ -109,7 +109,7 @@ public class BankUserHistoryCommand extends VoyageCommand
 
             id = bankIds.get(0);
         } else if (split.length == 2) {
-            Optional<PlayerProfile> targetProfile = instance.getInstance().getMojangLookup().lookup(split[0]);
+            Optional<PlayerProfile> targetProfile = instance.getInstance().getBackupLookup().lookup(split[0]);
 
             if (!targetProfile.isPresent()) {
                 sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + split[0])));
@@ -151,7 +151,7 @@ public class BankUserHistoryCommand extends VoyageCommand
                 message.add(Format.colour(histroyHeader));
 
                 entries.forEach(entry -> {
-                    Optional<PlayerProfile> targetPlayer = instance.getInstance().getMojangLookup().lookup(entry.getMember());
+                    Optional<PlayerProfile> targetPlayer = instance.getInstance().getBackupLookup().lookup(entry.getMember());
                     String name;
 
                     if (!targetPlayer.isPresent()) {
@@ -163,17 +163,17 @@ public class BankUserHistoryCommand extends VoyageCommand
                     String messageEntry = null;
 
                     if (entry.getAction().equals(Action.INVITED_MEMBER)) {
-                        String invitedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                        String invitedPlayer = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
                         messageEntry = Format.format(inviteEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + invitedPlayer);
                     }
 
                     if (entry.getAction().equals(Action.REMOVE_MEMBER)) {
-                        String removedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                        String removedPlayer = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
                         messageEntry = Format.format(removedEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + removedPlayer);
                     }
 
                     if (entry.getAction().equals(Action.TRANSFER_OWNERSHIP)) {
-                        String newOwner = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("transferredOwnershipTp"))).get().getName();
+                        String newOwner = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("transferredOwnershipTp"))).get().getName();
                         messageEntry = Format.format(ownershipTransferredEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{newowner};" + newOwner);
                     }
 
@@ -182,13 +182,13 @@ public class BankUserHistoryCommand extends VoyageCommand
                     }
 
                     if (entry.getAction().equals(Action.MEMBERSHIP_DENIED)) {
-                        String requester = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                        String requester = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
                         messageEntry = Format.format(inviteRejectedEntry, "{player};" + name, "{requester};" + requester, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
                     }
 
                     if (entry.getAction().equals(Action.MEMBERSHIP_ACCEPTED)) {
-                        String requester = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
-                        String member = instance.getInstance().getMojangLookup().lookup(entry.getMember()).get().getName();
+                        String requester = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                        String member = instance.getInstance().getBackupLookup().lookup(entry.getMember()).get().getName();
                         messageEntry = Format.format(inviteAcceptedEntry, "{player};" + member, "{requester};" + requester, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
                     }
 
@@ -227,7 +227,7 @@ public class BankUserHistoryCommand extends VoyageCommand
                 message.add(Format.colour(histroyHeader));
 
                 for (HistoryEntry entry : entries) {
-                    Optional<PlayerProfile> targetPlayer = instance.getInstance().getMojangLookup().lookup(entry.getMember());
+                    Optional<PlayerProfile> targetPlayer = instance.getInstance().getBackupLookup().lookup(entry.getMember());
                     String name;
 
                     if (!targetPlayer.isPresent()) {
@@ -240,26 +240,26 @@ public class BankUserHistoryCommand extends VoyageCommand
 
                     switch (entry.getAction()) {
                         case INVITED_MEMBER:
-                            String invitedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                            String invitedPlayer = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
                             messageEntry = Format.format(inviteEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + invitedPlayer);
                             break;
                         case REMOVE_MEMBER:
-                            String removedPlayer = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
+                            String removedPlayer = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("invitedMember"))).get().getName();
                             messageEntry = Format.format(removedEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{player};" + removedPlayer);
                             break;
                         case TRANSFER_OWNERSHIP:
-                            String newOwner = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("transferredOwnershipTp"))).get().getName();
+                            String newOwner = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("transferredOwnershipTp"))).get().getName();
                             messageEntry = Format.format(ownershipTransferredEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()), "{newowner};" + newOwner);
                             break;
                         case LEAVE_BANK:
                             messageEntry = Format.format(leftEntry, "{member};" + name, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
                             break;
                         case MEMBERSHIP_DENIED:
-                            String requestor = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                            String requestor = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
                             messageEntry = Format.format(inviteRejectedEntry, "{player};" + name, "{requester};" + requestor, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
                             break;
                         case MEMBERSHIP_ACCEPTED:
-                            String requester = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
+                            String requester = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("requester"))).get().getName();
                             messageEntry = Format.format(inviteAcceptedEntry, "{player};" + name, "{requester};" + requester, "{date};" + dateFormat.format(entry.getDate()), "{time};" + timeFormat.format(entry.getDate()));
                     }
 

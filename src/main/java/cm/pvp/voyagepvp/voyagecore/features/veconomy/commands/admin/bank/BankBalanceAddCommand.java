@@ -42,7 +42,7 @@ public class BankBalanceAddCommand extends VoyageCommand
         this.feature = feature;
 
         ArgumentField ownerArg = new ArgumentField("owner's name (player name)", true);
-        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
         ArgumentField amountArg = new ArgumentField("amount", true);
         amountArg.setCheckFunction(new NumberCheckFunction(double.class));
 
@@ -57,7 +57,7 @@ public class BankBalanceAddCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        VEconomyPlayer owner = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId());
+        VEconomyPlayer owner = feature.get(feature.getInstance().getBackupLookup().lookup(arguments.get(0)).get().getId());
         List<UUID> ownedBanks = owner.getSharedAccounts().stream().filter(id -> feature.getAccount(id).getOwner().equals(owner.getReference().get().getUniqueId())).collect(Collectors.toCollection(Lists::newArrayList));
 
         if (ownedBanks.size() == 0 || ownedBanks.stream().noneMatch(id -> feature.getAccount(id).getName().equals(arguments.get(1)))) {

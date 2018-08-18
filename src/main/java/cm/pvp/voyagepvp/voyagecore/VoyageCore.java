@@ -52,13 +52,13 @@ public class VoyageCore extends VoyagePlugin
     public LocalLookup getLocalLookup()
     {
         if (localLookup == null) {
-            if (!mainConfig.raw().getBoolean("core.mariadb")) {
+            if (mainConfig.raw().getBoolean("core.locallookup.sqlite")) {
                 localLookup = new LocalLookup(new DefaultStore(null, null, null, null, 0), this);
             } else {
                 localLookup = new LocalLookup(new DefaultStore(
-                        mainConfig.raw().getString("core.mariadb.username"), mainConfig.raw().getString("core.mariadb.passowrd"),
-                        mainConfig.raw().getString("core.mariadb.database"), mainConfig.raw().getString("core.mariadb.ip"),
-                        mainConfig.raw().getInt("core.mariadb.port")), this);
+                        mainConfig.raw().getString("core.locallookup.mariadb.username"), mainConfig.raw().getString("core.locallookup.mariadb.passowrd"),
+                        mainConfig.raw().getString("core.locallookup.mariadb.database"), mainConfig.raw().getString("core.localookup.mariadb.ip"),
+                        mainConfig.raw().getInt("core.locallookup.mariadb.port")), this);
             }
         }
 

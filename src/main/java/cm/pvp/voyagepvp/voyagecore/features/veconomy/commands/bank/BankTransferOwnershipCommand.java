@@ -12,8 +12,8 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccou
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -21,7 +21,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.UUID;
 
 import static cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount.Type.MEMBER;
 
@@ -55,7 +58,7 @@ public class BankTransferOwnershipCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.transferownership", "Transfer the ownership of a bank to a member.", true, "transferownership");
         this.feature = feature;
         ArgumentField checkPlayer = new ArgumentField("player name", true);
-        checkPlayer.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        checkPlayer.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
         try {
             addArguments(new ArgumentField("bank name", true), checkPlayer);
@@ -82,7 +85,7 @@ public class BankTransferOwnershipCommand extends VoyageCommand
             return;
         }
 
-        UUID target = feature.getInstance().getMojangLookup().lookup(arguments.get(1)).get().getId();
+        UUID target = feature.getInstance().getBackupLookup().lookup(arguments.get(1)).get().getId();
 
         if (account.getOwner().equals(target)) {
             sender.sendMessage(Format.colour(playerIsOwnerMessage));
@@ -106,9 +109,7 @@ public class BankTransferOwnershipCommand extends VoyageCommand
             }
 
             if (account.transferOwnership(target).getResponse() == Response.SUCCESS) {
-                HashMap<String, Object> map = Maps.newHashMap();
-                map.put("transferredOwnershipTo", target);
-                feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.TRANSFER_OWNERSHIP, new Date(), map));
+                feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.TRANSFER_OWNERSHIP, new Date(), ImmutableMap.<String, Object>builder().put("transferredOwnershipTo", target.toString()).build()));
                 sender.sendMessage(Format.colour(tranferredBankMessage));
             } else {
                 sender.sendMessage(Format.colour(errorMessage));

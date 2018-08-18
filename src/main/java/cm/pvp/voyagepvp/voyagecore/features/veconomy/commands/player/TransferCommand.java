@@ -5,8 +5,8 @@ import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.NumberCheckFunction;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
+import cm.pvp.voyagepvp.voyagecore.api.lookup.Lookup;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
-import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.MojangLookup;
 import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
@@ -67,7 +67,7 @@ public class TransferCommand extends VoyageCommand
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
         Player p = (Player) sender;
-        MojangLookup lookup = feature.getInstance().getMojangLookup();
+        Lookup lookup = feature.getInstance().getBackupLookup();
         VEconomyPlayer player = feature.get((Player) sender);
         PlayerAccount playerAccount = player.getAccount();
 
@@ -117,7 +117,7 @@ public class TransferCommand extends VoyageCommand
                     return;
                 }
 
-                Optional<PlayerProfile> ownerProfile = feature.getInstance().getMojangLookup().lookup(split[0]);
+                Optional<PlayerProfile> ownerProfile = feature.getInstance().getLocalLookup().lookup(split[0]);
 
                 if (!ownerProfile.isPresent()) {
                     sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{target};" + split[0])));
@@ -150,9 +150,8 @@ public class TransferCommand extends VoyageCommand
             }
 
             if (playerAccount.subtract(amount).getResponse() == Response.SUCCESS && target.add(amount).getResponse() == Response.SUCCESS) {
-
                 feature.getHandler().addPlayerLedgerEntry(p.getUniqueId(), new PlayerLedgerEntry(p.getUniqueId(), Action.WITHDRAW_MONEY, amount, player.getAccount().getBalance(), new Date(), ImmutableMap.<String, Object>builder()
-                        .put("destinationIsBank", true).put("destination", feature.getInstance().getMojangLookup().lookup(target.getOwner()).get().getName() + "/" + target.getName()).build()));
+                        .put("destinationIsBank", true).put("destination", feature.getInstance().getBackupLookup().lookup(target.getOwner()).get().getName() + "/" + target.getName()).build()));
                 feature.getHandler().addSharedLedgerEntry(target.getId(), new SharedLedgerEntry(target.getId(), Action.DEPOSIT_MONEY, p.getUniqueId(), target.getBalance(), amount, new Date(),
                         ImmutableMap.<String, Object>builder().put("originIsBank", false).put("origin", "their personal account").build()));
                 sender.sendMessage(Format.colour(Format.format(transferSuccessMessage, "{amount};" + feature.getVaultHook().format(amount), "{receiver};" + target.getName())));

@@ -66,7 +66,7 @@ public class LedgerCommand extends VoyageCommand
     {
         Player p = (Player) sender;
 
-        Optional<PlayerProfile> targetPlayer = instance.getInstance().getMojangLookup().lookup(arguments.get(0));
+        Optional<PlayerProfile> targetPlayer = instance.getInstance().getBackupLookup().lookup(arguments.get(0));
 
         if (!targetPlayer.isPresent()) {
             sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player}", arguments.get(0))));
@@ -96,7 +96,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+                            Optional<PlayerProfile> player = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
 
                             if (!player.isPresent()) {
                                 throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
@@ -116,7 +116,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
 
                             if (!playerOrigin.isPresent()) {
                                 throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");
@@ -172,7 +172,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("destinationIsBank")) {
                             destination = "Bank " + entry.getData().get("destination");
                         } else {
-                            Optional<PlayerProfile> player = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
+                            Optional<PlayerProfile> player = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("destination")));
 
                             if (!player.isPresent()) {
                                 throw new MojangException("Couldn't get " + entry.getData().get("destination") + " from Mojang DB.");
@@ -192,7 +192,7 @@ public class LedgerCommand extends VoyageCommand
                         if ((boolean) entry.getData().get("originIsBank")) {
                             origin = "Bank " + entry.getData().get("origin");
                         } else {
-                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getMojangLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
+                            Optional<PlayerProfile> playerOrigin = instance.getInstance().getBackupLookup().lookup(UUID.fromString((String) entry.getData().get("origin")));
 
                             if (!playerOrigin.isPresent()) {
                                 throw new MojangException("Couldn't find " + entry.getData().get("origin") + " in Mojang DB.");

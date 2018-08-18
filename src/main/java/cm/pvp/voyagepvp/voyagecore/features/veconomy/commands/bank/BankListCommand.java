@@ -78,7 +78,7 @@ public class BankListCommand extends VoyageCommand
             LinkedList<String> members = Lists.newLinkedList();
 
             for (Map.Entry<UUID, SharedAccount.Type> member : account.getMembers().entrySet()) {
-                PlayerProfile profile = feature.getInstance().getMojangLookup().lookup(member.getKey()).orElse(null);
+                PlayerProfile profile = feature.getInstance().getBackupLookup().lookup(member.getKey()).orElse(null);
                 String name;
 
                 if (profile == null) {

@@ -2,6 +2,7 @@ package cm.pvp.voyagepvp.voyagecore.features.veconomy.commands.admin;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.command.argument.ArgumentField;
+import cm.pvp.voyagepvp.voyagecore.api.command.argument.check.PlayerCheckFunction;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
@@ -28,6 +29,7 @@ public class BalanceClearCommand extends VoyageCommand
         this.feature = feature;
 
         ArgumentField playerArg = new ArgumentField("player name", true);
+        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
         try {
             addArguments(playerArg);
@@ -39,7 +41,7 @@ public class BalanceClearCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        VEconomyPlayer player = feature.get(feature.getInstance().getMojangLookup().lookup(arguments.get(0)).get().getId());
+        VEconomyPlayer player = feature.get(feature.getInstance().getLocalLookup().lookup(arguments.get(0)).get().getId());
 
         if (player.getAccount().subtract(player.getAccount().getBalance()).getResponse() == Response.SUCCESS) {
             sender.sendMessage(Format.colour(Format.format(clearedBalanceMessage, "{target};" + arguments.get(0))));

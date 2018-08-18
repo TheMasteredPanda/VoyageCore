@@ -12,8 +12,8 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.HistoryEntr
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Action;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -55,7 +55,7 @@ public class BankRemoveMemberCommand extends VoyageCommand
         this.feature = feature;
         ArgumentField bankCheck = new ArgumentField("bank name", true);
         ArgumentField playerCheck = new ArgumentField("player name", true);
-        playerCheck.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getMojangLookup()));
+        playerCheck.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
         try {
             addArguments(bankCheck, playerCheck);
@@ -96,7 +96,7 @@ public class BankRemoveMemberCommand extends VoyageCommand
             }
 
 
-            Optional<PlayerProfile> target = feature.getInstance().getMojangLookup().lookup(split[0]);
+            Optional<PlayerProfile> target = feature.getInstance().getBackupLookup().lookup(split[0]);
 
             if (!target.isPresent()) {
                 sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + split[0])));
@@ -109,7 +109,7 @@ public class BankRemoveMemberCommand extends VoyageCommand
         }
 
 
-        UUID target = feature.getInstance().getMojangLookup().lookup(arguments.get(1)).get().getId();
+        UUID target = feature.getInstance().getBackupLookup().lookup(arguments.get(1)).get().getId();
 
         if (account.getMembers().get(p.getUniqueId()) == MEMBER) {
             sender.sendMessage(Format.colour(noPermissionMessage));
@@ -123,9 +123,7 @@ public class BankRemoveMemberCommand extends VoyageCommand
         }
 
         if (account.removeMember(target, account.getMembers().get(target)).getResponse() == Response.SUCCESS) {
-            HashMap<String, Object> map = Maps.newHashMap();
-            map.put("removedMember", target.toString());
-            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.REMOVE_MEMBER, new Date(), map));
+            feature.getHandler().addUserHistoryEntry(new HistoryEntry(account.getId(), p.getUniqueId(), Action.REMOVE_MEMBER, new Date(), ImmutableMap.<String, Object>builder().put("removedMember", target.toString()).build()));
             sender.sendMessage(Format.colour(Format.format(removedMemberMessage, "{target};" + arguments.get(1))));
         } else {
             sender.sendMessage(Format.colour(errorMessage));
