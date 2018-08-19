@@ -75,7 +75,7 @@ public class Module<T extends JavaPlugin>
     /**
      * Process for disabling module.
      */
-    protected void shutdown()
+    public void shutdown()
     {
         if (isEnabled()) {
             try {

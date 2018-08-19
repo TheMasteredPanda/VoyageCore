@@ -169,11 +169,17 @@ features:
   vvoting:
     messages:
       thanksforvoting: "Thanks for voting on {servicename}, {player}! <3"
+      vote: "You should vote, why? Because in doing so I give you something in return :)."
+      claims:
+        gotmore: "You've got {amount} more rewards to claim!"
+        gotnone: "You've got no more rewards to claim."
+      claimedreward: "{commandprefix} We've given you x, y, and z as a thanks for contributing to the vote party! {claims?}"
+      noclaimsavailable: "{commandprefix} There are no rewards for you to claim."
+      claimsavailable: "{commandprefix} There are {amount} voting reward claims available."
       voteparty:
-        noclaimsavailable: "{commandprefix} There are no rewards for you to claim."
-        claimedreward: "{commandprefix} We've given you x, y, and z as a thanks for contributing to the vote party!"
         votecount: "{commandprefix} {count}/{required}"
-        claimsavailable: "{commandprefix} There are {amount} claims available."
+        claimsavailable: "{commandprefix} There are {amount} VoteParty claims available."
+        complete: "The Voting Party is now complete! Execute '/vp claim' to claim your reward if you contributed in the party."
     voteparty:
       requiredVotes: 250
       #A list of commands that will be invoked by the console.
@@ -183,7 +189,6 @@ features:
         - ""
     #A list of commands invoked by the console when someone votes.
     dailyreward:
-      - ""
-      - ""
-      - ""
+      - "give @p diamond 16"
+
 

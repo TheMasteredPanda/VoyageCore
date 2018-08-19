@@ -35,30 +35,33 @@ public class DataHandler
         Tasks.runAsync(() -> {
             PreparedStatement table0 = null;
             PreparedStatement table1 = null;
+            PreparedStatement table2 = null;
 
-            try (Connection connection0 = source.getConnection(); Connection connection1 = source.getConnection()) {
-                table0 = connection0.prepareStatement("create table if not exists party(player varchar(40) primary key)");
-                table1 = connection1.prepareStatement("create table if not exists claims(player varchar(40) primary key, count int default 0)");
+            try (Connection connection0 = source.getConnection(); Connection connection1 = source.getConnection(); Connection connection2 = source.getConnection()) {
+                table0 = connection0.prepareStatement("create table if not exists vvoting_party(player varchar(40) primary key)");
+                table1 = connection1.prepareStatement("create table if not exists vvoting_party_claims(player varchar(40) primary key, count int default 0)");
+                table2 = connection2.prepareCall("create table if not exists vvoting_daily_claims(player varchar(40) primary key, count int default 0)");
                 table0.execute();
                 table1.execute();
+                table2.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
+                feature.shutdown();
             } finally {
                 DBUtil.close(table0, table1);
             }
         });
     }
 
-    public CompletableFuture<Void> createNewParty()
+    public CompletableFuture<Void> cleanParty()
     {
         return CompletableFuture.supplyAsync(() -> {
             PreparedStatement statement = null;
             PreparedStatement statement1 = null;
 
             try (Connection connection = source.getConnection(); Connection connection1 = source.getConnection()) {
-                statement = connection.prepareStatement("insert into claims select * from party on duplicate key update count=count+1;");
-                statement1 = connection1.prepareStatement("delete from party;");
-
+                statement = connection.prepareStatement("insert into vvoting_party_claims select * from vvoting_party on duplicate key update count=count+1;");
+                statement1 = connection1.prepareStatement("delete from vvoting_party;");
                 statement.executeUpdate();
                 statement1.executeUpdate();
             } catch (SQLException e) {
@@ -79,7 +82,7 @@ public class DataHandler
             ArrayList<UUID> party = Lists.newArrayList();
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("select * from party;");
+                statement = connection.prepareStatement("select * from vvoting_party;");
                 set = statement.executeQuery();
 
                 while (set.next()) {
@@ -95,7 +98,7 @@ public class DataHandler
         });
     }
 
-    public CompletableFuture<Map<UUID, Integer>> claims()
+    public CompletableFuture<Map<UUID, Integer>> partyClaims()
     {
         return CompletableFuture.supplyAsync(() -> {
             PreparedStatement statement = null;
@@ -103,7 +106,7 @@ public class DataHandler
             HashMap<UUID, Integer> claims = Maps.newHashMap();
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("select * from claims");
+                statement = connection.prepareStatement("select * from vvoting_part_claims");
                 set = statement.executeQuery();
 
                 while (set.next()) {
@@ -119,17 +122,41 @@ public class DataHandler
         });
     }
 
-    public CompletableFuture<Void> updateClaimCount(UUID player, int count)
+    public CompletableFuture<Map<UUID, Integer>> dailyClaims()
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
+            HashMap<UUID, Integer> claims = Maps.newHashMap();
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("select * from vvoting_daily");
+                set = statement.executeQuery();
+
+                while (set.next()) {
+                    claims.put(UUID.fromString(set.getString("player")), set.getInt("count"));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
+            }
+
+            return claims;
+        });
+    }
+
+    public CompletableFuture<Void> updatePartyClaimCount(UUID player, int count)
     {
         return CompletableFuture.supplyAsync(() -> {
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                if (count == 0) {
-                    statement = connection.prepareStatement("delete from claims where player=?");
+                if (count <= 0) {
+                    statement = connection.prepareStatement("delete from vvoting_party_claims where player=?");
                     statement.setString(1, player.toString());
                 } else {
-                    statement = connection.prepareStatement("update claims set count=? where player=?");
+                    statement = connection.prepareStatement("update vvoting_party_claims set count=? where player=?");
                     statement.setInt(1, count);
                     statement.setString(2, player.toString());
                 }
@@ -145,15 +172,59 @@ public class DataHandler
         });
     }
 
-    public void insert(UUID player)
+    public CompletableFuture<Void> updateDailyClaimCount(UUID player, int count)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            PreparedStatement statement = null;
+            ResultSet set = null;
+
+            try (Connection connection = source.getConnection()) {
+                if (count <= 0) {
+                    statement = connection.prepareStatement("delete from vvoting_daily_claims where player=?");
+                    statement.setString(1, player.toString());
+                } else {
+                    statement = connection.prepareStatement("update vvoting_daily_claims set count=? where player=?");
+                    statement.setString(1, player.toString());
+                    statement.setInt(2, count);
+                }
+
+                statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement, set);
+            }
+
+            return null;
+        });
+    }
+
+    public void partyInsert(UUID player)
     {
         Tasks.runAsync(() -> {
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("insert into party (?)");
+                statement = connection.prepareStatement("insert into vvoting_party values (?)");
                 statement.setString(1, player.toString());
                 statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        });
+    }
+
+    public void dailyInsert(UUID player)
+    {
+        Tasks.runAsync(() -> {
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("insert into vvoting_daily_claims values (?,?)");
+                statement.setString(1, player.toString());
+                statement.setInt(2, 0);
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
@@ -170,7 +241,7 @@ public class DataHandler
             boolean result = false;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("select * from party where player=?");
+                statement = connection.prepareStatement("select * from vvoting_party where player=?");
                 statement.setString(1, player.toString());
                 set = statement.executeQuery();
                 result = set.next();
