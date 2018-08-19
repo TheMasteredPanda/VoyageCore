@@ -13,6 +13,7 @@ import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
 import cm.pvp.voyagepvp.voyagecore.features.mention.Mention;
 import cm.pvp.voyagepvp.voyagecore.features.norain.NoRain;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomy;
+import cm.pvp.voyagepvp.voyagecore.features.vvoting.VVoting;
 import lombok.Getter;
 
 import java.io.File;
@@ -52,14 +53,9 @@ public class VoyageCore extends VoyagePlugin
     public LocalLookup getLocalLookup()
     {
         if (localLookup == null) {
-            if (mainConfig.raw().getBoolean("core.locallookup.sqlite")) {
-                localLookup = new LocalLookup(new DefaultStore(null, null, null, null, 0), this);
-            } else {
-                localLookup = new LocalLookup(new DefaultStore(
-                        mainConfig.raw().getString("core.locallookup.mariadb.username"), mainConfig.raw().getString("core.locallookup.mariadb.passowrd"),
-                        mainConfig.raw().getString("core.locallookup.mariadb.database"), mainConfig.raw().getString("core.localookup.mariadb.ip"),
-                        mainConfig.raw().getInt("core.locallookup.mariadb.port")), this);
-            }
+            localLookup = new LocalLookup(new DefaultStore(
+                    mainConfig.raw().getString("core.locallookup.mariadb.username"), mainConfig.raw().getString("core.locallookup.mariadb.password"),
+                    mainConfig.raw().getString("core.locallookup.mariadb.database"), mainConfig.raw().getString("core.locallookup.mariadb.host")), this);
         }
 
         return localLookup;
@@ -91,7 +87,8 @@ public class VoyageCore extends VoyagePlugin
                 new CustomPrefix(this),
                 new Mention(this),
                 new VEconomy(this),
-                new NoRain(this)
+                new NoRain(this),
+                new VVoting(this)
         );
     }
 

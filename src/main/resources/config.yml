@@ -1,17 +1,16 @@
 core:
   locallookup:
-    sqlite: false
     mariadb:
       username: "root"
       password: "password"
       database: "voyagecore"
-      ip: "127.0.0.1"
-      port: "3306"
+      host: "127.0.0.1:3306"
 
 #Features
 features:
-  ##http://minecraft.tools/en/tellraw.php
   cannotfindplayerprofile: "{commandprefix} &cCannot find {player}s profile on Mojang API."
+
+  ##http://minecraft.tools/en/tellraw.php
   announcements:
     messages:
       announcementthreadrunning: "{commandprefix} &cThe announcement thread is already running."
@@ -167,3 +166,24 @@ features:
       maximumbalance: -1
   norain:
     enabled: true
+  vvoting:
+    messages:
+      thanksforvoting: "Thanks for voting on {servicename}, {player}! <3"
+      voteparty:
+        noclaimsavailable: "{commandprefix} There are no rewards for you to claim."
+        claimedreward: "{commandprefix} We've given you x, y, and z as a thanks for contributing to the vote party!"
+        votecount: "{commandprefix} {count}/{required}"
+        claimsavailable: "{commandprefix} There are {amount} claims available."
+    voteparty:
+      requiredVotes: 250
+      #A list of commands that will be invoked by the console.
+      reward:
+        - ""
+        - ""
+        - ""
+    #A list of commands invoked by the console when someone votes.
+    dailyreward:
+      - ""
+      - ""
+      - ""
+

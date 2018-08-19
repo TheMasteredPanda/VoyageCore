@@ -10,8 +10,6 @@ import com.google.gson.JsonArray;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +25,7 @@ public class DefaultStore implements LocalStore
     private HikariDataSource source;
     private Logger logger;
 
-    public DefaultStore(String username, String password, String database, String ip, int port)
+    public DefaultStore(String username, String password, String database, String host)
     {
         logger = VoyageCore.get().getLogger();
         HikariConfig config = new HikariConfig();
@@ -35,27 +33,13 @@ public class DefaultStore implements LocalStore
         config.setMaxLifetime(60000);
         config.setIdleTimeout(45000);
 
-        if (username == null || password == null || ip == null || port == 0) {
-            File db = new File(VoyageCore.get().getDataFolder(), "locallookup-default.db");
-
-            if (!db.exists()) {
-                try {
-                    if (db.createNewFile()) {
-                        logger.info("Created locallookup-default.db");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-            config.setJdbcUrl("jdbc:sqlite:/" + db.getAbsolutePath());
-            source = new HikariDataSource(config);
-        } else {
+        if (username != null && password != null && host != null) {
             config.setPassword(password);
             config.setUsername(username);
-            config.setJdbcUrl("jdbc:mariadb:/" + ip + ":" + String.valueOf(port) + "/" + database);
-            source = new HikariDataSource(source);
+            config.setJdbcUrl("jdbc:mariadb:/" + host + "/" + database);
+            source = new HikariDataSource(config);
+        } else {
+            return;
         }
 
         Tasks.runAsync(() -> {
