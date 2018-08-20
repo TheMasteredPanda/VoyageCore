@@ -16,8 +16,8 @@ public class CountCommand extends VoyageCommand
     @ConfigPopulate("features.vvoting.messages.voteparty.votecount")
     private String voteCountMessage;
 
-    @ConfigPopulate("features.vvoting.requiredVotes")
-    private String requiredVotes;
+    @ConfigPopulate("features.vvoting.voteparty.requiredVotes")
+    private int requiredVotes;
 
     public CountCommand(VVoting feature)
     {
@@ -34,6 +34,6 @@ public class CountCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        feature.getHandler().party().whenCompleteAsync((uuids, throwable) -> sender.sendMessage(Format.colour(Format.format(voteCountMessage, "{count};" + String.valueOf(uuids.size()), "{required};" + requiredVotes))));
+        feature.getHandler().party().whenCompleteAsync((uuids, throwable) -> sender.sendMessage(Format.colour(Format.format(voteCountMessage, "{count};" + String.valueOf(uuids.size()), "{required};" + String.valueOf(requiredVotes)))));
     }
 }

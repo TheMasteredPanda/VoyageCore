@@ -61,7 +61,7 @@ public class VVoting extends Feature implements Listener
     protected boolean enable() throws Exception
     {
         handler = new DataHandler(this);
-        getInstance().register(new VotePartyCommand(this), new TestVoteCommand(), new VotePartyCommand(this));
+        getInstance().register(new VotePartyCommand(this), new TestVoteCommand());
         Bukkit.getPluginManager().registerEvents(this, getInstance());
         settingsFile = new File(getInstance().getDataFolder(), "vvoting-settings.json");
 

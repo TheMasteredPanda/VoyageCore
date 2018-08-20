@@ -36,7 +36,7 @@ public class DefaultStore implements LocalStore
         if (username != null && password != null && host != null) {
             config.setPassword(password);
             config.setUsername(username);
-            config.setJdbcUrl("jdbc:mariadb:/" + host + "/" + database);
+            config.setJdbcUrl("jdbc:mysql://" + host + "/" + database);
             source = new HikariDataSource(config);
         } else {
             return;

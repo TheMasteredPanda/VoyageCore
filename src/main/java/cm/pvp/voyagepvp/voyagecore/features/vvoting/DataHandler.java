@@ -21,14 +21,14 @@ public class DataHandler
 
     public DataHandler(VVoting feature)
     {
-        ConfigurationSection section = feature.getSection().getConfigurationSection("sql");
+        ConfigurationSection section = feature.getSection().getConfigurationSection("mariadb");
         HikariConfig config = new HikariConfig();
         config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(60000);
         config.setIdleTimeout(45000);
         config.setUsername(section.getString("username"));
         config.setPassword(section.getString("password"));
-        config.setJdbcUrl("jdbc:mariadb:/" + section.getString("host") + "/" + section.getString("database"));
+        config.setJdbcUrl("jdbc:mysql://" + section.getString("host") + "/" + section.getString("database"));
 
         source = new HikariDataSource(config);
 
@@ -48,7 +48,7 @@ public class DataHandler
                 e.printStackTrace();
                 feature.shutdown();
             } finally {
-                DBUtil.close(table0, table1);
+                DBUtil.close(table0, table1, table2);
             }
         });
     }
@@ -106,7 +106,7 @@ public class DataHandler
             HashMap<UUID, Integer> claims = Maps.newHashMap();
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("select * from vvoting_part_claims");
+                statement = connection.prepareStatement("select * from vvoting_party_claims");
                 set = statement.executeQuery();
 
                 while (set.next()) {
