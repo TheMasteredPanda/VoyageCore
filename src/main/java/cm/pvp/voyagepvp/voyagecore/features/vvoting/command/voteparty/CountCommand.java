@@ -19,6 +19,9 @@ public class CountCommand extends VoyageCommand
     @ConfigPopulate("features.vvoting.voteparty.requiredVotes")
     private int requiredVotes;
 
+    @ConfigPopulate("features.vvoting.messages.voteparty.partynotstarted")
+    private String partyNotStartedMessage;
+
     public CountCommand(VVoting feature)
     {
         super(null, "voyagecore.vvoting.voteparty.count", "Displays the amount of votes that have contributed to the party, and the amount required for the players of that party to receive a reward.", true, "count");
@@ -34,6 +37,10 @@ public class CountCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        feature.getHandler().party().whenCompleteAsync((uuids, throwable) -> sender.sendMessage(Format.colour(Format.format(voteCountMessage, "{count};" + String.valueOf(uuids.size()), "{required};" + String.valueOf(requiredVotes)))));
+        if (feature.getSettingsObject().get("startedParty").getAsBoolean()) {
+            feature.getHandler().party().whenCompleteAsync((uuids, throwable) -> sender.sendMessage(Format.colour(Format.format(voteCountMessage, "{count};" + String.valueOf(uuids.size()), "{required};" + String.valueOf(requiredVotes)))));
+        } else {
+            sender.sendMessage(Format.colour(partyNotStartedMessage));
+        }
     }
 }

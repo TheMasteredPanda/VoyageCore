@@ -8,6 +8,7 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.api.player.Players;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.TestVoteCommand;
+import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.VoteClaimCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.VotePartyCommand;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -52,6 +53,9 @@ public class VVoting extends Feature implements Listener
     @ConfigPopulate("features.vvoting.dailyreward")
     private List<String> dailyReward;
 
+    @ConfigPopulate("features.vvoting.voteparty.requiredVotes")
+    private int requiredVotes;
+
     public VVoting(VoyageCore instance)
     {
         super(instance, "VVoting", 1.0);
@@ -61,7 +65,7 @@ public class VVoting extends Feature implements Listener
     protected boolean enable() throws Exception
     {
         handler = new DataHandler(this);
-        getInstance().register(new VotePartyCommand(this), new TestVoteCommand());
+        getInstance().register(new VotePartyCommand(this), new TestVoteCommand(), new VoteClaimCommand(this));
         Bukkit.getPluginManager().registerEvents(this, getInstance());
         settingsFile = new File(getInstance().getDataFolder(), "vvoting-settings.json");
 
@@ -76,9 +80,12 @@ public class VVoting extends Feature implements Listener
             }
 
             settingsObject = gson.fromJson(new JsonReader(new FileReader(settingsFile)), JsonObject.class);
+
+            getInstance().getMainConfig().populate(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         return true;
     }
@@ -124,28 +131,25 @@ public class VVoting extends Feature implements Listener
         if (Players.online().stream().anyMatch(p -> p.getName().equalsIgnoreCase(e.getVote().getUsername()))) {
             Player p = Bukkit.getPlayer(e.getVote().getUsername());
 
-            dailyReward.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
+            dailyReward.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Format.format(cmd, "@p;" + p.getName())));
             p.sendMessage(Format.colour(Format.format(thanksForVotingMessage, "{player};" + p.getName(), "{servicename};" + e.getVote().getServiceName())));
         } else {
-            handler.dailyClaims().whenCompleteAsync((claims, throwable) -> {
-                if (!claims.containsKey(id)) {
-                    handler.dailyInsert(id);
-                } else {
-                    handler.updateDailyClaimCount(id, claims.get(id) + 1).whenCompleteAsync((aVoid, throwable1) -> getLogger().info("Player " + e.getVote().getUsername() + " voted on " + e.getVote().getServiceName() + ". Added a daily claim to their daily claims count."));
-                }
-            });
+            handler.dailyInsert(id);
         }
 
-        handler.partyClaims().whenCompleteAsync((claims, throwable) -> {
-            if (!claims.containsKey(id)) {
+        handler.party().whenCompleteAsync((claims, throwable) -> {
+            if (!claims.contains(id)) {
                 handler.partyInsert(id);
             }
 
-            handler.cleanParty().whenCompleteAsync((aVoid, throwable12) -> {
-                Bukkit.broadcastMessage(Format.colour(votePartyCompleteMessage));
-                settingsObject.addProperty("startedParty", false);
-                saveSettingsFile();
-            });
+            if (claims.size() >= requiredVotes) {
+                handler.cleanParty().whenCompleteAsync((aVoid, throwable12) -> {
+                    Bukkit.broadcastMessage(Format.colour(votePartyCompleteMessage));
+                    settingsObject.addProperty("startedParty", false);
+                    saveSettingsFile();
+                });
+            }
+
         });
     }
 }

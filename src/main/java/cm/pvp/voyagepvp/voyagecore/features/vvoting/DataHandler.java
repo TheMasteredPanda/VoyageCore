@@ -60,7 +60,7 @@ public class DataHandler
             PreparedStatement statement1 = null;
 
             try (Connection connection = source.getConnection(); Connection connection1 = source.getConnection()) {
-                statement = connection.prepareStatement("insert into vvoting_party_claims select * from vvoting_party on duplicate key update count=count+1;");
+                statement = connection.prepareStatement("insert into vvoting_party_claims (select * from vvoting_party) on duplicate key update vvoting_party_claims.count=vvoting_party_claims.count + 1;");
                 statement1 = connection1.prepareStatement("delete from vvoting_party;");
                 statement.executeUpdate();
                 statement1.executeUpdate();
@@ -130,7 +130,7 @@ public class DataHandler
             HashMap<UUID, Integer> claims = Maps.newHashMap();
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("select * from vvoting_daily");
+                statement = connection.prepareStatement("select * from vvoting_daily_claims");
                 set = statement.executeQuery();
 
                 while (set.next()) {
@@ -184,8 +184,8 @@ public class DataHandler
                     statement.setString(1, player.toString());
                 } else {
                     statement = connection.prepareStatement("update vvoting_daily_claims set count=? where player=?");
-                    statement.setString(1, player.toString());
-                    statement.setInt(2, count);
+                    statement.setInt(1, count);
+                    statement.setString(2, player.toString());
                 }
 
                 statement.execute();
@@ -222,9 +222,10 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("insert into vvoting_daily_claims values (?,?)");
+                statement = connection.prepareStatement("insert into vvoting_daily_claims values (?,?) on duplicate key update count=count+1");
                 statement.setString(1, player.toString());
-                statement.setInt(2, 0);
+                statement.setInt(2, 1);
+                statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {

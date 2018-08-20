@@ -182,6 +182,11 @@ features:
       noclaimsavailable: "{commandprefix} There are no rewards for you to claim."
       claimsavailable: "{commandprefix} There are {amount} voting reward claims available."
       voteparty:
+        admin:
+          partyalreadystarted: "{commandprefix} Party already started."
+          partystarted: "{commandprefix} Started party."
+          partystartedannouncment: "A voting party has now started!"
+        partynotstarted: "{commandprefix} A vote party hasn't been started yet."
         votecount: "{commandprefix} {count}/{required}"
         claimsavailable: "{commandprefix} There are {amount} VoteParty claims available."
         complete: "The voting party is now complete! Execute '/vp claim' to claim your reward if you contributed in the party."

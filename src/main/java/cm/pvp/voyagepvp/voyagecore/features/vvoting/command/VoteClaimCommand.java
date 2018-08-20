@@ -3,11 +3,13 @@ package cm.pvp.voyagepvp.voyagecore.features.vvoting.command;
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
+import cm.pvp.voyagepvp.voyagecore.api.tasks.Tasks;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.VVoting;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class VoteClaimCommand extends VoyageCommand
@@ -30,6 +32,12 @@ public class VoteClaimCommand extends VoyageCommand
     {
         super(null, "voyagecore.vvoting.voteclaim", "Claim your daily vote reward", true, "voteclaim");
         this.feature = feature;
+
+        try {
+            feature.getInstance().getMainConfig().populate(this);
+        } catch (OperationNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -38,12 +46,16 @@ public class VoteClaimCommand extends VoyageCommand
         Player p = (Player) sender;
 
         feature.getHandler().dailyClaims().whenCompleteAsync((claims, throwable) -> {
+            if (throwable != null) {
+                throw new RuntimeException(throwable);
+            }
+
             if (!claims.containsKey(p.getUniqueId())) {
                 p.sendMessage(Format.colour(noClaimsAvailableMessage));
                 return;
             }
 
-            feature.getDailyReward().forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Format.format(cmd, "@p;" + p.getName())));
+            Tasks.runSyncLater(() -> feature.getDailyReward().forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Format.format(cmd, "@p;" + p.getName()))), 0L);
             p.sendMessage(Format.colour(Format.format(claimedRewardMessage, "{claims?};" + (claims.get(p.getUniqueId()) > 0 ? Format.format(gotMoreClaims, "{amount};" + String.valueOf(claims.get(p.getUniqueId()))) : gotNoClaims))));
             feature.getHandler().updateDailyClaimCount(p.getUniqueId(), claims.get(p.getUniqueId()) - 1);
         });
