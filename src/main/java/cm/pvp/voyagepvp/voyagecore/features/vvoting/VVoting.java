@@ -10,6 +10,7 @@ import cm.pvp.voyagepvp.voyagecore.api.player.Players;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.TestVoteCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.VoteClaimCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.VotePartyCommand;
+import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.admin.VotePartyAdminCommand;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -65,7 +66,7 @@ public class VVoting extends Feature implements Listener
     protected boolean enable() throws Exception
     {
         handler = new DataHandler(this);
-        getInstance().register(new VotePartyCommand(this), new TestVoteCommand(), new VoteClaimCommand(this));
+        getInstance().register(new VotePartyCommand(this), new TestVoteCommand(), new VoteClaimCommand(this), new VotePartyAdminCommand(this));
         Bukkit.getPluginManager().registerEvents(this, getInstance());
         settingsFile = new File(getInstance().getDataFolder(), "vvoting-settings.json");
 
