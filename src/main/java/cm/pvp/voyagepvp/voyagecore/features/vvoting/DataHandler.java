@@ -39,8 +39,8 @@ public class DataHandler
 
             try (Connection connection0 = source.getConnection(); Connection connection1 = source.getConnection(); Connection connection2 = source.getConnection()) {
                 table0 = connection0.prepareStatement("create table if not exists vvoting_party(player varchar(40) primary key)");
-                table1 = connection1.prepareStatement("create table if not exists vvoting_party_claims(player varchar(40) primary key, count int default 0)");
-                table2 = connection2.prepareCall("create table if not exists vvoting_daily_claims(player varchar(40) primary key, count int default 0)");
+                table1 = connection1.prepareStatement("create table if not exists vvoting_party_claims(player varchar(40) primary key, count int default 1)");
+                table2 = connection2.prepareCall("create table if not exists vvoting_daily_claims(player varchar(40) primary key, count int default 1)");
                 table0.execute();
                 table1.execute();
                 table2.execute();
@@ -60,7 +60,7 @@ public class DataHandler
             PreparedStatement statement1 = null;
 
             try (Connection connection = source.getConnection(); Connection connection1 = source.getConnection()) {
-                statement = connection.prepareStatement("insert into vvoting_party_claims (select * from vvoting_party) on duplicate key update vvoting_party_claims.count=vvoting_party_claims.count + 1;");
+                statement = connection.prepareStatement("insert into vvoting_party_claims (vvoting_party_claims.player) (select player from vvoting_party) on duplicate key update count=count + 1;");
                 statement1 = connection1.prepareStatement("delete from vvoting_party;");
                 statement.executeUpdate();
                 statement1.executeUpdate();
@@ -222,9 +222,8 @@ public class DataHandler
             PreparedStatement statement = null;
 
             try (Connection connection = source.getConnection()) {
-                statement = connection.prepareStatement("insert into vvoting_daily_claims values (?,?) on duplicate key update count=count+1");
+                statement = connection.prepareStatement("insert into vvoting_daily_claims values (?) on duplicate key update count=count+1");
                 statement.setString(1, player.toString());
-                statement.setInt(2, 1);
                 statement.execute();
             } catch (SQLException e) {
                 e.printStackTrace();

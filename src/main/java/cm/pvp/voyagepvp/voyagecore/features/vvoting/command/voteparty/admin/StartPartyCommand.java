@@ -20,7 +20,7 @@ public class StartPartyCommand extends VoyageCommand
     @ConfigPopulate("features.vvoting.messages.voteparty.admin.partystarted")
     private String partyStartedMessage;
 
-    @ConfigPopulate("features.vvoting.messages.voteparty.partystartedannouncment")
+    @ConfigPopulate("features.vvoting.messages.voteparty.admin.partystartedannouncement")
     private String partyStartedAnnouncement;
 
     public StartPartyCommand(VVoting feature)

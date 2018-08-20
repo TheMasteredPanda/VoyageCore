@@ -185,7 +185,7 @@ features:
         admin:
           partyalreadystarted: "{commandprefix} Party already started."
           partystarted: "{commandprefix} Started party."
-          partystartedannouncment: "A voting party has now started!"
+          partystartedannouncement: "A voting party has now started!"
         partynotstarted: "{commandprefix} A vote party hasn't been started yet."
         votecount: "{commandprefix} {count}/{required}"
         claimsavailable: "{commandprefix} There are {amount} VoteParty claims available."

@@ -13,8 +13,6 @@ import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.VotePartyC
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.admin.VotePartyAdminCommand;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -77,10 +75,20 @@ public class VVoting extends Feature implements Listener
                 }
                 JsonObject data = new JsonObject();
                 data.addProperty("startedParty", false);
-                gson.toJson(data, new JsonWriter(new FileWriter(settingsFile)));
+
+                try (FileWriter writer = new FileWriter(settingsFile)) {
+                    gson.toJson(data, writer);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
 
-            settingsObject = gson.fromJson(new JsonReader(new FileReader(settingsFile)), JsonObject.class);
+            try (FileReader reader = new FileReader(settingsFile)) {
+                settingsObject = gson.fromJson(reader, JsonObject.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             getInstance().getMainConfig().populate(this);
         } catch (IOException e) {
@@ -93,8 +101,8 @@ public class VVoting extends Feature implements Listener
 
     public void saveSettingsFile()
     {
-        try {
-            gson.toJson(settingsObject, new JsonWriter(new FileWriter(settingsFile)));
+        try (FileWriter writer = new FileWriter(settingsFile)) {
+            gson.toJson(settingsObject, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,7 +151,7 @@ public class VVoting extends Feature implements Listener
                 handler.partyInsert(id);
             }
 
-            if (claims.size() >= requiredVotes) {
+            if ((claims.size() + 1) >= requiredVotes) {
                 handler.cleanParty().whenCompleteAsync((aVoid, throwable12) -> {
                     Bukkit.broadcastMessage(Format.colour(votePartyCompleteMessage));
                     settingsObject.addProperty("startedParty", false);
