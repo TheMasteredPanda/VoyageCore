@@ -57,6 +57,7 @@ public class VoteClaimCommand extends VoyageCommand
 
             Tasks.runSyncLater(() -> feature.getDailyRewards().forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Format.format(cmd, "@p;" + p.getName()))), 0L);
             p.sendMessage(Format.colour(Format.format(claimedRewardMessage, "{claims?};" + (claims.get(p.getUniqueId()) > 0 ? Format.format(gotMoreClaims, "{amount};" + String.valueOf(claims.get(p.getUniqueId()))) : gotNoClaims))));
+            feature.pick(p);
             feature.getHandler().updateDailyClaimCount(p.getUniqueId(), claims.get(p.getUniqueId()) - 1);
         });
     }

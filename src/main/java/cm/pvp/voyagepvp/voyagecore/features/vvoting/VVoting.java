@@ -6,11 +6,13 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.exception.MojangException;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
+import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import cm.pvp.voyagepvp.voyagecore.api.player.Players;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.TestVoteCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.VoteClaimCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.VotePartyCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.admin.VotePartyAdminCommand;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.vexsoftware.votifier.model.VotifierEvent;
@@ -26,13 +28,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 public class VVoting extends Feature implements Listener
 {
+    private Random r = new Random();
     private DataHandler handler;
     private Gson gson = new Gson();
     private File settingsFile;
@@ -67,6 +68,8 @@ public class VVoting extends Feature implements Listener
 
     @ConfigPopulate("features.vvoting.voteparty.repeat")
     private boolean repeatEnabled;
+
+    private Map<String, GAEntry> gaRewards = Maps.newHashMap();
 
     @Setter
     private VotePartyCountdown countdown;
@@ -125,6 +128,21 @@ public class VVoting extends Feature implements Listener
         }
 
         new VVotingPlaceholderExtension(this).register();
+
+        for (String key : getSection().getConfigurationSection("garewards").getKeys(true)) {
+            String[] fraction = key.split("/");
+
+            if (fraction.length == 1) {
+                continue;
+            }
+
+            if (!NumberUtil.parseable(fraction[0], int.class) || !NumberUtil.parseable(fraction[1], int.class)) {
+                continue;
+            }
+
+            gaRewards.put(key, new GAEntry(getSection().getStringList("garewards." + key + ".commands"), getSection().getStringList("garewards." + key + ".message")));
+        }
+
         return true;
     }
 
@@ -198,6 +216,7 @@ public class VVoting extends Feature implements Listener
             Player p = Bukkit.getPlayer(e.getVote().getUsername());
 
             dailyRewards.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Format.format(cmd, "@p;" + p.getName())));
+            pick(p);
             p.sendMessage(Format.colour(Format.format(thanksForVotingMessage, "{player};" + p.getName(), "{servicename};" + e.getVote().getServiceName())));
         } else {
             handler.dailyInsert(id);
@@ -225,5 +244,20 @@ public class VVoting extends Feature implements Listener
                 });
             }
         });
+    }
+
+    public void pick(Player player)
+    {
+        for (Map.Entry<String, GAEntry> entry : gaRewards.entrySet()) {
+            String[] fraction = entry.getKey().split("/");
+            int numerator = NumberUtil.parse(fraction[0], int.class);
+            int denominator = NumberUtil.parse(fraction[1], int.class);
+
+            if (r.nextInt(denominator) <= numerator) {
+                entry.getValue().getCommands().forEach(cmd -> Bukkit.dispatchCommand(player, Format.format(cmd, "@p;" + player.getName())));
+                entry.getValue().getMessage().forEach(line -> player.sendMessage(Format.colour(line)));
+                return;
+            }
+        }
     }
 }
