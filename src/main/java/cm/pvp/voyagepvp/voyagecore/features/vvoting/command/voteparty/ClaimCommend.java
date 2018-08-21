@@ -16,8 +16,8 @@ public class ClaimCommend extends VoyageCommand
 {
     private VVoting feature;
 
-    @ConfigPopulate("features.vvoting.voteparty.reward")
-    private List<String> commands;
+    @ConfigPopulate("features.vvoting.voteparty.rewards")
+    private List<String> rewards;
 
     @ConfigPopulate("features.vvoting.messages.noclaimsavailable")
     private String noClaimsAvailableMessage;
@@ -54,7 +54,7 @@ public class ClaimCommend extends VoyageCommand
                 return;
             }
 
-            commands.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
+            rewards.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
             p.sendMessage(Format.colour(Format.format(claimedRewardMessage, "{claims?};" + (claims.get(p.getUniqueId()) > 0 ? Format.format(gotMoreClaims, "{amount};" + String.valueOf(claims.get(p.getUniqueId()))) : gotNoClaims))));
             feature.getHandler().updatePartyClaimCount(p.getUniqueId(), claims.get(p.getUniqueId()) - 1);
         });

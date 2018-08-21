@@ -51,24 +51,29 @@ public class VVoting extends Feature implements Listener
     private String thanksForVotingMessage;
 
     @ConfigPopulate("features.vvoting.dailyreward")
-    private List<String> dailyReward;
+    private List<String> dailyRewards;
 
-    @ConfigPopulate("features.vvoting.voteparty.requiredVotes")
+    @ConfigPopulate("features.vvoting.voteparty.requiredvotes")
     private int requiredVotes;
 
     @ConfigPopulate("features.vvoting.messages.voteparty.admin.partystartedannouncement")
     private String partyStartedAnnouncement;
 
-    @ConfigPopulate("features.vvoting.votepary.interval")
+    @ConfigPopulate("features.vvoting.voteparty.cooldown.interval")
     private int interval;
 
+    @ConfigPopulate("features.vvoting.voteparty.cooldown.enabled")
+    private boolean cooldownEnabled;
+
+    @ConfigPopulate("features.vvoting.voteparty.repeat")
+    private boolean repeatEnabled;
 
     @Setter
     private VotePartyCountdown countdown;
 
     public VVoting(VoyageCore instance)
     {
-        super(instance, "VVoting", 1.5);
+        super(instance, "VVoting", 2.0);
     }
 
     @Override
@@ -82,7 +87,7 @@ public class VVoting extends Feature implements Listener
         try {
             if (!settingsFile.exists()) {
                 if (settingsFile.createNewFile()) {
-                    getLogger().info("Created settings file for vvoting.");
+                    getLogger().info("Created settings file for VVoting.");
                 }
                 JsonObject data = new JsonObject();
                 data.addProperty("startedParty", false);
@@ -106,9 +111,17 @@ public class VVoting extends Feature implements Listener
             e.printStackTrace();
         }
 
+        if (cooldownEnabled && repeatEnabled) {
+            throw new RuntimeException("You cannot have the cooldown and repeat functions enabled at the same time.");
+        }
 
-        if (settingsObject.has("countdown")) {
+
+        if (settingsObject.has("countdown") && cooldownEnabled) {
             countdown = new VotePartyCountdown(this, settingsObject.get("countdown").getAsInt());
+        }
+
+        if (!settingsObject.get("startedParty").getAsBoolean()) {
+            startVotingParty();
         }
 
         new VVotingPlaceholderExtension(this).register();
@@ -117,9 +130,11 @@ public class VVoting extends Feature implements Listener
 
     public void startVotingParty()
     {
-        if (!countdown.isCancelled()) {
-            countdown.cancel();
-            settingsObject.remove("countdown");
+        if (cooldownEnabled) {
+            if (!countdown.isCancelled()) {
+                countdown.cancel();
+                settingsObject.remove("countdown");
+            }
         }
 
         Bukkit.broadcastMessage(Format.colour(partyStartedAnnouncement));
@@ -129,8 +144,10 @@ public class VVoting extends Feature implements Listener
 
     public void stopVotingParty()
     {
-        if (countdown.isCancelled()) {
-            countdown = new VotePartyCountdown(this, interval);
+        if (cooldownEnabled) {
+            if (countdown.isCancelled()) {
+                countdown = new VotePartyCountdown(this, interval);
+            }
         }
 
         handler.cleanParty().whenCompleteAsync((aVoid, throwable) -> {
@@ -180,7 +197,7 @@ public class VVoting extends Feature implements Listener
         if (Players.online().stream().anyMatch(p -> p.getName().equalsIgnoreCase(e.getVote().getUsername()))) {
             Player p = Bukkit.getPlayer(e.getVote().getUsername());
 
-            dailyReward.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Format.format(cmd, "@p;" + p.getName())));
+            dailyRewards.forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Format.format(cmd, "@p;" + p.getName())));
             p.sendMessage(Format.colour(Format.format(thanksForVotingMessage, "{player};" + p.getName(), "{servicename};" + e.getVote().getServiceName())));
         } else {
             handler.dailyInsert(id);
@@ -196,6 +213,15 @@ public class VVoting extends Feature implements Listener
                     Bukkit.broadcastMessage(Format.colour(votePartyCompleteMessage));
                     settingsObject.addProperty("startedParty", false);
                     saveSettingsFile();
+
+                    if (repeatEnabled) {
+                        startVotingParty();
+                    }
+
+                    if (cooldownEnabled) {
+                        countdown = new VotePartyCountdown(this, interval);
+                    }
+
                 });
             }
         });

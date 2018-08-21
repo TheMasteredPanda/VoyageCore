@@ -13,7 +13,7 @@ public class VVotingPlaceholderExtension extends PlaceholderExpansion
 {
     private VVoting feature;
 
-    @ConfigPopulate("features.vvoting.votepary.requiredvotes")
+    @ConfigPopulate("features.vvoting.voteparty.requiredvotes")
     private int requiredVotes;
 
     public VVotingPlaceholderExtension(VVoting feature)

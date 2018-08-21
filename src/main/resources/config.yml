@@ -173,8 +173,8 @@ features:
       database: "voyagecore"
       host: "172.17.0.2:3306"
     messages:
-      thanksforvoting: "Thanks for voting on {servicename}, {player}! <3"
-      vote: "You should vote, why? Because in doing so I give you something in return :)."
+      thanksforvoting: "&aVoyageCore &8» &7Thanks for voting on {servicename}, {player}! <3"
+      vote: "&aVoyageCore &8» &7You should vote, why? Because in doing so I give you something in return :)."
       claims:
         gotmore: "You've got {amount} more rewards to claim!"
         gotnone: "You've got no more rewards to claim."
@@ -185,23 +185,27 @@ features:
         admin:
           partyalreadystarted: "{commandprefix} Party already started."
           partystarted: "{commandprefix} Started party."
-          partystartedannouncement: "A voting party has now started!"
+          partystartedannouncement: "&aVoyageCore &8» &7A voting party has now started!"
           partystopped: "{commandprefiix} Stopped party."
           partynotstarted: "{commandprefix} A party hasn't been started yet."
-          partystoppedannouncement: "The vote party has been stopped. Anybody contributing to the VoteParty will receive a a reward claimable in the normal fashion."
+          partystoppedannouncement: "&aVoyageCore &8» &7The vote party has been stopped. Anybody contributing to the VoteParty will receive a a reward claimable in the normal fashion."
+        cooldownnotenabled: "{commandprefix} VoteParty cooldowns have not been enabled. "
+        timeleft: "{commandprefix} There is {time} left until the VoteParty starts."
         partynotstarted: "{commandprefix} A vote party hasn't been started yet."
         votecount: "{commandprefix} {count}/{required}"
-        claimsavailable: "{commandprefix} There are {amount} VoteParty claims available."
-        complete: "The voting party is now complete! Execute '/vp claim' to claim your reward if you contributed in the party."
+        claimsavailable: "&aVoyageCore &8» &7There are {amount} VoteParty claims available."
+        complete: "&a&lVoyageCore &8» &7The voting party is now complete! Execute '/vp claim' to claim your reward if you contributed in the party."
     voteparty:
       #The amount of seconds to wait to automatically start a new vote party after one has finished.
-      interval: 3600
+      cooldown:
+        enabled: false
+        interval: 3600
+      #Instantly creates a new VoteParty after the last one has finished. You cannot have the cooldown function and repeat function enabled at the same time.
+      repeat: true
       requiredvotes: 250
       #A list of commands that will be invoked by the console.
-      reward:
-        - ""
-        - ""
-        - ""
+      rewards:
+        - "give @p gold 16"
     #A list of commands invoked by the console when someone votes.
     dailyreward:
       - "give @p diamond 16"

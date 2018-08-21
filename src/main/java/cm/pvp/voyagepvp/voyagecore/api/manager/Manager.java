@@ -24,7 +24,7 @@ public class Manager<T extends VoyagePlugin>
     {
         this.name = name;
         this.version = version;
-        logger = Logger.getLogger(getClass().getName());
+        logger = Logger.getLogger("Manager: " + getClass().getSimpleName());
         logger.setParent(instance.getLogger());
     }
 
@@ -34,7 +34,7 @@ public class Manager<T extends VoyagePlugin>
     public final void boot()
     {
         if (!enabled) {
-            logger.info("Enabling module.");
+            logger.info("Enabling manager.");
 
             try {
                 enabled = enable();
@@ -57,11 +57,11 @@ public class Manager<T extends VoyagePlugin>
     public final void shutdown()
     {
         if (enabled) {
-            logger.info("Disabling module.");
+            logger.info("Disabling manager.");
 
             try {
                 disable();
-                logger.info("Disabled module.");
+                logger.info("Disabled manager.");
                 enabled = false;
             } catch (Exception e) {
                 e.printStackTrace();

@@ -16,7 +16,7 @@ public class CountCommand extends VoyageCommand
     @ConfigPopulate("features.vvoting.messages.voteparty.votecount")
     private String voteCountMessage;
 
-    @ConfigPopulate("features.vvoting.voteparty.requiredVotes")
+    @ConfigPopulate("features.vvoting.voteparty.requiredvotes")
     private int requiredVotes;
 
     @ConfigPopulate("features.vvoting.messages.voteparty.partynotstarted")
