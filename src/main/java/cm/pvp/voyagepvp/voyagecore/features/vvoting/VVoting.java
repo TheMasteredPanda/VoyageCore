@@ -9,6 +9,7 @@ import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
 import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import cm.pvp.voyagepvp.voyagecore.api.player.Players;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.TestVoteCommand;
+import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.ViewGARewardsCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.VoteClaimCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.VotePartyCommand;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.admin.VotePartyAdminCommand;
@@ -83,7 +84,7 @@ public class VVoting extends Feature implements Listener
     protected boolean enable() throws Exception
     {
         handler = new DataHandler(this);
-        getInstance().register(new VotePartyCommand(this), new TestVoteCommand(), new VoteClaimCommand(this), new VotePartyAdminCommand(this));
+        getInstance().register(new VotePartyCommand(this), new TestVoteCommand(), new VoteClaimCommand(this), new VotePartyAdminCommand(this), new ViewGARewardsCommand(this));
         Bukkit.getPluginManager().registerEvents(this, getInstance());
         settingsFile = new File(getInstance().getDataFolder(), "vvoting-settings.json");
 
@@ -123,7 +124,11 @@ public class VVoting extends Feature implements Listener
             countdown = new VotePartyCountdown(this, settingsObject.get("countdown").getAsInt());
         }
 
-        if (!settingsObject.get("startedParty").getAsBoolean()) {
+        if (countdown == null && cooldownEnabled) {
+            countdown = new VotePartyCountdown(this, interval);
+        }
+
+        if (!settingsObject.get("startedParty").getAsBoolean() && repeatEnabled) {
             startVotingParty();
         }
 
@@ -149,7 +154,7 @@ public class VVoting extends Feature implements Listener
     public void startVotingParty()
     {
         if (cooldownEnabled) {
-            if (!countdown.isCancelled()) {
+            if (countdown != null && !countdown.isCancelled()) {
                 countdown.cancel();
                 settingsObject.remove("countdown");
             }
@@ -222,28 +227,30 @@ public class VVoting extends Feature implements Listener
             handler.dailyInsert(id);
         }
 
-        handler.party().whenCompleteAsync((claims, throwable) -> {
-            if (!claims.contains(id)) {
-                handler.partyInsert(id);
-            }
+        if (settingsObject.get("startedParty").getAsBoolean()) {
+            handler.party().whenCompleteAsync((claims, throwable) -> {
+                if (!claims.contains(id)) {
+                    handler.partyInsert(id);
+                }
 
-            if ((claims.size() + 1) >= requiredVotes) {
-                handler.cleanParty().whenCompleteAsync((aVoid, throwable12) -> {
-                    Bukkit.broadcastMessage(Format.colour(votePartyCompleteMessage));
-                    settingsObject.addProperty("startedParty", false);
-                    saveSettingsFile();
+                if ((claims.size() + 1) >= requiredVotes) {
+                    handler.cleanParty().whenCompleteAsync((aVoid, throwable12) -> {
+                        Bukkit.broadcastMessage(Format.colour(votePartyCompleteMessage));
+                        settingsObject.addProperty("startedParty", false);
+                        saveSettingsFile();
 
-                    if (repeatEnabled) {
-                        startVotingParty();
-                    }
+                        if (repeatEnabled) {
+                            startVotingParty();
+                        }
 
-                    if (cooldownEnabled) {
-                        countdown = new VotePartyCountdown(this, interval);
-                    }
+                        if (cooldownEnabled) {
+                            countdown = new VotePartyCountdown(this, interval);
+                        }
 
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
     }
 
     public void pick(Player player)
@@ -253,7 +260,7 @@ public class VVoting extends Feature implements Listener
             int numerator = NumberUtil.parse(fraction[0], int.class);
             int denominator = NumberUtil.parse(fraction[1], int.class);
 
-            if (r.nextInt(denominator) <= numerator) {
+            if (r.nextInt(denominator) < numerator) {
                 entry.getValue().getCommands().forEach(cmd -> Bukkit.dispatchCommand(player, Format.format(cmd, "@p;" + player.getName())));
                 entry.getValue().getMessage().forEach(line -> player.sendMessage(Format.colour(line)));
                 return;

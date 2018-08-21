@@ -14,6 +14,7 @@ public class VotePartyCountdown extends BukkitRunnable
     {
         this.feature = feature;
         this.interval = interval;
+        runTaskTimerAsynchronously(feature.getInstance(), 0L, 20L);
     }
 
     @Override
