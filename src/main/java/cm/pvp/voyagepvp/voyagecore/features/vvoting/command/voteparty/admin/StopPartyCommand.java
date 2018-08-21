@@ -9,20 +9,24 @@ import org.bukkit.command.CommandSender;
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
-public class StartPartyCommand extends VoyageCommand
+public class StopPartyCommand extends VoyageCommand
 {
     private VVoting feature;
 
-    @ConfigPopulate("features.vvoting.messages.voteparty.admin.partyalreadystarted")
-    private String partyAlreadyStartedMessage;
+    @ConfigPopulate("featurs.votting.voteparty.admin.partynotstarted")
+    private String partyNotStarted;
 
-    @ConfigPopulate("features.vvoting.messages.voteparty.admin.partystarted")
-    private String partyStartedMessage;
+    @ConfigPopulate("features.vvoting.voteparty.admin.partystopped")
+    private String partyStoppedMessage;
 
-    public StartPartyCommand(VVoting feature)
+    @ConfigPopulate("features.vvoting.votepary.admin.partystoppedannouncement")
+    private String partyStoppedAccouncementMessage;
+
+    public StopPartyCommand(VVoting feature)
     {
-        super(null, "voyagecore.vvoting.voteparty.admin.startparty", "Start a vote party.", false, "start");
+        super(null, "voyagecore.vvoting.voteparty.admin.stopparty", "Stop a VoteParty.", true, "stop");
         this.feature = feature;
+
 
         try {
             feature.getInstance().getMainConfig().populate(this);
@@ -34,12 +38,12 @@ public class StartPartyCommand extends VoyageCommand
     @Override
     public void execute(CommandSender sender, VoyageCommand command, LinkedList<String> arguments)
     {
-        if (feature.getSettingsObject().get("startedParty").getAsBoolean()) {
-            sender.sendMessage(Format.colour(partyAlreadyStartedMessage));
+        if (!feature.getSettingsObject().get("startedParty").getAsBoolean()) {
+            sender.sendMessage(Format.colour(partyNotStarted));
             return;
         }
 
-        feature.startVotingParty();
-        sender.sendMessage(Format.colour(partyStartedMessage));
+        feature.stopVotingParty();
+        sender.sendMessage(Format.colour(partyStoppedMessage));
     }
 }

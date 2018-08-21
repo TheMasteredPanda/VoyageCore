@@ -186,12 +186,17 @@ features:
           partyalreadystarted: "{commandprefix} Party already started."
           partystarted: "{commandprefix} Started party."
           partystartedannouncement: "A voting party has now started!"
+          partystopped: "{commandprefiix} Stopped party."
+          partynotstarted: "{commandprefix} A party hasn't been started yet."
+          partystoppedannouncement: "The vote party has been stopped. Anybody contributing to the VoteParty will receive a a reward claimable in the normal fashion."
         partynotstarted: "{commandprefix} A vote party hasn't been started yet."
         votecount: "{commandprefix} {count}/{required}"
         claimsavailable: "{commandprefix} There are {amount} VoteParty claims available."
         complete: "The voting party is now complete! Execute '/vp claim' to claim your reward if you contributed in the party."
     voteparty:
-      requiredVotes: 250
+      #The amount of seconds to wait to automatically start a new vote party after one has finished.
+      interval: 3600
+      requiredvotes: 250
       #A list of commands that will be invoked by the console.
       reward:
         - ""

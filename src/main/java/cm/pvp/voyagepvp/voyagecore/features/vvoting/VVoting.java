@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -55,9 +56,19 @@ public class VVoting extends Feature implements Listener
     @ConfigPopulate("features.vvoting.voteparty.requiredVotes")
     private int requiredVotes;
 
+    @ConfigPopulate("features.vvoting.messages.voteparty.admin.partystartedannouncement")
+    private String partyStartedAnnouncement;
+
+    @ConfigPopulate("features.vvoting.votepary.interval")
+    private int interval;
+
+
+    @Setter
+    private VotePartyCountdown countdown;
+
     public VVoting(VoyageCore instance)
     {
-        super(instance, "VVoting", 1.0);
+        super(instance, "VVoting", 1.5);
     }
 
     @Override
@@ -96,7 +107,36 @@ public class VVoting extends Feature implements Listener
         }
 
 
+        if (settingsObject.has("countdown")) {
+            countdown = new VotePartyCountdown(this, settingsObject.get("countdown").getAsInt());
+        }
+
+        new VVotingPlaceholderExtension(this).register();
         return true;
+    }
+
+    public void startVotingParty()
+    {
+        if (!countdown.isCancelled()) {
+            countdown.cancel();
+            settingsObject.remove("countdown");
+        }
+
+        Bukkit.broadcastMessage(Format.colour(partyStartedAnnouncement));
+        settingsObject.addProperty("startedParty", true);
+        saveSettingsFile();
+    }
+
+    public void stopVotingParty()
+    {
+        if (countdown.isCancelled()) {
+            countdown = new VotePartyCountdown(this, interval);
+        }
+
+        handler.cleanParty().whenCompleteAsync((aVoid, throwable) -> {
+            settingsObject.addProperty("startedParty", false);
+            saveSettingsFile();
+        });
     }
 
     public void saveSettingsFile()
@@ -158,7 +198,6 @@ public class VVoting extends Feature implements Listener
                     saveSettingsFile();
                 });
             }
-
         });
     }
 }
