@@ -11,7 +11,7 @@ public class VotePartyAdminCommand extends VoyageCommand
     public VotePartyAdminCommand(VVoting feature)
     {
         super(null, null, "Admin command for VoteParty", false, "votepartyadmin", "vpa");
-        addChildren(new StartPartyCommand(feature));
+        addChildren(new StartPartyCommand(feature), new StartPartyCommand(feature));
     }
 
     @Override

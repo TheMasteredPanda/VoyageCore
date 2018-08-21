@@ -1,27 +1,32 @@
-package cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty.admin;
+package cm.pvp.voyagepvp.voyagecore.features.vvoting.command.voteparty;
 
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
+import cm.pvp.voyagepvp.voyagecore.api.math.TimeUtil;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.VVoting;
 import org.bukkit.command.CommandSender;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
-public class StartPartyCommand extends VoyageCommand
+public class TimeCommand extends VoyageCommand
 {
     private VVoting feature;
 
     @ConfigPopulate("features.vvoting.messages.voteparty.admin.partyalreadystarted")
     private String partyAlreadyStartedMessage;
 
-    @ConfigPopulate("features.vvoting.messages.voteparty.admin.partystarted")
-    private String partyStartedMessage;
+    @ConfigPopulate("features.vvoting.messages.voteparty.timeleft")
+    private String timeLeftMessage;
 
-    public StartPartyCommand(VVoting feature)
+    @ConfigPopulate("features.vvoting.messages.voteparty.cooldownnotenabled")
+    private String notEnabledMessage;
+
+    public TimeCommand(VVoting feature)
     {
-        super(null, "voyagecore.vvoting.voteparty.admin.startparty", "Start a vote party.", false, "start");
+        super(null, "voyagecore.vvoting.voteparty.time", "Check when the next VotePary will start.", true, "time");
         this.feature = feature;
 
         try {
@@ -39,7 +44,6 @@ public class StartPartyCommand extends VoyageCommand
             return;
         }
 
-        feature.startVotingParty();
-        sender.sendMessage(Format.colour(partyStartedMessage));
+        sender.sendMessage(Format.colour(Format.format(timeLeftMessage, "{time};" + TimeUtil.millisecondsToTimeUnits(TimeUnit.SECONDS, feature.getCountdown().getInterval(), false))));
     }
 }

@@ -14,7 +14,7 @@ public class VotePartyCommand extends VoyageCommand
     {
         super(null, null, "Parent command for the VoteParty feature withing VVoting.", true, "voteparty", "vp");
         this.feature = feature;
-        addChildren(new ClaimCommend(feature), new CountCommand(feature));
+        addChildren(new ClaimCommend(feature), new CountCommand(feature), new TimeCommand(feature));
     }
 
     @Override

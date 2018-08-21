@@ -49,6 +49,7 @@ public abstract class VoyageCommand extends BukkitCommand
         this.locale = locale == null ? new DefaultCommandLocale() : locale;
         setPermissionMessage(this.locale.get(NO_PERMISSION));
         this.playerOnlyCommand = playerOnlyCommand;
+
     }
 
     /**

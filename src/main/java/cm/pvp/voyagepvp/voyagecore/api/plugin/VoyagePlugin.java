@@ -76,7 +76,7 @@ public class VoyagePlugin extends JavaPlugin
 
         for (VoyageCommand cmd : commands) {
             map.register(getDescription().getName().toLowerCase(), cmd);
-            getLogger().warning("Registered command " + cmd.getName() + ".");
+            getLogger().info("Registered command " + cmd.getName() + ".");
         }
     }
 }
