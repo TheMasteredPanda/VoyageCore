@@ -220,3 +220,7 @@ features:
           - "give @p gold 16"
         message:
           - "In addition to you daily reward, we've given you 16 Gold! Enjoy!"
+  vtrade:
+    messages:
+      playeernotonline: "{commandprefix} {target} is not online."
+      tradesessionstart: "{commandprefix} A trade session has started with {target}."
