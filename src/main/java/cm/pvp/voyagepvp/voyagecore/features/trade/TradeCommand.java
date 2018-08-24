@@ -22,12 +22,19 @@ public class TradeCommand extends VoyageCommand
     @ConfigPopulate("features.vtrade.messages.tradesessionstarted")
     private String tradeSessionStartedMessage;
 
+    @ConfigPopulate("features.vtrade.messages.cannotselftrade")
+    private String cannotTradeWithYourselfMessage;
+
+    @ConfigPopulate("features.vtrade.messages.currentlytrading")
+    private String currentlyTradingMessage;
+
+
     public TradeCommand(Trade feature)
     {
         super(null, "voyagecore.vtrade.trade", "Open up a trade gui with another player.", true, "trade");
+        this.feature = feature;
 
         try {
-
             ArgumentField field = new ArgumentField("player name", true);
             field.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
             addArguments(field);
@@ -44,9 +51,19 @@ public class TradeCommand extends VoyageCommand
             sender.sendMessage(Format.colour(Format.format(playerNotOnlineMessage, "{target};" + arguments.get(0))));
         }
 
+        if (arguments.get(0).equalsIgnoreCase(sender.getName())) {
+            sender.sendMessage(Format.colour(cannotTradeWithYourselfMessage));
+            return;
+        }
+
+        if (Players.get(arguments.get(0)).getOpenInventory().getTopInventory().getTitle().equalsIgnoreCase("Trade GUI")) {
+            sender.sendMessage(Format.colour(Format.format(currentlyTradingMessage, "{player};" + arguments.get(0))));
+            return;
+        }
+
         Player p = (Player) sender;
         Player target = Players.get(arguments.get(0));
         p.sendMessage(tradeSessionStartedMessage);
-        new TradeGUI(p, target);
+        new TradeGUI(feature, p, target);
     }
 }

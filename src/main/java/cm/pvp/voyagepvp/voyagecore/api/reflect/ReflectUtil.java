@@ -114,7 +114,7 @@ public class ReflectUtil
         try {
             Constructor constructor = declared ? origin.getDeclaredConstructor(parameters) : origin.getConstructor(parameters);
             ConstructorAccessor accessor = new ConstructorAccessor(constructor);
-            reflections.put(sb.toString(), constructor);
+            reflections.put(sb.toString(), accessor);
             return accessor;
         } catch (NoSuchMethodException e) {
             throw new ReflectionException(e);

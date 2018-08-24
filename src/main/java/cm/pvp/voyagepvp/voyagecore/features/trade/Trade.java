@@ -13,6 +13,7 @@ public class Trade extends Feature
     @Override
     protected boolean enable() throws Exception
     {
-        return super.enable();
+        getInstance().register(new TradeCommand(this));
+        return true;
     }
 }

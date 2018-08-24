@@ -9,7 +9,6 @@ core:
 #Features
 features:
   cannotfindplayerprofile: "{commandprefix} &cCannot find {player}s profile on Mojang API."
-
   ##http://minecraft.tools/en/tellraw.php
   announcements:
     messages:
@@ -222,5 +221,7 @@ features:
           - "In addition to you daily reward, we've given you 16 Gold! Enjoy!"
   vtrade:
     messages:
-      playeernotonline: "{commandprefix} {target} is not online."
-      tradesessionstart: "{commandprefix} A trade session has started with {target}."
+      playernotonline: "{commandprefix} {target} is not online."
+      tradesessionstarted: "{commandprefix} A trade session has started with {target}."
+      cannotselftrade: "{commandprefix} You cannot self trade."
+      currentlytrading: "{commandprefix} Currently trading message."
