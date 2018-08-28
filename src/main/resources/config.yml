@@ -231,3 +231,8 @@ features:
     #Command names (without the forward slash)
     blockedcommands:
       - "test"
+  joinandleavemsgs:
+    enabled: false
+    format:
+      join: ""
+      leave: ""
