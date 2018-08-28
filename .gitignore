@@ -8,6 +8,7 @@ complile_and_move.sh
 VoyageCore.iml
 .idea
 target
+dependency-reduced-pom.xml
 
 # Log file
 *.log

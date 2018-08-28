@@ -3,6 +3,7 @@ package cm.pvp.voyagepvp.voyagecore.features.cmdblocker;
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
+import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -35,13 +36,17 @@ public class CMDBlocker extends Feature implements Listener
     @EventHandler
     public void on(PlayerCommandPreprocessEvent e)
     {
-        if (e.getMessage().split(" ")[0].split(":").length != 1) {
+        if (e.getMessage().split(" ")[0].split(":").length == 2) {
             e.setCancelled(true);
+            e.getPlayer().sendMessage(Format.colour(commandBlockedMessage));
+            getLogger().info("1");
             return;
         }
 
-        if (blockedCommands.stream().anyMatch(cmd -> e.getMessage().startsWith(cmd))) {
+        if (blockedCommands.contains(e.getMessage().split(" ")[0])) {
             e.setCancelled(true);
+            e.getPlayer().sendMessage(Format.colour(commandBlockedMessage));
+            getLogger().info("2");
         }
     }
 }

@@ -230,6 +230,4 @@ features:
       commandblocked: "{commandprefix} That command is blocked."
     #Command names (without the forward slash)
     blockedcommands:
-      - ""
-      - ""
-      - ""
+      - "test"
