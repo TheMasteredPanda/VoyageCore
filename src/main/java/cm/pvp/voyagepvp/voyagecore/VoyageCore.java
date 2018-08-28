@@ -9,6 +9,7 @@ import cm.pvp.voyagepvp.voyagecore.api.module.ModuleManager;
 import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
 import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import cm.pvp.voyagepvp.voyagecore.features.chatreaction.ChatReaction;
+import cm.pvp.voyagepvp.voyagecore.features.cmdblocker.CMDBlocker;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
 import cm.pvp.voyagepvp.voyagecore.features.mention.Mention;
 import cm.pvp.voyagepvp.voyagecore.features.norain.NoRain;
@@ -90,7 +91,8 @@ public class VoyageCore extends VoyagePlugin
                 new VEconomy(this),
                 new NoRain(this),
                 new VVoting(this),
-                new Trade(this)
+                new Trade(this),
+                new CMDBlocker(this)
         );
     }
 
