@@ -6,7 +6,7 @@
 
     <groupId>cm.pvp.voyagepvp</groupId>
     <artifactId>VoyageCore</artifactId>
-    <version>1.09.0257</version>
+    <version>1.10.0257</version>
 
     <repositories>
         <repository>

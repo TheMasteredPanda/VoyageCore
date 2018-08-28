@@ -45,6 +45,7 @@ public class JoinAndLeaveMsgs extends Feature implements Listener
         e.setJoinMessage(Format.format(joinFormat, "{playername};" + e.getPlayer().getName()));
     }
 
+    @EventHandler
     public void on(PlayerQuitEvent e)
     {
         if (!enabled) {
