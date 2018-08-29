@@ -236,3 +236,12 @@ features:
     format:
       join: ""
       leave: ""
+  itemstacker:
+    #Anything specified here will be the new default maximum stack sizes of the material used as a key.
+    #Any material that isn't specified here will remain with the preset vanilla stack sizes.
+    #You may also specify the maximum stack size of a material via a permission using the following format:
+    #voyagecore.itemstacker.<upper case material>.<a positive number (> 0)>
+    default:
+      GOLD_INGOT: 400
+    lore:
+      - "Amount: {amount}"
