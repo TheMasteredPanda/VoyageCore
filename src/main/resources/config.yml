@@ -242,6 +242,6 @@ features:
     #You may also specify the maximum stack size of a material via a permission using the following format:
     #voyagecore.itemstacker.<upper case material>.<a positive number (> 0)>
     default:
-      GOLD_INGOT: 400
+      STONE: 400
     lore:
       - "Amount: {amount}"

@@ -95,8 +95,7 @@ public class VoyageCore extends VoyagePlugin
                 new VVoting(this),
                 new Trade(this),
                 new CMDBlocker(this),
-                new JoinAndLeaveMsgs(this),
-                new ItemStacker(this)
+                new JoinAndLeaveMsgs(this)
         );
     }
 

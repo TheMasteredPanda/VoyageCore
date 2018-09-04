@@ -8,15 +8,14 @@ import cm.pvp.voyagepvp.voyagecore.api.reflect.ReflectUtil;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.ConstructorAccessor;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
@@ -35,7 +34,10 @@ public class ItemStacker extends Feature implements Listener
     private MethodAccessor<Integer> GET_INT;
     private MethodAccessor<ItemStack> AS_BUKKIT_COPY;
     private ConstructorAccessor NBTCOMPOUND_CONSTRUCTOR;
+
+    @Getter
     private HashMap<Material, Integer> customDefaultStackSizes = Maps.newHashMap();
+    private MethodAccessor SET_COUNT;
 
     public ItemStacker(VoyageCore instance)
     {
@@ -50,6 +52,7 @@ public class ItemStacker extends Feature implements Listener
         SET_INT = ReflectUtil.getMethod(nbtCompound, "setInt", true, String.class, int.class);
         GET_INT = ReflectUtil.getMethod(nbtCompound, "getInt", true, String.class);
         AS_BUKKIT_COPY = ReflectUtil.getMethod(craftItemStack, "asBukkitCopy", true, nmsItemStack);
+        SET_COUNT = ReflectUtil.getMethod(nmsItemStack, "setCount", true, int.class);
 
         for (String key : getSection().getConfigurationSection("default").getKeys(true)) {
             if (Material.getMaterial(key.toUpperCase()) == null) {
@@ -142,27 +145,22 @@ public class ItemStacker extends Feature implements Listener
     @EventHandler
     public void on(PlayerItemConsumeEvent e)
     {
-        PlayerInventory inv = e.getPlayer().getInventory();
-        int size = getAmount(inv.getItemInMainHand());
+        int size = getAmount(e.getItem());
 
         if (size == 0) {
             return;
         }
 
         size--;
-        getLogger().info("Size is: " + String.valueOf(size));
 
-        if (size > inv.getItemInMainHand().getType().getMaxStackSize()) {
-            //TODO reflect this.
-            net.minecraft.server.v1_12_R1.ItemStack stack = CraftItemStack.asNMSCopy(e.getItem());
-            stack.setCount(64);
-            e.setItem(CraftItemStack.asBukkitCopy(stack));
+        if (size > e.getItem().getType().getMaxStackSize()) {
+            Object nmsItem = AS_NMS_COPY.invoke(null, e.getItem());
+            SET_COUNT.invoke(nmsItem, e.getItem().getType().getMaxStackSize());
+            e.setItem(AS_BUKKIT_COPY.invoke(null, nmsItem));
             e.setItem(setAmount(e.getItem(), size, false));
-            getLogger().info("New amount: " + getAmount(inv.getItemInMainHand()));
-
             e.getPlayer().updateInventory();
         } else {
-            inv.setItemInMainHand(removeNBTTag(inv.getItemInMainHand()));
+            e.setItem(removeNBTTag(e.getItem()));
             e.getPlayer().updateInventory();
         }
     }

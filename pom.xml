@@ -58,7 +58,7 @@
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>LATEST</version>
-            <systemPath>${project.basedir}/depends/PlaceholderAPI-2.9.1.jar</systemPath>
+            <systemPath>${project.basedir}/depends/PlaceholderAPI-2.9.2.jar</systemPath>
             <scope>system</scope>
         </dependency>
         <dependency>
@@ -101,8 +101,8 @@
         <dependency>
             <groupId>de.Herbystar</groupId>
             <artifactId>TTA</artifactId>
-            <version>4.1-SNAPSHOT</version>
-            <systemPath>${project.basedir}/depends/TTA-4.1.jar</systemPath>
+            <version>4.2-SNAPSHOT</version>
+            <systemPath>${project.basedir}/depends/TTA-4.2.jar</systemPath>
             <scope>system</scope>
             <optional>true</optional>
         </dependency>
