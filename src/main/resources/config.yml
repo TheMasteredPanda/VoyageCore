@@ -246,6 +246,11 @@ features:
     lore:
       - "Amount: {amount}"
   inventorybragger:
-    playernotfound: "{commandprefix} Player {player} wasn't found. They are either not on the server or haven't requested to view your inventory."
-    requestaccepted: "{commandprefix} Accepted the request."
-    requestremoved: "{commandprefix} Removed request."
+    messages:
+      playernotfound: "{commandprefix} Player {player} wasn't found. They are either not on the server or haven't requested to view your inventory."
+      requestaccepted: "{commandprefix} Accepted the request."
+      requestremoved: "{commandprefix} Removed request."
+      requestalreadysent: "{commandprefix} You've already sent a request to {player}."
+      sendingrequest: "{commandprefix} Sending request to {player}."
+      targetnotfound: "{commandprefix} Target {player} not found."
+      cannotselfview: "{commandprefix} You cannot self view your own inventory through InventoryBragger!"

@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -27,12 +28,12 @@ public class InventoryBragger extends Feature implements Listener
     public InventoryBragger(VoyageCore instance)
     {
         super(instance, "InventoryBragger", 1.0);
-        getInstance().register(new InventoryBraggerCommand(this));
     }
 
     @Override
     protected boolean enable() throws Exception
     {
+        getInstance().register(new InventoryBraggerCommand(this));
         Bukkit.getPluginManager().registerEvents(this, getInstance());
         return true;
     }
@@ -42,11 +43,11 @@ public class InventoryBragger extends Feature implements Listener
     {
         Player p = (Player) e.getInventory().getHolder();
 
-        if (p.getUniqueId().equals(e.getWhoClicked().getUniqueId())) {
+        if (!p.getUniqueId().equals(e.getWhoClicked().getUniqueId())) {
             return;
         }
 
-        if (viewing.containsKey(e.getWhoClicked().getUniqueId()) && e.getClickedInventory() == viewing.get(e.getWhoClicked().getUniqueId())) {
+        if (viewing.containsKey(e.getWhoClicked().getUniqueId()) && Objects.equals(e.getInventory(), viewing.get(e.getWhoClicked().getUniqueId()))) {
             e.setCancelled(true);
         }
     }

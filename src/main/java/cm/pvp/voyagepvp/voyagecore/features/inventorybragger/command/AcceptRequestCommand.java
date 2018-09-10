@@ -18,7 +18,7 @@ public class AcceptRequestCommand extends VoyageCommand
 {
     private InventoryBragger feature;
 
-    @ConfigPopulate("feautres.inventorybragger.messages.playernotfound")
+    @ConfigPopulate("features.inventorybragger.messages.playernotfound")
     private String playerNotFoundMessage;
 
     @ConfigPopulate("features.inventorybragger.messages.requestaccepted")
@@ -46,7 +46,7 @@ public class AcceptRequestCommand extends VoyageCommand
         Player p = (Player) sender;
         Player target = Players.get(arguments.get(0));
 
-        if (target == null || feature.getRequests().containsEntry(p.getUniqueId(), target.getUniqueId())) {
+        if (target == null || !feature.getRequests().containsEntry(p.getUniqueId(), target.getUniqueId())) {
             sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + arguments.get(0))));
             return;
         }

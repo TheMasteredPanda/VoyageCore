@@ -11,6 +11,7 @@ import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import cm.pvp.voyagepvp.voyagecore.features.chatreaction.ChatReaction;
 import cm.pvp.voyagepvp.voyagecore.features.cmdblocker.CMDBlocker;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
+import cm.pvp.voyagepvp.voyagecore.features.inventorybragger.InventoryBragger;
 import cm.pvp.voyagepvp.voyagecore.features.itemstacker.ItemStacker;
 import cm.pvp.voyagepvp.voyagecore.features.joinandleave.JoinAndLeaveMsgs;
 import cm.pvp.voyagepvp.voyagecore.features.mention.Mention;
@@ -96,7 +97,8 @@ public class VoyageCore extends VoyagePlugin
                 new Trade(this),
                 new CMDBlocker(this),
                 new JoinAndLeaveMsgs(this),
-                new ItemStacker(this)
+                new ItemStacker(this),
+                new InventoryBragger(this)
         );
     }
 
