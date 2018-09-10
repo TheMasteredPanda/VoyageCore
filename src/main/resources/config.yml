@@ -245,3 +245,7 @@ features:
       STONE: 400
     lore:
       - "Amount: {amount}"
+  inventorybragger:
+    playernotfound: "{commandprefix} Player {player} wasn't found. They are either not on the server or haven't requested to view your inventory."
+    requestaccepted: "{commandprefix} Accepted the request."
+    requestremoved: "{commandprefix} Removed request."

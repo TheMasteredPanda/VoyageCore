@@ -9,26 +9,23 @@ import cm.pvp.voyagepvp.voyagecore.api.player.Players;
 import cm.pvp.voyagepvp.voyagecore.features.inventorybragger.InventoryBragger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.PlayerInventory;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
-public class AcceptRequestCommand extends VoyageCommand
+public class DenyRequestCommand extends VoyageCommand
 {
     private InventoryBragger feature;
 
-    @ConfigPopulate("feautres.inventorybragger.messages.playernotfound")
-    private String playerNotFoundMessage;
+    @ConfigPopulate("feature.inventorybragger.messages.playernotfound")
+    private String playerNotFoundMesage;
 
-    @ConfigPopulate("features.inventorybragger.messages.requestaccepted")
-    private String requestAcceptedMessage;
+    @ConfigPopulate("feature.inventorybragger.messages.requestremoved")
+    private String removedRequestMessage;
 
-    public AcceptRequestCommand(InventoryBragger feature)
+    public DenyRequestCommand(InventoryBragger feature)
     {
-        super(null, "voyagecore.inventorybragger.acceptrequest", "Accept a request from a player to view your inventory.", true, "accept");
-        this.feature = feature;
-
+        super(null, "voyagecore.inventorybragger.denyrequest", "Deny a player's request to view your inventory.", true, "deny");
         ArgumentField playerArg = new ArgumentField("player name", true);
         playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
@@ -46,14 +43,13 @@ public class AcceptRequestCommand extends VoyageCommand
         Player p = (Player) sender;
         Player target = Players.get(arguments.get(0));
 
-        if (target == null || feature.getRequests().containsEntry(p.getUniqueId(), target.getUniqueId())) {
-            sender.sendMessage(Format.colour(Format.format(playerNotFoundMessage, "{player};" + arguments.get(0))));
+        if (p == null || !feature.getRequests().containsEntry(target.getUniqueId(), p.getUniqueId())) {
+            sender.sendMessage(Format.colour(Format.format(playerNotFoundMesage, "{player};" + arguments.get(0))));
             return;
         }
 
-        feature.getRequests().remove(p.getUniqueId(), target.getUniqueId());
-        PlayerInventory inv = p.getInventory();
-        feature.getViewing().put(target.getUniqueId(), inv);
-        target.openInventory(inv);
+        feature.getRequests().remove(target.getUniqueId(), p.getUniqueId());
+        sender.sendMessage(Format.colour(removedRequestMessage));
+
     }
 }

@@ -2,6 +2,7 @@ package cm.pvp.voyagepvp.voyagecore.features.inventorybragger;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
 import cm.pvp.voyagepvp.voyagecore.VoyageCore;
+import cm.pvp.voyagepvp.voyagecore.features.inventorybragger.command.InventoryBraggerCommand;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import lombok.Getter;
@@ -16,9 +17,9 @@ import org.bukkit.inventory.Inventory;
 import java.util.HashMap;
 import java.util.UUID;
 
+@Getter
 public class InventoryBragger extends Feature implements Listener
 {
-    @Getter
     private ArrayListMultimap<UUID, UUID> requests = ArrayListMultimap.create();
     private HashMap<UUID, Inventory> viewing = Maps.newHashMap();
 
@@ -26,6 +27,7 @@ public class InventoryBragger extends Feature implements Listener
     public InventoryBragger(VoyageCore instance)
     {
         super(instance, "InventoryBragger", 1.0);
+        getInstance().register(new InventoryBraggerCommand(this));
     }
 
     @Override
