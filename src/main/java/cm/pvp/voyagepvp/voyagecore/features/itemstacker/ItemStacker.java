@@ -90,6 +90,22 @@ public class ItemStacker extends Feature implements Listener
 
     public ItemStack setAmount(ItemStack entry, int amount, boolean newNbt)
     {
+        if (entry.getItemMeta() == null) {
+            getLogger().info("Item meta is null.");
+            entry.setItemMeta(Bukkit.getItemFactory().getItemMeta(entry.getType()));
+        }
+
+        ItemMeta meta = entry.getItemMeta();
+        List<String> lore = getSection().getStringList("lore");
+
+        if (meta == null) {
+            meta = Bukkit.getItemFactory().getItemMeta(entry.getType());
+        }
+
+        lore.replaceAll(s -> Format.colour(Format.format(s, "{amount};" + String.valueOf(amount))));
+        meta.setLore(lore);
+        entry.setItemMeta(meta);
+
         Object nmsItem = AS_NMS_COPY.invoke(null, entry);
 
         if (GET_NBT_TAG.invoke(nmsItem) == null || newNbt) {
@@ -97,14 +113,7 @@ public class ItemStacker extends Feature implements Listener
         }
 
         SET_INT.invoke(GET_NBT_TAG.invoke(nmsItem), "voyageCoreItemStacker", amount);
-
-        ItemStack stack = AS_BUKKIT_COPY.invoke(null, nmsItem);
-        ItemMeta meta = stack.getItemMeta();
-        List<String> lore = getSection().getStringList("lore");
-        lore.replaceAll(s -> Format.colour(Format.format(s, "{amount};" + String.valueOf(amount))));
-        meta.setLore(lore);
-        stack.setItemMeta(meta);
-        return stack;
+        return AS_BUKKIT_COPY.invoke(null, nmsItem);
     }
 
     public ItemStack removeNBTTag(ItemStack entry)
@@ -136,7 +145,7 @@ public class ItemStacker extends Feature implements Listener
         e.getPlayer().setItemInHand(setAmount(e.getItemInHand(), size, false));
 
         if (size > e.getItemInHand().getMaxStackSize()) {
-            e.getItemInHand().setAmount(e.getItemInHand().getMaxStackSize());
+            e.getItemInHand().setAmount(e.getItemInHand().getType().getMaxStackSize());
         } else {
             e.getPlayer().setItemInHand(removeNBTTag(e.getItemInHand()));
         }
