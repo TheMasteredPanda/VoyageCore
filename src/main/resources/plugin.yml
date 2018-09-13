@@ -1,5 +1,5 @@
 name: VoyageCore
 main: cm.pvp.voyagepvp.voyagecore.VoyageCore
-version: 1.11.0264
+version: 1.16.0268
 author: TheMasteredPanda
 depend: [TTA, LuckPerms, Vault, Votifier, PlaceholderAPI]
