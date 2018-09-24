@@ -28,7 +28,7 @@ public class CustomDrops extends Feature implements Listener
     {
         super(instance, "CustomDrops", 1.0);
 
-        for (String key : getSection().getConfigurationSection("drops").getKeys(true)) {
+        for (String key : getSection().getConfigurationSection("drops").getKeys(false)) {
             if (Stream.of(EntityType.values()).noneMatch(type -> type.name().equalsIgnoreCase(key.toUpperCase()))) {
                 getLogger().warning(key.toUpperCase() + " is not an entity type.");
                 continue;
@@ -37,19 +37,20 @@ public class CustomDrops extends Feature implements Listener
             EntityType type = EntityType.valueOf(key.toUpperCase());
 
 
-            Set<String> keys = getSection().getConfigurationSection("drops." + key).getKeys(true);
+            Set<String> keys = getSection().getConfigurationSection("drops." + key).getKeys(false);
 
             for (String materialKey : keys) {
                 short data = -1;
                 Material material = null;
                 String[] split = materialKey.split(":");
 
-                if (split.length >= 1) {
+                if (split.length == 1) {
                     material = Material.getMaterial(materialKey.toUpperCase());
                 }
 
                 if (split.length == 2) {
                     data = NumberUtil.parse(split[1], byte.class);
+                    material = Material.getMaterial(split[0]);
                 }
 
                 if (material == null) {
@@ -59,8 +60,8 @@ public class CustomDrops extends Feature implements Listener
 
                 ItemStack stack = new ItemStack(material, 1, data == -1 ? 0 : data);
 
-                int min = getSection().getInt("drops." + materialKey + ".min");
-                int max = getSection().getInt("drops." + materialKey + ".max");
+                int min = getSection().getInt("drops." + key + "." + materialKey + ".min");
+                int max = getSection().getInt("drops." + key + "." + materialKey + ".max");
                 CustomMobEntry entry = new CustomMobEntry(stack, min, max);
                 drops.put(type, entry);
             }

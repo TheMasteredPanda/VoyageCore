@@ -8,9 +8,11 @@ import cm.pvp.voyagepvp.voyagecore.api.lookup.lookup.local.DefaultStore;
 import cm.pvp.voyagepvp.voyagecore.api.module.ModuleManager;
 import cm.pvp.voyagepvp.voyagecore.api.plugin.VoyagePlugin;
 import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
+import cm.pvp.voyagepvp.voyagecore.features.antiportaltrap.AntiPortalTrap;
 import cm.pvp.voyagepvp.voyagecore.features.chatreaction.ChatReaction;
 import cm.pvp.voyagepvp.voyagecore.features.cmdblocker.CMDBlocker;
 import cm.pvp.voyagepvp.voyagecore.features.commandcooldown.CommandCooldown;
+import cm.pvp.voyagepvp.voyagecore.features.customdrops.CustomDrops;
 import cm.pvp.voyagepvp.voyagecore.features.customlist.CustomList;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
 import cm.pvp.voyagepvp.voyagecore.features.inventorybragger.InventoryBragger;
@@ -101,9 +103,10 @@ public class VoyageCore extends VoyagePlugin
                 new JoinAndLeaveMsgs(this),
                 new ItemStacker(this),
                 new InventoryBragger(this),
-//                new CustomDrops(this),
+                new CustomDrops(this),
                 new CommandCooldown(this),
-                new CustomList(this)
+                new CustomList(this),
+                new AntiPortalTrap(this)
         );
     }
 

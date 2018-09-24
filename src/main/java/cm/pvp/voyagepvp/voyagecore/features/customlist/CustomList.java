@@ -130,7 +130,7 @@ public class CustomList extends Feature
                     if (part.startsWith("{role:")) {
                         String roleId = part.replace("{role:", "").replace("}", "");
 
-                        Set<String> players = api.getUserManager().getLoadedUsers().stream().filter(user -> user.getPrimaryGroup().toLowerCase().equalsIgnoreCase(roleId)).map(User::getName).collect(Collectors.toSet());
+                        Set<String> players = api.getUserManager().getLoadedUsers().stream().filter(user -> user.getPrimaryGroup().toLowerCase().equalsIgnoreCase(roleId)).map(User::getFriendlyName).collect(Collectors.toSet());
 
                         if (players.size() == 0) {
                             s = s.replace(part, "");
