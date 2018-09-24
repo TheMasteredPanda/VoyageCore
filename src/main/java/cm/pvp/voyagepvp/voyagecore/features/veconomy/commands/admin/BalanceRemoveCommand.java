@@ -12,7 +12,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class BalanceRemoveCommand extends VoyageCommand
@@ -33,17 +32,8 @@ public class BalanceRemoveCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.balance.remove", "Remove a sum of money from a players balance", false, "remove");
         this.feature = feature;
 
-        ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-        ArgumentField amountArg = new ArgumentField("amount", true);
-        amountArg.setCheckFunction(new NumberCheckFunction(double.class));
-
-        try {
-            addArguments(playerArg, amountArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())), new ArgumentField("amount", true).check(new NumberCheckFunction(double.class)));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

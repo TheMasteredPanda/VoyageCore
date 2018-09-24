@@ -20,7 +20,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -57,15 +56,9 @@ public class BankTransferOwnershipCommand extends VoyageCommand
     {
         super(null, "voyagecore.veconomy.player.bank.transferownership", "Transfer the ownership of a bank to a member.", true, "transferownership");
         this.feature = feature;
-        ArgumentField checkPlayer = new ArgumentField("player name", true);
-        checkPlayer.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
-        try {
-            addArguments(new ArgumentField("bank name", true), checkPlayer);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

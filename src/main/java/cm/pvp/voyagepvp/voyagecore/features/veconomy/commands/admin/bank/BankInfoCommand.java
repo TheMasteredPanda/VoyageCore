@@ -12,7 +12,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -33,15 +32,8 @@ public class BankInfoCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.bank.info", "Get information about a bank", false, "info");
         this.feature = feature;
 
-        ArgumentField ownerArg = new ArgumentField("owner's name (player name)", true);
-        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(ownerArg, new ArgumentField("bank name", true));
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("owner's name (player name)", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())), new ArgumentField("bank name", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

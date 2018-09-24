@@ -10,7 +10,6 @@ import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class AdminResetPrefixCommand extends VoyageCommand
@@ -27,13 +26,8 @@ public class AdminResetPrefixCommand extends VoyageCommand
         this.instance = instance;
         this.feature = feature;
 
-        try {
-            ArgumentField field = new ArgumentField("player name", true);
-            field.setCheckFunction(new PlayerCheckFunction(instance.getMojangLookup()));
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(instance.getMojangLookup())));
+        instance.getMainConfig().populate(this);
     }
 
     @Override

@@ -20,11 +20,7 @@ public class VVotingPlaceholderExtension extends PlaceholderExpansion
     {
         this.feature = feature;
 
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

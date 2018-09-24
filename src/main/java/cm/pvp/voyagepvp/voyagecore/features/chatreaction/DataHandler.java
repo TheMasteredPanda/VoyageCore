@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+
+//TODO make unblocking async.
 public class DataHandler implements AutoCloseable, Listener
 {
     private Cache<UUID, ReactionPlayer> players = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();

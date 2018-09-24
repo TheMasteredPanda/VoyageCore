@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
@@ -48,11 +47,7 @@ public class BankListCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.list", "Lists the banks accessible to you.", true, "list", "l");
         this.feature = feature;
 
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

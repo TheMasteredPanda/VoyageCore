@@ -6,7 +6,6 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.VVoting;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,11 +19,7 @@ public class ViewGARewardsCommand extends VoyageCommand
     {
         super(null, "voyagecore.vvoting.gawardslist", "Presents a list of rewards given by GA in VVoting", true, "garewards");
 
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

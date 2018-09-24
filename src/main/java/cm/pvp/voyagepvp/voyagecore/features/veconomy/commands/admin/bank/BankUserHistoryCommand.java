@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -74,12 +73,8 @@ public class BankUserHistoryCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.bank.userhistory", "View the banks user history (promotions, demotions, etc)", true, "userhistory");
         this.instance = instance;
 
-        try {
-            instance.getInstance().getMainConfig().populate(this);
-            addArguments(new ArgumentField("bank name", true), new ArgumentField("date (yyyy/mm/dd)", false));
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        instance.getInstance().getMainConfig().populate(this);
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("date (yyyy/mm/dd)", false));
     }
 
     @Override

@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class AcceptRequestCommand extends VoyageCommand
@@ -29,15 +28,8 @@ public class AcceptRequestCommand extends VoyageCommand
         super(null, "voyagecore.inventorybragger.acceptrequest", "Accept a request from a player to view your inventory.", true, "accept");
         this.feature = feature;
 
-        ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(playerArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

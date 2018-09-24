@@ -9,7 +9,6 @@ import cm.pvp.voyagepvp.voyagecore.features.announcement.AnnouncementThread;
 import cm.pvp.voyagepvp.voyagecore.features.announcement.Announcements;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class StartAnnouncementThread extends VoyageCommand
@@ -29,11 +28,7 @@ public class StartAnnouncementThread extends VoyageCommand
         this.instance = instance;
         this.feature = feature;
 
-        try {
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        instance.getMainConfig().populate(this);
     }
 
     @Override

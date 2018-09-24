@@ -19,7 +19,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,19 +50,12 @@ public class CustomList extends Feature
     {
         super(instance, "CustomList", 1.0);
 
-        try {
-            getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        getInstance().getMainConfig().populate(this);
     }
 
     @Override
     protected boolean enable() throws Exception
     {
-
-
-
         RegisteredServiceProvider<LuckPermsApi> luckPerms = Bukkit.getServicesManager().getRegistration(LuckPermsApi.class);
 
         if (luckPerms == null) {

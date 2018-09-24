@@ -15,7 +15,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,11 +43,7 @@ public class BankListInvitesCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.listinvites", "List all membership invitations to banks.", true, "invites");
         this.feature = feature;
 
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

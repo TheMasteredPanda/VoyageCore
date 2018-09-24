@@ -10,7 +10,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -32,15 +31,8 @@ public class DeleteBankCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.bank.delete", "Delete a players bank.", true, "delete");
         this.feature = feature;
 
-        ArgumentField playerArg = new ArgumentField("owners name (player name)", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(playerArg, new ArgumentField("bank name ", true));
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("owners name (player name)", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())), new ArgumentField("bank name ", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

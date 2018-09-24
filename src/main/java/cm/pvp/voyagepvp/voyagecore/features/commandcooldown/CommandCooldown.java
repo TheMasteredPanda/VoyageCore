@@ -15,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -70,11 +69,7 @@ public class CommandCooldown extends Feature implements Listener
         }, 20L);
 
 
-        try {
-            getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        getInstance().getMainConfig().populate(this);
 
         return true;
     }

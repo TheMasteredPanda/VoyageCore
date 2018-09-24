@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,9 +55,9 @@ public abstract class VoyageCommand extends BukkitCommand
      * Add arguments to this command. Beware, a required command can not come after an
      * optional argument. However, an optional argument can come after a required argument.
      * @param fields - the immutable array of arguments.
-     * @throws OperationNotSupportedException
+     * @throws UnsupportedOperationException
      */
-    public void addArguments(ArgumentField... fields) throws OperationNotSupportedException
+    public void addArguments(ArgumentField... fields) throws UnsupportedOperationException
     {
         boolean required = false;
 
@@ -66,7 +65,7 @@ public abstract class VoyageCommand extends BukkitCommand
             ArgumentField field = fields[i];
 
             if (i != 0 && !required && field.isRequired()) {
-                throw new OperationNotSupportedException("You cannot have a required argument after a non-required argument.");
+                throw new UnsupportedOperationException("You cannot have a required argument after a non-required argument.");
             }
 
             required = field.isRequired();

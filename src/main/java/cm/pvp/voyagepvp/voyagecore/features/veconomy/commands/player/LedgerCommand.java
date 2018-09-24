@@ -13,7 +13,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,13 +48,8 @@ public class LedgerCommand extends VoyageCommand
     {
         super(null, "voyagecore.veconomy.player.ledger", "View the ledger for your own personal account.", true, "ledger");
         this.instance = instance;
-
-        try {
-            addArguments(new ArgumentField("date (yyyy/mm/dd)", false));
-            instance.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("date (yyyy/mm/dd)", false));
+        instance.getInstance().getMainConfig().populate(this);
     }
 
     @Override

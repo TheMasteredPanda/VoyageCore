@@ -16,7 +16,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,12 +60,9 @@ public class BankLedgerCommand extends VoyageCommand
         this.instance = instance;
         this.handler = instance.getHandler();
 
-        try {
-            instance.getInstance().getMainConfig().populate(this);
-            addArguments(new ArgumentField("bank name", true), new ArgumentField("date (yyyy/mm/dd)", false));
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        instance.getInstance().getMainConfig().populate(this);
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("date (yyyy/mm/dd)", false));
+
     }
 
     @Override

@@ -13,7 +13,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -43,17 +42,9 @@ public class TransferOwnershipCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.bank.transferownership", "Transfer the ownership of a bank to a member of that bank.", false, "transfer");
         this.feature = feature;
 
-        ArgumentField ownerArg = new ArgumentField("owner's name (player name)", true);
-        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-        ArgumentField newOwnerArg = new ArgumentField("new owner's name (player name)", true);
-        newOwnerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(ownerArg, new ArgumentField("bank name", true), newOwnerArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("owner's name (player name)", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup()))
+                , new ArgumentField("bank name", true), new ArgumentField("new owner's name (player name)", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

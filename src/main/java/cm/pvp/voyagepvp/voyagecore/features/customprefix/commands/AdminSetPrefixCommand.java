@@ -11,7 +11,6 @@ import com.google.common.base.Joiner;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,14 +40,8 @@ public class AdminSetPrefixCommand extends VoyageCommand
         this.instance = instance;
         this.feature = feature;
 
-        try {
-            ArgumentField field = new ArgumentField("player name", true);
-            field.setCheckFunction(new PlayerCheckFunction(instance.getMojangLookup()));
-            addArguments(field, new ArgumentField("prefix", true));
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(instance.getMojangLookup())), new ArgumentField("prefix", true));
+        instance.getMainConfig().populate(this);
     }
 
     @Override

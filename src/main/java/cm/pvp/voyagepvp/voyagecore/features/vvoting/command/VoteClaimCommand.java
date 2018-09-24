@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class VoteClaimCommand extends VoyageCommand
@@ -33,11 +32,7 @@ public class VoteClaimCommand extends VoyageCommand
         super(null, "voyagecore.vvoting.voteclaim", "Claim your daily vote reward", true, "voteclaim");
         this.feature = feature;
 
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -36,12 +35,8 @@ public class BankMembershipRequestDeclineCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.declinerequest", "Decline a bank membership request.", true, "decline");
         this.feature = feature;
 
-        try {
-            addArguments(new ArgumentField("bank name", true));
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

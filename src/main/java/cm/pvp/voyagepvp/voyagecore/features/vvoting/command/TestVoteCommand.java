@@ -7,7 +7,6 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -17,11 +16,7 @@ public class TestVoteCommand extends VoyageCommand
     {
         super(null, "voyagecore.vvoting.testvote", "Casts a test vote", false, "testvote");
 
-        try {
-            addArguments(new ArgumentField("name", true));
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("name", true));
     }
 
     @Override

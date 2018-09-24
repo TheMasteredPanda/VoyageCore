@@ -19,7 +19,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,15 +52,8 @@ public class BankInvitePlayerCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.invite", "Invite a player to be a member of a bank.", true, "invite");
         this.instance = instance;
 
-        ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(instance.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(new ArgumentField("bank name", true), playerArg);
-            instance.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("player name", true).check(new PlayerCheckFunction(instance.getInstance().getBackupLookup())));
+        instance.getInstance().getMainConfig().populate(this);
     }
 
     @Override

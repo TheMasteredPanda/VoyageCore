@@ -17,7 +17,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,16 +52,9 @@ public class BankRemoveMemberCommand extends VoyageCommand
     {
         super(null, "voyagecore.veconomy.player.bank.removemember", "Remove a member from the bank.", true, "removemember");
         this.feature = feature;
-        ArgumentField bankCheck = new ArgumentField("bank name", true);
-        ArgumentField playerCheck = new ArgumentField("player name", true);
-        playerCheck.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
 
-        try {
-            addArguments(bankCheck, playerCheck);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

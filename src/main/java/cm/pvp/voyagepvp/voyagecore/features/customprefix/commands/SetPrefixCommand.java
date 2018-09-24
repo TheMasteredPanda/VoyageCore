@@ -9,7 +9,6 @@ import com.google.common.base.Joiner;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,11 +37,7 @@ public class SetPrefixCommand extends VoyageCommand
         super(null, "voyagecore.customprefix.setprefix", "Set a custom prefix.", true, "set");
         this.feature = feature;
 
-        try {
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        instance.getMainConfig().populate(this);
     }
 
     @Override

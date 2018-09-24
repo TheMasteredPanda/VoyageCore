@@ -8,7 +8,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class BalanceCommand extends VoyageCommand
@@ -22,12 +21,7 @@ public class BalanceCommand extends VoyageCommand
     {
         super(null, "voyagecore.veconomy.player.balance", "Check your balance", true, "balance", "bal");
         this.feature = feature;
-
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

@@ -7,7 +7,6 @@ import cm.pvp.voyagepvp.voyagecore.api.math.TimeUtil;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.VVoting;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -28,12 +27,7 @@ public class TimeCommand extends VoyageCommand
     {
         super(null, "voyagecore.vvoting.voteparty.time", "Check when the next VotePary will start.", true, "time");
         this.feature = feature;
-
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

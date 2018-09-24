@@ -6,7 +6,6 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.VVoting;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class StartPartyCommand extends VoyageCommand
@@ -23,12 +22,7 @@ public class StartPartyCommand extends VoyageCommand
     {
         super(null, "voyagecore.vvoting.voteparty.admin.startparty", "Start a vote party.", false, "start");
         this.feature = feature;
-
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

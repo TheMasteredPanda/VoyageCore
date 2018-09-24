@@ -16,7 +16,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,11 +34,7 @@ public class Mention extends Feature implements Listener
     {
         super(instance, "Mention", 2.0);
 
-        try {
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        instance.getMainConfig().populate(this);
     }
 
     @Override

@@ -10,7 +10,6 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.List;
 
 public class VEconomyVaultHook extends AbstractEconomy
@@ -29,12 +28,7 @@ public class VEconomyVaultHook extends AbstractEconomy
     public VEconomyVaultHook(Plugin plugin)
     {
         feature = VoyageCore.get().get(ModuleManager.class).getModule(VoyageCore.get(), VEconomy.class);
-
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     /**

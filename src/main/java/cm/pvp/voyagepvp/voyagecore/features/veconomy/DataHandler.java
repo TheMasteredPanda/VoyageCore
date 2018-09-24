@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+//TODO make methods unblocking async?
 public class DataHandler
 {
     private VEconomy feature;

@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,18 +56,10 @@ public class BankTransferCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.transfer", "Transfer money from one shared account to a player or another shared account.", true, "transfer");
         this.feature = feature;
 
-        ArgumentField bankExists = new ArgumentField("bank name", true);
-        ArgumentField destinationExists = new ArgumentField("player name/(bank name or owner/bank name e.g. themasteredpanda/savings", true);
-        destinationExists.setCheckFunction(new TransferDestinationCheck(feature));
-        ArgumentField amountCheck = new ArgumentField("amount", true);
-        amountCheck.setCheckFunction(new NumberCheckFunction(double.class));
-
-        try {
-            addArguments(bankExists, new ArgumentField("p or b (p for player, b for bank)", true), destinationExists, amountCheck);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("p or b (p for player, b for bank)", true),
+                new ArgumentField("player name/(bank name or owner/bank name e.g. themasteredpanda/savings", true).check(new TransferDestinationCheck(feature))
+                , new ArgumentField("amount", true).check(new NumberCheckFunction(double.class)));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

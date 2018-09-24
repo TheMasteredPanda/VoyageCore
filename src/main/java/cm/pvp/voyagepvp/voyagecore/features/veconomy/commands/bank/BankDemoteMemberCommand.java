@@ -15,7 +15,6 @@ import com.google.common.collect.ImmutableMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -47,16 +46,8 @@ public class BankDemoteMemberCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.demotemember", "Demote a member from a POA to a Member.", true, "demote");
         this.feature = feature;
 
-        ArgumentField bankCheck = new ArgumentField("bank name", true);
-        ArgumentField playerCheck = new ArgumentField("player name", true);
-        playerCheck.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(bankCheck, playerCheck);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

@@ -12,7 +12,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -41,16 +40,8 @@ public class DemoteMemberCommand extends VoyageCommand
     {
         super(null, "voyagecore.veconomy.admin.bank.demote", "Demote a member in a bank.", false, "demote");
         this.feature = feature;
-
-        ArgumentField ownerArg = new ArgumentField("owner's name (player name)", true);
-        ArgumentField memberArg = new ArgumentField("member's name (player name)", true);
-
-        try {
-            addArguments(ownerArg, new ArgumentField("bank name", true), memberArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("owner's name (player name)", true), new ArgumentField("bank name", true), new ArgumentField("member's name (player name)", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

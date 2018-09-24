@@ -8,7 +8,6 @@ import cm.pvp.voyagepvp.voyagecore.features.customprefix.CustomPrefix;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class ResetPrefixCommand extends VoyageCommand
@@ -23,11 +22,7 @@ public class ResetPrefixCommand extends VoyageCommand
         super(null, "voyagecore.customprefix.reset", "Remove the custom prefix", true, "reset");
         this.feature = feature;
 
-        try {
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        instance.getMainConfig().populate(this);
     }
 
     @Override

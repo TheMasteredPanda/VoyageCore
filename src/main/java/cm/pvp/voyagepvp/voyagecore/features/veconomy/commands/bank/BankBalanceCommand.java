@@ -9,7 +9,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -28,12 +27,8 @@ public class BankBalanceCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.balance", "View a banks balance", true, "balance", "bal");
         this.feature = feature;
 
-        try {
-            addArguments(new ArgumentField("bank name", true));
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

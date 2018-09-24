@@ -10,7 +10,6 @@ import cm.pvp.voyagepvp.voyagecore.features.inventorybragger.InventoryBragger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class DenyRequestCommand extends VoyageCommand
@@ -26,15 +25,8 @@ public class DenyRequestCommand extends VoyageCommand
     public DenyRequestCommand(InventoryBragger feature)
     {
         super(null, "voyagecore.inventorybragger.denyrequest", "Deny a player's request to view your inventory.", true, "deny");
-        ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(playerArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

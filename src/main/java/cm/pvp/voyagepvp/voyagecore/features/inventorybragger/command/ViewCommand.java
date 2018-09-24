@@ -10,7 +10,6 @@ import cm.pvp.voyagepvp.voyagecore.features.inventorybragger.InventoryBragger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class ViewCommand extends VoyageCommand
@@ -34,14 +33,8 @@ public class ViewCommand extends VoyageCommand
         super(null, "voyagecore.inventorybragger.view", "Request to view a players inventory.", true, "view");
         this.feature = feature;
 
-        try {
-            ArgumentField playerArg = new ArgumentField("player name", true);
-            playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-            addArguments(playerArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

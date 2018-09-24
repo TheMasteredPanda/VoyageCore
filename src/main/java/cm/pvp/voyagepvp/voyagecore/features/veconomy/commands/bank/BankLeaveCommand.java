@@ -18,7 +18,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,12 +57,8 @@ public class BankLeaveCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.leave", "Leave a bank.", true, "leave");
         this.feature = feature;
 
-        try {
-            addArguments(new ArgumentField("bank name", true));
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

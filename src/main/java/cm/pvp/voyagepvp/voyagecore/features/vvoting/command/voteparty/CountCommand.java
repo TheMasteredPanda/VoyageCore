@@ -6,7 +6,6 @@ import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.vvoting.VVoting;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class CountCommand extends VoyageCommand
@@ -26,12 +25,7 @@ public class CountCommand extends VoyageCommand
     {
         super(null, "voyagecore.vvoting.voteparty.count", "Displays the amount of votes that have contributed to the party, and the amount required for the players of that party to receive a reward.", true, "count");
         this.feature = feature;
-
-        try {
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

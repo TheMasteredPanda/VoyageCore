@@ -10,7 +10,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class BalanceClearCommand extends VoyageCommand
@@ -28,14 +27,7 @@ public class BalanceClearCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.balance.clear", "Clear a players balance", false, "clear");
         this.feature = feature;
 
-        ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(playerArg);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
     }
 
     @Override

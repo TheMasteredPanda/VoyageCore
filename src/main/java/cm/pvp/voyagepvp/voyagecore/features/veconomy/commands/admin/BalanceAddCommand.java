@@ -12,7 +12,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.VEconomyPlayer;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class BalanceAddCommand extends VoyageCommand
@@ -33,17 +32,8 @@ public class BalanceAddCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.balance.add", "Add money to a players balance.", false, "add");
         this.feature = feature;
 
-        ArgumentField numberArg = new ArgumentField("amount", true);
-        numberArg.setCheckFunction(new NumberCheckFunction(double.class));
-        ArgumentField playerArg = new ArgumentField("player name", true);
-        playerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-
-        try {
-            addArguments(playerArg, numberArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())), new ArgumentField("amount", true).check(new NumberCheckFunction(double.class)));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

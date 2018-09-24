@@ -60,14 +60,14 @@ public class Config<T extends VoyagePlugin>
      * Inject fields decorated with the annotation @ConfigPopulate in the passed instance.
      * @param instance - instance to populate.
      */
-    public void populate(Object instance) throws OperationNotSupportedException
+    public void populate(Object instance) throws UnsupportedOperationException
     {
         Class clazz = instance.getClass();
         ArrayList<Field> fields = Arrays.stream(clazz.getDeclaredFields()).filter(f -> f.isAnnotationPresent(ConfigPopulate.class)).collect(Collectors.toCollection(Lists::newArrayList));
         fields.addAll(Arrays.stream(clazz.getFields()).filter(f -> f.isAnnotationPresent(ConfigPopulate.class)).collect(Collectors.toCollection(Lists::newArrayList)));
 
         if (fields.size() == 0) {
-            throw new OperationNotSupportedException("No fields decorated with @ConfigPopulate were found in the declared class or any of the inherited classes of " + clazz.getName() + ".");
+            throw new UnsupportedOperationException("No fields decorated with @ConfigPopulate were found in the declared class or any of the inherited classes of " + clazz.getName() + ".");
         }
 
         for (Field f : fields) {

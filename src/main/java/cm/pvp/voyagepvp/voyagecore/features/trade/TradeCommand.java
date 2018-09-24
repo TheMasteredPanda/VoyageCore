@@ -9,7 +9,6 @@ import cm.pvp.voyagepvp.voyagecore.api.player.Players;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 
 public class TradeCommand extends VoyageCommand
@@ -34,14 +33,8 @@ public class TradeCommand extends VoyageCommand
         super(null, "voyagecore.vtrade.trade", "Open up a trade gui with another player.", true, "trade");
         this.feature = feature;
 
-        try {
-            ArgumentField field = new ArgumentField("player name", true);
-            field.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-            addArguments(field);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

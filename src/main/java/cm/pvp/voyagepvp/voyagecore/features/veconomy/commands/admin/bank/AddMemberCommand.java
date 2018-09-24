@@ -13,7 +13,6 @@ import cm.pvp.voyagepvp.voyagecore.features.veconomy.response.Response;
 import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -40,16 +39,10 @@ public class AddMemberCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.admin.bank.addmember", "Add a member to a bank.", false, "add");
         this.feature = feature;
 
-        ArgumentField ownerArg = new ArgumentField("owner's name (player name)", true);
-        ownerArg.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getBackupLookup()));
-        ArgumentField memberArg = new ArgumentField("player name", true);
-
-        try {
-            addArguments(ownerArg, new ArgumentField("bank name", true), memberArg);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(
+                new ArgumentField("owner's name (player name)", true).check(new PlayerCheckFunction(feature.getInstance().getBackupLookup())),
+                new ArgumentField("bank name", true), new ArgumentField("player name", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

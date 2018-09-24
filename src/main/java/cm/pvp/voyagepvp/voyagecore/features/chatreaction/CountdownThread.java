@@ -16,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.naming.OperationNotSupportedException;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -46,13 +45,7 @@ public class CountdownThread extends BukkitRunnable implements Listener
         this.instance = instance;
         this.feature = feature;
         this.word = word;
-
-        try {
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
-
+        instance.getMainConfig().populate(this);
         countdown = feature.getSection().getInt("countdown");
         started = System.currentTimeMillis();
         if (feature.getScambleThread() != null) feature.getScambleThread().cancel();
@@ -64,8 +57,7 @@ public class CountdownThread extends BukkitRunnable implements Listener
         component.addExtra(Format.colour(broadcast.split("\\{randomword}")[1].replace("{time}", TimeUtil.millisecondsToTimeUnits(TimeUnit.SECONDS, countdown, true))));
         Bukkit.spigot().broadcast(component);
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
-        System.out.println("Initial countdown number: " + countdown);
-        runTaskTimerAsynchronously(instance, 0L, 20);
+         runTaskTimerAsynchronously(instance, 0L, 20);
     }
 
     @EventHandler

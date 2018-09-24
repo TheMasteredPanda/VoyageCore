@@ -14,7 +14,6 @@ import com.google.common.base.Joiner;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -41,14 +40,8 @@ public class StatsCommand extends VoyageCommand
         this.instance = instance;
         this.handler = handler;
 
-        try {
-            ArgumentField field = new ArgumentField("player name", true);
-            field.setCheckFunction(new PlayerCheckFunction(instance.getMojangLookup()));
-            addArguments(field);
-            instance.getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("player name", true).check(new PlayerCheckFunction(instance.getMojangLookup())));
+        instance.getMainConfig().populate(this);
     }
 
     @Override

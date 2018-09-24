@@ -7,7 +7,6 @@ import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import org.bukkit.command.CommandSender;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -20,11 +19,7 @@ public class CoinFlip extends Feature
     {
         super(instance, "CoinFlip", 1.0);
 
-        try {
-            getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        getInstance().getMainConfig().populate(this);
     }
 
     @Override

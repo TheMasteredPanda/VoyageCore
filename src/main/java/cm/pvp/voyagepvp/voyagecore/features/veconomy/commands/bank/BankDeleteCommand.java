@@ -15,10 +15,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
+
 
 public class BankDeleteCommand extends VoyageCommand
 {
@@ -47,12 +47,8 @@ public class BankDeleteCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.delete", "Delete a shared bank.", true, "delete");
         this.feature = feature;
 
-        try {
-            addArguments(new ArgumentField("bank name", true));
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

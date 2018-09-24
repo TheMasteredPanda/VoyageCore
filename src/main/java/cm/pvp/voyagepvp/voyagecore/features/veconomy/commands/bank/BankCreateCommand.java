@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -36,12 +35,8 @@ public class BankCreateCommand extends VoyageCommand
         super(null, "voyagecore.veconomy.player.bank.create", "Create a new shared bank.", true, "create");
         this.feature = feature;
 
-        try {
-            addArguments(new ArgumentField("name", true));
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("name", true));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override

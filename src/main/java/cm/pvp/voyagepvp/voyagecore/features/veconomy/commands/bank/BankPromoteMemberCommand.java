@@ -15,7 +15,6 @@ import com.google.common.collect.ImmutableMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -49,16 +48,8 @@ public class BankPromoteMemberCommand extends VoyageCommand
     {
         super(null, "voyagecore.veconomy.player.bank.promotemember", "Promote a member to POA", true, "promote");
         this.feature = feature;
-        ArgumentField checkBank = new ArgumentField("bank name", true);
-        ArgumentField playerCheck = new ArgumentField("player name", true);
-        playerCheck.setCheckFunction(new PlayerCheckFunction(feature.getInstance().getLocalLookup()));
-
-        try {
-            addArguments(checkBank, playerCheck);
-            feature.getInstance().getMainConfig().populate(this);
-        } catch (OperationNotSupportedException e) {
-            e.printStackTrace();
-        }
+        addArguments(new ArgumentField("bank name", true), new ArgumentField("player name", true).check(new PlayerCheckFunction(feature.getInstance().getLocalLookup())));
+        feature.getInstance().getMainConfig().populate(this);
     }
 
     @Override
