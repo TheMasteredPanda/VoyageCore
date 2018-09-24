@@ -1,13 +1,12 @@
 package cm.pvp.voyagepvp.voyagecore.features.trade;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 
 public class Trade extends Feature
 {
-    public Trade(VoyageCore instance)
+    public Trade()
     {
-        super(instance, "VTrade", 1.0);
+        super("VTrade", 1.0);
     }
 
     @Override

@@ -90,24 +90,10 @@ public class VoyageCore extends VoyagePlugin
         }
 
         add(new ModuleManager(this));
-        get(ModuleManager.class).add(this,
-                new Announcements(this),
-                new ChatReaction(this),
-                new CustomPrefix(this),
-                new Mention(this),
-                new VEconomy(this),
-                new NoRain(this),
-                new VVoting(this),
-                new Trade(this),
-                new CMDBlocker(this),
-                new JoinAndLeaveMsgs(this),
-                new ItemStacker(this),
-                new InventoryBragger(this),
-                new CustomDrops(this),
-                new CommandCooldown(this),
-                new CustomList(this),
-                new AntiPortalTrap(this)
-        );
+        get(ModuleManager.class).add(this, new Announcements(), new ChatReaction(), new CustomPrefix(), new Mention(), new VEconomy(),
+                new NoRain(), new VVoting(), new Trade(), new CMDBlocker(), new JoinAndLeaveMsgs(),
+                new ItemStacker(), new InventoryBragger(), new CustomDrops(), new CommandCooldown(), new CustomList(),
+                new AntiPortalTrap());
     }
 
     @Override

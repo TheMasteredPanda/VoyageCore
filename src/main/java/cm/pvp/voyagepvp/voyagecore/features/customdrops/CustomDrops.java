@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.customdrops;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
@@ -24,9 +23,9 @@ public class CustomDrops extends Feature implements Listener
     private Random r = new Random();
     private ArrayListMultimap<EntityType, CustomMobEntry> drops = ArrayListMultimap.create();
 
-    public CustomDrops(VoyageCore instance)
+    public CustomDrops()
     {
-        super(instance, "CustomDrops", 1.0);
+        super("CustomDrops", 1.0);
 
         for (String key : getSection().getConfigurationSection("drops").getKeys(false)) {
             if (Stream.of(EntityType.values()).noneMatch(type -> type.name().equalsIgnoreCase(key.toUpperCase()))) {

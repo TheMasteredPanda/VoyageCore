@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.joinandleave;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import org.bukkit.Bukkit;
@@ -21,9 +20,9 @@ public class JoinAndLeaveMsgs extends Feature implements Listener
     @ConfigPopulate("features.joinandleavemsgs.enabled")
     private boolean enabled;
 
-    public JoinAndLeaveMsgs(VoyageCore instance)
+    public JoinAndLeaveMsgs()
     {
-        super(instance, "Join&LeaveMsgs", 1.0);
+        super("Join&LeaveMsgs", 1.0);
     }
 
     @Override

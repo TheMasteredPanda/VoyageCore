@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.commandcooldown;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
@@ -32,9 +31,9 @@ public class CommandCooldown extends Feature implements Listener
     @ConfigPopulate("features.commandcooldown.messages.cooldownadded")
     private String cooldownAddedMessage;
 
-    public CommandCooldown(VoyageCore instance)
+    public CommandCooldown()
     {
-        super(instance, "CommandCooldown", 1.0);
+        super("CommandCooldown", 1.0);
     }
 
     @Override

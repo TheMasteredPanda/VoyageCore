@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.cmdblocker;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import com.google.common.collect.Lists;
@@ -20,9 +19,9 @@ public class CMDBlocker extends Feature implements Listener
     @ConfigPopulate("features.cmdblocker.messages.commandblocked")
     private String commandBlockedMessage;
 
-    public CMDBlocker(VoyageCore instance)
+    public CMDBlocker()
     {
-        super(instance, "CMDBlocker", 1.0);
+        super("CMDBlocker", 1.0);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.customprefix;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.CustomPrefixAdminCommand;
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.CustomPrefixCommand;
 import lombok.Getter;
@@ -11,9 +10,9 @@ import lombok.Getter;
 @Getter
 public class CustomPrefix extends Feature
 {
-    public CustomPrefix(VoyageCore instance)
+    public CustomPrefix()
     {
-        super(instance, "CustomPrefix", 1.0);
+        super("CustomPrefix", 1.0);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.coinflip;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
@@ -15,10 +14,9 @@ public class CoinFlip extends Feature
     @ConfigPopulate("features.coinflip.messages.flipped")
     private String coinFlipMessage;
 
-    public CoinFlip(VoyageCore instance)
+    public CoinFlip()
     {
-        super(instance, "CoinFlip", 1.0);
-
+        super("CoinFlip", 1.0);
         getInstance().getMainConfig().populate(this);
     }
 

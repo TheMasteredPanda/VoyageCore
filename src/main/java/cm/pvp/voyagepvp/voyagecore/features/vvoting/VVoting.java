@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.vvoting;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.exception.MojangException;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
@@ -75,9 +74,9 @@ public class VVoting extends Feature implements Listener
     @Setter
     private VotePartyCountdown countdown;
 
-    public VVoting(VoyageCore instance)
+    public VVoting()
     {
-        super(instance, "VVoting", 2.0);
+        super("VVoting", 2.0);
     }
 
     @Override

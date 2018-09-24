@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.customlist;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
@@ -46,10 +45,9 @@ public class CustomList extends Feature
 
     private LuckPermsApi api;
 
-    public CustomList(VoyageCore instance)
+    public CustomList()
     {
-        super(instance, "CustomList", 1.0);
-
+        super("CustomList", 1.0);
         getInstance().getMainConfig().populate(this);
     }
 

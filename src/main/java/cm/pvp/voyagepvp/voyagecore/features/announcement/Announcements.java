@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.announcement;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.features.announcement.commands.AnnouncementCommand;
 import com.google.common.collect.Lists;
@@ -22,9 +21,9 @@ public class Announcements extends Feature
     @Getter @Setter
     private AnnouncementThread announcementThread;
 
-    public Announcements(VoyageCore instance)
+    public Announcements()
     {
-        super(instance, "Announcements", 1.0);
+        super("Announcements", 1.0);
     }
 
     @Override

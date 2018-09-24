@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.itemstacker;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.math.NumberUtil;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.ReflectUtil;
@@ -39,9 +38,9 @@ public class ItemStacker extends Feature implements Listener
     private HashMap<Material, Integer> customDefaultStackSizes = Maps.newHashMap();
     private MethodAccessor SET_COUNT;
 
-    public ItemStacker(VoyageCore instance)
+    public ItemStacker()
     {
-        super(instance, "ItemStacker", 1.0);
+        super("ItemStacker", 1.0);
         Class craftItemStack = ReflectUtil.getOBCClass("inventory.CraftItemStack");
         AS_NMS_COPY = ReflectUtil.getMethod(craftItemStack, "asNMSCopy", true, ItemStack.class);
         Class nmsItemStack = ReflectUtil.getNMSClass("ItemStack");

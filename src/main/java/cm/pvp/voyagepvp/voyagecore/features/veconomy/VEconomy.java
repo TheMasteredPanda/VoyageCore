@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.veconomy;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.ReflectUtil;
 import cm.pvp.voyagepvp.voyagecore.api.reflect.accessor.MethodAccessor;
 import cm.pvp.voyagepvp.voyagecore.features.veconomy.accounts.shared.SharedAccount;
@@ -37,9 +36,9 @@ public class VEconomy extends Feature implements Listener
     @Getter
     private DataHandler handler;
 
-    public VEconomy(VoyageCore instance)
+    public VEconomy()
     {
-        super(instance, "VEconomy", 3.1);
+        super("VEconomy", 3.1);
         handler = new DataHandler(this);
     }
 

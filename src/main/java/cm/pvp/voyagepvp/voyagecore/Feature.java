@@ -7,13 +7,12 @@ import org.bukkit.configuration.ConfigurationSection;
 @Getter
 public class Feature extends Module<VoyageCore>
 {
-    private VoyageCore instance;
+    private VoyageCore instance = VoyageCore.get();
     private ConfigurationSection section;
 
-    public Feature(VoyageCore instance, String name, double version)
+    public Feature(String name, double version)
     {
-        super(instance, name, version);
-        this.instance = instance;
+        super(VoyageCore.get(), name, version);
         section = instance.getMainConfig().raw().getConfigurationSection("features." + name.toLowerCase());
     }
 }

@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.mention;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.api.config.wrapper.ConfigPopulate;
 import cm.pvp.voyagepvp.voyagecore.api.locale.Format;
 import cm.pvp.voyagepvp.voyagecore.api.lookup.PlayerProfile;
@@ -30,11 +29,11 @@ public class Mention extends Feature implements Listener
     @ConfigPopulate("features.mention.messages.infotemplate")
     private List<String> infoTemplate;
 
-    public Mention(VoyageCore instance)
+    public Mention()
     {
-        super(instance, "Mention", 2.0);
+        super("Mention", 2.0);
 
-        instance.getMainConfig().populate(this);
+        getInstance().getMainConfig().populate(this);
     }
 
     @Override

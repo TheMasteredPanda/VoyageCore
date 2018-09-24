@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.antiportaltrap;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,9 +10,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class AntiPortalTrap extends Feature implements Listener
 {
-    public AntiPortalTrap(VoyageCore instance)
+    public AntiPortalTrap()
     {
-        super(instance, "AntiPortalTrap", 1.0);
+        super("AntiPortalTrap", 1.0);
     }
 
     @Override

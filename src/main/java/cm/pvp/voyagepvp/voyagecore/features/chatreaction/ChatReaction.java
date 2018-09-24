@@ -1,7 +1,6 @@
 package cm.pvp.voyagepvp.voyagecore.features.chatreaction;
 
 import cm.pvp.voyagepvp.voyagecore.Feature;
-import cm.pvp.voyagepvp.voyagecore.VoyageCore;
 import cm.pvp.voyagepvp.voyagecore.features.chatreaction.commands.StatsCommand;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -26,11 +25,11 @@ public class ChatReaction extends Feature
     @Setter
     private CountdownThread countdown;
 
-    public ChatReaction(VoyageCore instance)
+    public ChatReaction()
     {
-        super(instance, "ChatReaction", 1.0);
+        super("ChatReaction", 1.0);
 
-        File wordFile = new File(instance.getDataFolder() + File.separator + "chatreaction-words.txt");
+        File wordFile = new File(getInstance().getDataFolder() + File.separator + "chatreaction-words.txt");
 
         if (wordFile.exists()) {
             try {
