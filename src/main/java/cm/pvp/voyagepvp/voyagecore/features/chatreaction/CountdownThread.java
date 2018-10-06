@@ -16,8 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.SQLException;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class CountdownThread extends BukkitRunnable implements Listener
@@ -71,20 +69,14 @@ public class CountdownThread extends BukkitRunnable implements Listener
             long time = System.currentTimeMillis() - started;
             Bukkit.broadcastMessage(Format.colour(Format.format(wordUnscambled, "{winner};" + e.getPlayer().getName(), "{time};" + TimeUtil.millisecondsToTimeUnits(TimeUnit.MILLISECONDS, time, true), "{word};" + word.getKey())));
             Tasks.runSyncLater(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), feature.getSection().getString("rewardcommand").replace("{player}", e.getPlayer().getName())), 0L);
-            Optional<ReactionPlayer> player = feature.getHandler().get(e.getPlayer().getUniqueId());
 
-            if (!player.isPresent()) {
-                throw new NumberFormatException("Couldn't find ReactionPlayer instance for " + e.getPlayer().getName());
-            } else {
-                player.get().setWins(player.get().getWins() + 1);
-                if (player.get().getFastest() < time) player.get().setFastest(time);
+            feature.getHandler().get(e.getPlayer().getUniqueId()).whenComplete((player, throwable) -> {
+                if (player == null) throw new RuntimeException("Couldn't find ReactionPlayer instance.");
 
-                try {
-                    feature.getHandler().update(player.get());
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-            }
+                player.setWins(player.getWins() + 1);
+                if (player.getFastest() < time) player.setFastest(time);
+                feature.getHandler().update(player);
+            });
 
             HandlerList.unregisterAll(this);
             feature.setScambleThread(new ScrambleBroadcasterThread(instance, feature));
@@ -94,8 +86,6 @@ public class CountdownThread extends BukkitRunnable implements Listener
     @Override
     public void run()
     {
-        //System.out.println("Countdown: " + countdown);
-
         countdown--;
 
         if (countdown <= 0) {

@@ -44,6 +44,7 @@ public class ChatReaction extends Feature
     protected boolean enable() throws Exception
     {
         if (words.size() == 0) {
+            getLogger().warning("If you want ChatReaction to be enabled, fill a file with words, separated one per line, in a file named 'chatreaction-words.txt'");
             return false;
         }
 
@@ -51,5 +52,13 @@ public class ChatReaction extends Feature
         scambleThread = new ScrambleBroadcasterThread(getInstance(), this);
         getInstance().register(new StatsCommand(getInstance(), handler));
         return true;
+    }
+
+    @Override
+    protected void disable() throws Exception
+    {
+        if (handler != null) {
+            handler.close();
+        }
     }
 }

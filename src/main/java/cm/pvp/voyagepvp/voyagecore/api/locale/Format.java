@@ -36,6 +36,6 @@ public final class Format
      */
     public static String colour(String message)
     {
-        return ChatColor.translateAlternateColorCodes('&', Format.format(message, "{commandprefix};&aCommand &8» &7")); //TODO make configurable.
+        return ChatColor.translateAlternateColorCodes('&', Format.format(message, "{commandprefix};&aCommand &8» &7"));
     }
 }

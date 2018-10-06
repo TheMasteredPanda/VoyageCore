@@ -5,8 +5,6 @@ import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.CustomPrefixAd
 import cm.pvp.voyagepvp.voyagecore.features.customprefix.commands.CustomPrefixCommand;
 import lombok.Getter;
 
-
-//TODO add blacklisted words.
 @Getter
 public class CustomPrefix extends Feature
 {

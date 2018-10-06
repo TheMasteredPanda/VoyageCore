@@ -3,23 +3,19 @@ package cm.pvp.voyagepvp.voyagecore.features.itemstacker;
 import cm.pvp.voyagepvp.voyagecore.api.command.VoyageCommand;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import javafx.util.Pair;
 import org.bukkit.Material;
-import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-/*
-TODO: check if the items list is bigger than the amount of available slots in a player inventory.
- */
 public class StackCommand extends VoyageCommand
 {
     private ItemStacker feature;

@@ -18,13 +18,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-
-//TODO make unblocking async.
-public class DataHandler implements AutoCloseable, Listener
+public class DataHandler implements Listener
 {
     private Cache<UUID, ReactionPlayer> players = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).build();
     private HikariDataSource source;
@@ -57,15 +56,10 @@ public class DataHandler implements AutoCloseable, Listener
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
     }
 
-    @Override
     public void close()
     {
         for (Map.Entry<UUID, ReactionPlayer> entry : players.asMap().entrySet()) {
-            try {
-                update(entry.getValue());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            update(entry.getValue()).complete(null);
         }
 
         players.invalidateAll();
@@ -76,124 +70,140 @@ public class DataHandler implements AutoCloseable, Listener
     @EventHandler
     public void on(PlayerJoinEvent e)
     {
-        if (!exists(e.getPlayer().getUniqueId())) {
+
+        exists(e.getPlayer().getUniqueId()).whenComplete((exists, throwable) -> {
+            if (!exists) {
+                create(e.getPlayer().getUniqueId()).complete(null);
+            } else {
+                load(e.getPlayer().getUniqueId()).complete(null);
+            }
+        });
+    }
+
+    public CompletableFuture<Boolean> exists(UUID player)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            if (!players.asMap().containsKey(player)) {
+                return true;
+            }
+
+
+            boolean exists = false;
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("SELECT * FROM records WHERE uuid=?");
+                statement.setString(1, player.toString());
+
+                ResultSet set = statement.executeQuery();
+
+                while (set.next()) {
+                    exists = true;
+                }
+
+                DBUtil.close(set);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+
+            return exists;
+        });
+    }
+
+    public CompletableFuture<Void> create(UUID player)
+    {
+        return CompletableFuture.runAsync(() -> {
+            if (players.asMap().containsKey(player)) {
+                throw new RuntimeException("Player already in database.");
+            }
+
+            PreparedStatement statement = null;
+
+            try (Connection connection = source.getConnection()) {
+                statement = connection.prepareStatement("INSERT INTO records(uuid, wins, quickestTime) VALUES (?, ?, ?);");
+                statement.setString(1, player.toString());
+                statement.setInt(2, 0);
+                statement.setLong(3, 0);
+                players.put(player, new ReactionPlayer(Bukkit.getPlayer(player), 0, 0L));
+                statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                DBUtil.close(statement);
+            }
+        });
+    }
+
+    public CompletableFuture<Void> update(ReactionPlayer player)
+    {
+        return CompletableFuture.runAsync(() -> {
             try {
-                create(e.getPlayer().getUniqueId());
-            } catch (SQLException e1) {
-                e1.printStackTrace();
+                PreparedStatement statement = null;
+
+                try (Connection connection = source.getConnection()) {
+                    statement = connection.prepareStatement("UPDATE records SET wins=?, quickestTime=? WHERE uuid=?");
+                    statement.setInt(1, player.getWins());
+                    statement.setLong(2, player.getFastest());
+                    statement.setString(3, player.getReference().get().getUniqueId().toString());
+                    statement.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    DBUtil.close(statement);
+                }
+            } catch (NullPointerException e) {
+                players.invalidate(player);
             }
-        } else {
-            load(e.getPlayer().getUniqueId());
-        }
+        });
     }
 
-    public boolean exists(UUID player)
+    public CompletableFuture<Void> load(UUID player)
     {
-        if (players.asMap().containsKey(player)) {
-            return true;
-        }
-
-        boolean exists = false;
-        Connection connection = null;
-        PreparedStatement statement = null;
-
-        try {
-            connection = source.getConnection();
-            statement = connection.prepareStatement("SELECT * FROM records WHERE uuid=?");
-            statement.setString(1, player.toString());
-
-            ResultSet set = statement.executeQuery();
-
-            while (set.next()) {
-                exists = true;
-            }
-
-            DBUtil.close(set);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.close(connection, statement);
-        }
-
-        return exists;
-    }
-
-    public void create(UUID player) throws SQLException
-    {
-        if (players.asMap().containsKey(player)) {
-            throw new SQLException("Player already in database.");
-        }
-
-        Connection connection = null;
-        PreparedStatement statement = null;
-
-        try {
-            connection = source.getConnection();
-            statement = connection.prepareStatement("INSERT INTO records(uuid, wins, quickestTime) VALUES (?, ?, ?);");
-            statement.setString(1, player.toString());
-            statement.setInt(2, 0);
-            statement.setLong(3, 0);
-            players.put(player, new ReactionPlayer(Bukkit.getPlayer(player), 0, 0L));
-            statement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.close(connection, statement);
-        }
-    }
-
-    public void update(ReactionPlayer player) throws SQLException
-    {
-        try {
+        return CompletableFuture.runAsync(() -> {
             Connection connection = null;
             PreparedStatement statement = null;
 
             try {
                 connection = source.getConnection();
-                statement = connection.prepareStatement("UPDATE records SET wins=?, quickestTime=? WHERE uuid=?");
-                statement.setInt(1, player.getWins());
-                statement.setLong(2, player.getFastest());
-                statement.setString(3, player.getReference().get().getUniqueId().toString());
-                statement.executeUpdate();
+                statement = connection.prepareStatement("SELECT * FROM records WHERE uuid=?");
+                statement.setString(1, player.toString());
+                ResultSet set = statement.executeQuery();
+
+                while (set.next()) {
+                    players.put(player, new ReactionPlayer(Bukkit.getPlayer(player), set.getInt("wins"), set.getLong("quickestTime")));
+                }
+
+                DBUtil.close(set);
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
                 DBUtil.close(connection, statement);
             }
-        } catch (NullPointerException e) {
-            players.invalidate(player);
-        }
+        });
     }
 
-    public void load(UUID player)
+    public CompletableFuture<ReactionPlayer> get(UUID player)
     {
-        Connection connection = null;
-        PreparedStatement statement = null;
+        return exists(player).thenApplyAsync(exists -> {
+            if (exists) {
+                ReactionPlayer rPlayer = players.getIfPresent(player);
 
-        try {
-            connection = source.getConnection();
-            statement = connection.prepareStatement("SELECT * FROM records WHERE uuid=?");
-            statement.setString(1, player.toString());
-            ResultSet set = statement.executeQuery();
+                if (rPlayer == null) {
+                    try {
+                        load(player).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
-            while (set.next()) {
-                players.put(player, new ReactionPlayer(Bukkit.getPlayer(player), set.getInt("wins"), set.getLong("quickestTime")));
+                    rPlayer = players.getIfPresent(player);
+                }
+
+                return rPlayer;
+            } else {
+                return null;
             }
-
-            DBUtil.close(set);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.close(connection, statement);
-        }
-    }
-
-    public Optional<ReactionPlayer> get(UUID player)
-    {
-        if (!exists(player)) {
-            load(player);
-        }
-
-        return Optional.ofNullable(players.getIfPresent(player));
+        });
     }
 }
